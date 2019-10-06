@@ -14,7 +14,7 @@ import java.util.List;
  */
 class SemValue {
     enum Kind {
-        TOKEN, CLASS, CLASS_LIST, FIELD, FIELD_LIST, VAR, VAR_LIST, TYPE, STMT, STMT_LIST, BLOCK, EXPR, EXPR_LIST,
+        TOKEN, CLASS, CLASS_LIST, FIELD, FIELD_LIST, VAR, VAR_LIST, TYPE, STMT, STMT_LIST, BLOCK, EXPR, EXPR_LIST, TYPE_LIST,
         LVALUE, ID, TEMPORARY
     }
 
@@ -91,6 +91,8 @@ class SemValue {
     List<Tree.Expr> exprList;
     Tree.LValue lValue;
 
+    List<Tree.TypeLit> typeList;
+
     Tree.Id id;
 
     /**
@@ -130,10 +132,15 @@ class SemValue {
                 case Tokens.LESS_EQUAL -> "operator : <=";
                 case Tokens.NOT_EQUAL -> "operator : !=";
                 case Tokens.OR -> "operator : ||";
+                case Tokens.ABSTRACT -> "keyword  : abstract";
+                case Tokens.VAR -> "keyword  : var";
+                case Tokens.ARROW -> "operator : =>";
+                case Tokens.FUN -> "keyword  : fun";
                 default -> "operator : " + (char) code;
             };
             case CLASS -> "CLASS: " + clazz;
             case CLASS_LIST -> "CLASS_LIST: " + classList;
+            case TYPE_LIST -> "TYPE_LIST: " + typeList;
             case FIELD -> "FIELD: " + field;
             case FIELD_LIST -> "FIELD_LIST: " + fieldList;
             case VAR -> "VAR: " + type + " " + id;

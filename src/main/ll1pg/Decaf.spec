@@ -18,6 +18,7 @@ PRINT        READ_INTEGER            READ_LINE
 BOOL_LIT     INT_LIT     STRING_LIT
 IDENTIFIER   AND         OR          STATIC      INSTANCE_OF
 LESS_EQUAL   GREATER_EQUAL           EQUAL       NOT_EQUAL
+ABSTRACT     VAR
 '+'  '-'  '*'  '/'  '%'  '='  '>'  '<'  '.'
 ','  ';'  '!'  '('  ')'  '['  ']'  '{'  '}'
 
@@ -43,9 +44,19 @@ ClassList       :   ClassDef ClassList
                     }
                 ;
 
-ClassDef        :   CLASS Id ExtendsClause '{' FieldList '}'
+ClassDef        :   AbstractClause CLASS Id ExtendsClause '{' FieldList '}'
                     {
-                        $$ = svClass(new ClassDef($2.id, Optional.ofNullable($3.id), $5.fieldList, $1.pos));
+                        $$ = svClass(new ClassDef($3.id, Optional.ofNullable($4.id), $6.fieldList, $2.pos, $1.boolVal));
+                    }
+                ;
+
+AbstractClause  :   ABSTRACT
+                    {
+                        $$ = svBoolean(true);
+                    }
+                |   /* empty */
+                    {
+                        $$ = svBoolean(false);
                     }
                 ;
 
@@ -62,13 +73,13 @@ ExtendsClause   :   EXTENDS Id
 FieldList       :   STATIC Type Id '(' VarList ')' Block FieldList
                     {
                         $$ = $8;
-                        $$.fieldList.add(0, new MethodDef(true, $3.id, $2.type, $5.varList, $7.block, $3.pos));
+                        $$.fieldList.add(0, new MethodDef(true, false, $3.id, $2.type, $5.varList, Optional.ofNullable($7.block), $3.pos));
                     }
                 |   Type Id AfterIdField FieldList
                     {
                         $$ = $4;
                         if ($3.varList != null) {
-                            $$.fieldList.add(0, new MethodDef(false, $2.id, $1.type, $3.varList, $3.block, $2.pos));
+                            $$.fieldList.add(0, new MethodDef(false, false, $2.id, $1.type, $3.varList, Optional.ofNullable($3.block), $2.pos));
                         } else {
                             $$.fieldList.add(0, new VarDef($1.type, $2.id, $2.pos));
                         }
@@ -100,7 +111,7 @@ Var             :   Type Id
 VarList         :   Var VarList1
                     {
                         $$ = $2;
-                        $$.varList.add(0, new LocalVarDef($1.type, $1.id, $1.pos));
+                        $$.varList.add(0, new LocalVarDef(Optional.ofNullable($1.type), $1.id, $1.pos));
                     }
                 |   /* empty */
                     {
@@ -111,7 +122,7 @@ VarList         :   Var VarList1
 VarList1        :   ',' Var VarList1
                     {
                         $$ = $3;
-                        $$.varList.add(0, new LocalVarDef($2.type, $2.id, $2.pos));
+                        $$.varList.add(0, new LocalVarDef(Optional.ofNullable($2.type), $2.id, $2.pos));
                     }
                 |   /* empty */
                     {
@@ -225,7 +236,7 @@ StmtList        :   Stmt StmtList
 
 SimpleStmt      :   Var Initializer
                     {
-                        $$ = svStmt(new LocalVarDef($1.type, $1.id, $2.pos, Optional.ofNullable($2.expr), $1.pos));
+                        $$ = svStmt(new LocalVarDef(Optional.ofNullable($1.type), $1.id, $2.pos, Optional.ofNullable($2.expr), $1.pos));
                     }
                 |   Expr Initializer
                     {
@@ -546,7 +557,7 @@ Expr8           :   Expr9 ExprT8
                             if (sv.expr != null) {
                                 $$ = svExpr(new IndexSel($$.expr, sv.expr, sv.pos));
                             } else if (sv.exprList != null) {
-                                $$ = svExpr(new Call($$.expr, sv.id, sv.exprList, sv.pos));
+                                //$$ = svExpr(new Call($$.expr, sv.id, sv.exprList, sv.pos));
                             } else {
                                 $$ = svExpr(new VarSel($$.expr, sv.id, sv.pos));
                             }
@@ -630,7 +641,7 @@ Expr9           :   Literal
                 |   Id ExprListOpt
                     {
                         if ($2.exprList != null) {
-                            $$ = svExpr(new Call($1.id, $2.exprList, $2.pos));
+                            //$$ = svExpr(new Call($1.id, $2.exprList, $2.pos));
                         } else {
                             $$ = svExpr(new VarSel($1.id, $1.pos));
                         }

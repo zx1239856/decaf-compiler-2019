@@ -126,10 +126,23 @@ abstract class AbstractParser {
         return v;
     }
 
+    protected SemValue svBoolean(boolean bool) {
+        var v = new SemValue();
+        v.boolVal = bool;
+        return v;
+    }
+
     protected SemValue svVars(Tree.LocalVarDef... vars) {
         var v = new SemValue(SemValue.Kind.VAR_LIST, vars.length == 0 ? Pos.NoPos : vars[0].pos);
         v.varList = new ArrayList<>();
         v.varList.addAll(Arrays.asList(vars));
+        return v;
+    }
+
+    protected SemValue svTypes(Tree.TypeLit... types) {
+        var v = new SemValue(SemValue.Kind.TYPE_LIST, types.length == 0 ? Pos.NoPos : types[0].pos);
+        v.typeList = new ArrayList<>();
+        v.typeList.addAll(Arrays.asList(types));
         return v;
     }
 

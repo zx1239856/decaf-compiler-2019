@@ -1,5 +1,6 @@
 package decaf.printing;
 
+import decaf.frontend.tree.Tree;
 import decaf.frontend.tree.TreeNode;
 import decaf.lowlevel.log.IndentPrinter;
 

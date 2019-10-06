@@ -227,7 +227,7 @@ public class Namer extends Phase<Tree.TopLevel, Tree.TopLevel> implements TypeLi
                         ctx.declare(symbol);
                         method.symbol = symbol;
                         ctx.open(formal);
-                        method.body.accept(this, ctx);
+                        method.body.ifPresent(objects -> objects.accept(this, ctx));
                         ctx.close();
                     } else {
                         issue(new BadOverrideError(method.pos, method.name, suspect.owner.name));
@@ -249,7 +249,7 @@ public class Namer extends Phase<Tree.TopLevel, Tree.TopLevel> implements TypeLi
             ctx.declare(symbol);
             method.symbol = symbol;
             ctx.open(formal);
-            method.body.accept(this, ctx);
+            method.body.ifPresent(objects -> objects.accept(this, ctx));
             ctx.close();
         }
     }
@@ -262,7 +262,7 @@ public class Namer extends Phase<Tree.TopLevel, Tree.TopLevel> implements TypeLi
             var argTypes = new ArrayList<Type>();
             for (var param : method.params) {
                 param.accept(this, ctx);
-                argTypes.add(param.typeLit.type);
+                param.typeLit.ifPresent(objects -> argTypes.add(objects.type));
             }
             method.type = new FunType(method.returnType.type, argTypes);
             ctx.close();
@@ -287,16 +287,18 @@ public class Namer extends Phase<Tree.TopLevel, Tree.TopLevel> implements TypeLi
             return;
         }
 
-        def.typeLit.accept(this, ctx);
-        if (def.typeLit.type.eq(BuiltInType.VOID)) {
-            issue(new BadVarTypeError(def.pos, def.name));
-            return;
-        }
+        if(def.typeLit.isPresent()) {
+            def.typeLit.get().accept(this, ctx);
+            if (def.typeLit.get().type.eq(BuiltInType.VOID)) {
+                issue(new BadVarTypeError(def.pos, def.name));
+                return;
+            }
 
-        if (def.typeLit.type.noError()) {
-            var symbol = new VarSymbol(def.name, def.typeLit.type, def.id.pos);
-            ctx.declare(symbol);
-            def.symbol = symbol;
+            if (def.typeLit.get().type.noError()) {
+                var symbol = new VarSymbol(def.name, def.typeLit.get().type, def.id.pos);
+                ctx.declare(symbol);
+                def.symbol = symbol;
+            }
         }
     }
 

@@ -274,9 +274,9 @@ public interface TacEmitter extends Visitor<FuncVisitor> {
     @Override
     default void visitCall(Tree.Call expr, FuncVisitor mv) {
         if (expr.isArrayLength) { // special case for array.length()
-            var array = expr.receiver.get();
-            array.accept(this, mv);
-            expr.val = mv.visitLoadFrom(array.val, -4);
+            //var array = expr.receiver.get();
+            //array.accept(this, mv);
+            //expr.val = mv.visitLoadFrom(array.val, -4);
             return;
         }
 
@@ -291,13 +291,13 @@ public interface TacEmitter extends Visitor<FuncVisitor> {
                 expr.val = mv.visitStaticCall(expr.symbol.owner.name, expr.symbol.name, temps, true);
             }
         } else {
-            var object = expr.receiver.get();
-            object.accept(this, mv);
-            if (expr.symbol.type.returnType.isVoidType()) {
-                mv.visitMemberCall(object.val, expr.symbol.owner.name, expr.symbol.name, temps);
-            } else {
-                expr.val = mv.visitMemberCall(object.val, expr.symbol.owner.name, expr.symbol.name, temps, true);
-            }
+//            var object = expr.receiver.get();
+//            object.accept(this, mv);
+//            if (expr.symbol.type.returnType.isVoidType()) {
+//                mv.visitMemberCall(object.val, expr.symbol.owner.name, expr.symbol.name, temps);
+//            } else {
+//                expr.val = mv.visitMemberCall(object.val, expr.symbol.owner.name, expr.symbol.name, temps, true);
+//            }
         }
     }
 
