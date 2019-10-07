@@ -1,0 +1,9 @@
+class Test {
+    static void Main() {
+        var i; // invalid var
+        var lm = fun () => => {};
+        var lm2 = () {};
+        var lm3 = fun () => {};
+        var lm4 = fun () {};
+    }
+}

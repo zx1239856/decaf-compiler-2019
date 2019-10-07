@@ -26,7 +26,7 @@ import java.util.Optional;
 %token '+'  '-'  '*'  '/'  '%'  '='  '>'  '<'  '.'
 %token ','  ';'  '!'  '('  ')'  '['  ']'  '{'  '}'
 
-%nonassoc ARROW
+%right ARROW
 %left OR
 %left AND
 %nonassoc EQUAL NOT_EQUAL

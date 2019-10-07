@@ -1,0 +1,3 @@
+static class Main { // err class definition
+    static void main() { }
+}

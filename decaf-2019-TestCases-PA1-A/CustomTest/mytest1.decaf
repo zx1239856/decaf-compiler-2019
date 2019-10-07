@@ -1,0 +1,41 @@
+abstract class Abstract {
+    int v;
+    int a;
+    int vvv;
+    string aaa;
+    abstract int(int,int) makeIntLambda(int a);
+    abstract int(void(int),int) makeVoidIntLambda(int a);
+    static void test() { 
+        int inner_var;
+        var lambda1 = fun (int x, void(int) f) => fun (int y) => f(x+y);
+        lambda1(2, fun (int x) => x * x);
+    }
+}
+
+class Concrete extends Abstract {
+    void mainipulateArray(string[] arr) {
+        var map = fun (string[] arr, void(string) manip) => arr.forEach(manip);
+        map(arr);
+    }
+}
+
+class MoreConcrete extends Concrete {
+    static void main() {
+        string s = "\\\n\"";
+        int a_from_outer_block;
+        {
+            int a_from_inner_block;
+        }
+        ; // empty line
+        var lambda = fun () {
+            int a_inside_lambda = 1;
+            var aaa_inside_lambda = "wysiwyg";
+        };
+    }
+
+    class MoreConcrete(int,int) classFactory(int x, int y) {
+        return fun (int x, int y) {
+            return new MoreConcrete();
+        };
+    }
+}

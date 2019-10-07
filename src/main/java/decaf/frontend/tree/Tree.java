@@ -479,7 +479,7 @@ public abstract class Tree {
     /**
      * Lambda declaration
      * <pre>
-     *     'fun' '(' paramList ')' '=>' expr
+     *     'fun' '(' paramList ')' '=&gt;' expr
      *     'fun' '(' paramList ')' block
      * </pre>
      */
