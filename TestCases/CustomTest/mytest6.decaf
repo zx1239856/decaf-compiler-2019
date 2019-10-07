@@ -1,0 +1,4 @@
+class Test {
+    static void Main(int(int,void(int,string(int))) f, var g) {
+    }
+}

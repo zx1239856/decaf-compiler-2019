@@ -184,7 +184,7 @@ Type            :   INT
                     }
                 ;
 
- LambdaType     :   Type '(' TypeList ')'
+LambdaType      :   Type '(' TypeList ')'
                     {
                         $$ = svType(new TLambda($1.type, $3.typeList, $1.pos));
                     }

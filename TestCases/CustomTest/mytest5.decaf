@@ -1,0 +1,5 @@
+class Test {
+    static void Main(int(int,void(int,string(int))) f) {
+	void(int(int,int,int,int),void(string,string,int)) func;
+    }
+}
