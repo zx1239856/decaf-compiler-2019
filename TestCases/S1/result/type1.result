@@ -1,0 +1,72 @@
+TopLevel @ (1,1)
+    List
+        ClassDef @ (1,1)
+            A
+            <none>
+            List
+                <empty>
+        ClassDef @ (3,1)
+            Main
+            <none>
+            List
+                VarDef @ (4,12)
+                    TLambda @ (4,5)
+                        TVoid @ (4,5)
+                        List
+                            <empty>
+                    a1
+                    <none>
+                VarDef @ (6,27)
+                    TLambda @ (6,5)
+                        TClass @ (6,5)
+                            A
+                        List
+                            TBool @ (6,13)
+                            TArray @ (6,19)
+                                TVoid @ (6,19)
+                    a2
+                    <none>
+                MethodDef @ (8,33)
+                    ABSTRACT
+                    a3
+                    TLambda @ (8,14)
+                        TArray @ (8,14)
+                            TInt @ (8,14)
+                        List
+                            TArray @ (8,20)
+                                TArray @ (8,20)
+                                    TClass @ (8,20)
+                                        A
+                    List
+                        LocalVarDef @ (8,47)
+                            TArray @ (8,36)
+                                TLambda @ (8,36)
+                                    TInt @ (8,36)
+                                    List
+                                        TInt @ (8,40)
+                            a4
+                            <none>
+                    <none>
+                MethodDef @ (10,40)
+                    STATIC
+                    a5
+                    TLambda @ (10,12)
+                        TArray @ (10,12)
+                            TLambda @ (10,12)
+                                TLambda @ (10,12)
+                                    TString @ (10,12)
+                                    List
+                                        TString @ (10,19)
+                                List
+                                    <empty>
+                        List
+                            TArray @ (10,31)
+                                TLambda @ (10,31)
+                                    TInt @ (10,31)
+                                    List
+                                        <empty>
+                    List
+                        <empty>
+                    Block @ (10,45)
+                        List
+                            <empty>

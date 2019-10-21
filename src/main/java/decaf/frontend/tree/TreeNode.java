@@ -25,7 +25,7 @@ public abstract class TreeNode implements Iterable<Object> {
     /**
      * Position.
      */
-    public final Pos pos;
+    public Pos pos;
 
     /**
      * How many children (or here we call element) does it have?

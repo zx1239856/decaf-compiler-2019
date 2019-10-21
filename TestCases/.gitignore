@@ -1,9 +1,6 @@
 *.log
 *.DS_Store
-S1/output/
-S2/output/
-S3/output/
-S3-JVM/output/
+*/output/
 *.tac
 *.s
 *.class

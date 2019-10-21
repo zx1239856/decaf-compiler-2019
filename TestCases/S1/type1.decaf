@@ -1,0 +1,11 @@
+class A { }
+
+class Main {
+    void() a1;
+
+    class A(bool, void[]) a2;
+
+    abstract int[](class A[][]) a3(int(int)[] a4);
+
+    static string(string)()[](int()[]) a5() { }
+}

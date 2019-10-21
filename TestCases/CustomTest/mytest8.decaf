@@ -1,0 +1,8 @@
+class Main {
+	static void main() {
+		fun (int x, int y) => fun (int y) => x + y;
+		//(a.b.c.d())(1, 2)(x);
+		//fun (int x, int y) => x + y (x);
+		//a.b().c.d();
+	}
+}

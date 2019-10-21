@@ -1,0 +1,11 @@
+class Main {
+    int x,y; // error 1: this grammar is not supported
+
+    static void main() {
+        x = 0xf;
+        y = 0xff;
+        ;
+        Print(z,); // error 2: missing parameter after ','
+        return 0;
+    }
+}

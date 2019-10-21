@@ -69,14 +69,14 @@ def run_spim(asm_file: str, output: str) -> bool:
 
 # tester
 class Tester:
-    def __init__(self, test_set: str):
+    def __init__(self, test_set: str, exclude: [str]):
         self.test_set = test_set
         self.output_dir = os.path.join(test_set, 'output')
         if not os.path.exists(self.output_dir):
             os.mkdir(self.output_dir)
         self.result_dir = os.path.join(test_set, 'result')
         assert(os.path.isdir(self.result_dir))
-        self.test_cases = [f for f in sorted(os.listdir(test_set)) if f.endswith('.decaf')]
+        self.test_cases = [f for f in sorted(os.listdir(test_set)) if f.endswith('.decaf') and f not in exclude]
 
     def get_test_case(self, test_case_name: str) -> str:
         return os.path.join(self.test_set, test_case_name)
@@ -105,9 +105,9 @@ class Tester:
         return [self.test_one(t) for t in self.test_cases]
 
 class PATester(Tester):
-    def __init__(self, pa: str, test_set: str):
+    def __init__(self, pa: str, test_set: str, exclude: [str]):
         self.pa = pa
-        Tester.__init__(self, test_set)
+        Tester.__init__(self, test_set, exclude)
 
     def test_one(self, test_case_name: str) -> bool:
         output = self.get_output(test_case_name)
@@ -120,24 +120,24 @@ class PATester(Tester):
         return False
 
 class PA1ATester(PATester):
-    def __init__(self, test_set: str):
-        PATester.__init__(self, 'PA1', test_set)
+    def __init__(self, test_set: str, exclude: [str]):
+        PATester.__init__(self, 'PA1', test_set, exclude)
 
 class PA1BTester(PATester):
-    def __init__(self, test_set: str):
-        PATester.__init__(self, 'PA1-LL', test_set)
+    def __init__(self, test_set: str, exclude: [str]):
+        PATester.__init__(self, 'PA1-LL', test_set, exclude)
 
 class PA2Tester(PATester):
-    def __init__(self, test_set: str):
-        PATester.__init__(self, 'PA2', test_set)
+    def __init__(self, test_set: str, exclude: [str]):
+        PATester.__init__(self, 'PA2', test_set, exclude)
 
 class PA3Tester(PATester):
-    def __init__(self, test_set: str):
-        PATester.__init__(self, 'PA3', test_set)
+    def __init__(self, test_set: str, exclude: [str]):
+        PATester.__init__(self, 'PA3', test_set, exclude)
 
 class JVMTester(Tester):
-    def __init__(self, test_set: str):
-        Tester.__init__(self, test_set)
+    def __init__(self, test_set: str, exclude: [str]):
+        Tester.__init__(self, test_set, exclude)
 
     def test_one(self, test_case_name: str) -> bool:
         bytecode_dir = self.get_output_dir(test_case_name)
@@ -155,8 +155,8 @@ class JVMTester(Tester):
         return False
 
 class MipsTester(Tester):
-    def __init__(self, test_set: str):
-        Tester.__init__(self, test_set)
+    def __init__(self, test_set: str, exclude: [str]):
+        Tester.__init__(self, test_set, exclude)
 
     def test_one(self, test_case_name: str) -> bool:
         bytecode_dir = self.get_output_dir(test_case_name)
@@ -175,12 +175,12 @@ class MipsTester(Tester):
         return False
 
 TARGETS = {
-    'PA1-A': (['S1'], PA1ATester),
-    'PA1-B': (['S1'], PA1BTester),
-    'PA2': (['S2'], PA2Tester),
-    'PA3': (['S3'], PA3Tester),
-    'jvm': (['S3-JVM'], JVMTester),
-    'PA5': (['S3'], MipsTester),
+    'PA1-A': (['S1'], [], PA1ATester),
+    'PA1-B': (['S1', 'S1-LL'], ['abstract1.decaf', 'abstract3.decaf', 'lambdabad1.decaf'], PA1BTester),
+    'PA2': (['S2'], [], PA2Tester),
+    'PA3': (['S3'], [], PA3Tester),
+    'jvm': (['S3-JVM'], [], JVMTester),
+    'PA5': (['S3'], [], MipsTester),
 }
 
 OPTIONS = ', '.join(TARGETS.keys())
@@ -206,8 +206,8 @@ if __name__ == '__main__':
         print('Invalid target: {}, options are: {}'.format(name, OPTIONS))
         sys.exit(1)
 
-    (test_sets, tester) = TARGETS[name]
-    results = list(flatten([tester(test_set).test() for test_set in test_sets]))
+    (test_sets, exclude, tester) = TARGETS[name]
+    results = list(flatten([tester(test_set, exclude).test() for test_set in test_sets]))
     succeeded = results.count(True)
     failed = results.count(False)
     s = 'Summary: {} succeeded, {} failed'.format(succeeded, failed)
