@@ -744,25 +744,49 @@ AfterNewExpr    :   Id '(' ')'
                     {
                         $$ = svId($1.id);
                     }
-                |   AtomType '[' AfterLBrack
+                |   AtomType AfterAtomType
                     {
                         $$ = $1;
-                        for (int i = 0; i < $3.intVal; i++) {
-                            $$.type = new TArray($$.type, $1.pos);
+                        for (var sv : $2.thunkList) {
+                            var curType = sv.type;
+                            curType.pos = $1.type.pos;
+                            if (curType instanceof TArray) {
+                                // is an array
+                                ((TArray)curType).elemType = $$.type;
+                            } else {
+                                // is a lambda
+                                ((TLambda)curType).returnType = $$.type;
+                            }
+                            $$.type = curType;
                         }
-                        $$.expr = $3.expr;
+                        $$.expr = $2.expr;
                     }
                 ;
 
-AfterLBrack     :   ']' '[' AfterLBrack
+AfterAtomType   :   '(' TypeList ')' AfterAtomType
                     {
-                        $$ = $3;
-                        $$.intVal++;
+                        $$ = $4;
+                        var sv = new SemValue();
+                        sv.type = new TLambda(null, $2.typeList, null);
+                        $$.thunkList.add(0, sv);
                     }
-                |   Expr ']'
+                |   '[' AfterLBrack
+                    {
+                        $$ = $2;
+                    }
+                ;
+
+AfterLBrack     :   ']' AfterAtomType
+                    {
+                        $$ = $2;
+                        var sv = new SemValue();
+                        sv.type = new TArray(null, null);
+                        $$.thunkList.add(0, sv);
+                    }
+                |   Expr ']'   // terminal of NEW clause
                     {
                         $$ = svExpr($1.expr);
-                        $$.intVal = 0; // counter
+                        $$.thunkList = new ArrayList<>();
                     }
                 ;
 

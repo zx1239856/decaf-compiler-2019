@@ -1,4 +1,8 @@
-class Main {
+abstract class Main {
+	abstract string bar();
 	static void main() {
+		int[](int[])[] lambda_arr;
+		var lambda_arr = new int[](int[])(int,int)[a*b+c(d)+((class A)e).ff(fun(int x,int y)=>x+y) 
+		+ call(fun (int x) => fun (int y) => x)];
 	}
 }

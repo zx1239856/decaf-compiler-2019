@@ -1,0 +1,5 @@
+class Main {
+    static void main() {
+        var test = new int[5][6];
+    }
+}
