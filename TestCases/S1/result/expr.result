@@ -1,0 +1,156 @@
+TopLevel @ (1,1)
+    List
+        ClassDef @ (1,1)
+            A
+            <none>
+            List
+                <empty>
+        ClassDef @ (3,1)
+            B
+            A
+            List
+                <empty>
+        ClassDef @ (5,1)
+            Main
+            <none>
+            List
+                MethodDef @ (6,16)
+                    STATIC
+                    foo
+                    TInt @ (6,12)
+                    List
+                        <empty>
+                    Block @ (6,22)
+                        List
+                            Return @ (6,24)
+                                Unary @ (6,31)
+                                    NEG
+                                    Unary @ (6,32)
+                                        NEG
+                                        Unary @ (6,33)
+                                            NEG
+                                            Binary @ (6,40)
+                                                MUL
+                                                IntLit @ (6,38)
+                                                    1
+                                                IntLit @ (6,42)
+                                                    2
+                MethodDef @ (8,16)
+                    STATIC
+                    main
+                    TInt @ (8,12)
+                    List
+                        <empty>
+                    Block @ (8,23)
+                        List
+                            LocalVarDef @ (9,13)
+                                TInt @ (9,9)
+                                x
+                                Binary @ (9,31)
+                                    SUB
+                                    Binary @ (9,23)
+                                        ADD
+                                        Binary @ (9,19)
+                                            DIV
+                                            IntLit @ (9,17)
+                                                1
+                                            IntLit @ (9,21)
+                                                2
+                                        Binary @ (9,27)
+                                            MOD
+                                            IntLit @ (9,25)
+                                                3
+                                            IntLit @ (9,29)
+                                                4
+                                    Binary @ (9,35)
+                                        MUL
+                                        IntLit @ (9,33)
+                                            5
+                                        IntLit @ (9,37)
+                                            6
+                            LocalVarDef @ (10,14)
+                                TBool @ (10,9)
+                                b1
+                                Binary @ (10,28)
+                                    OR
+                                    Unary @ (10,19)
+                                        NOT
+                                        Unary @ (10,20)
+                                            NOT
+                                            Unary @ (10,21)
+                                                NOT
+                                                Unary @ (10,22)
+                                                    NOT
+                                                    BoolLit @ (10,23)
+                                                        true
+                                    Binary @ (10,40)
+                                        AND
+                                        Unary @ (10,31)
+                                            NOT
+                                            Unary @ (10,32)
+                                                NOT
+                                                Unary @ (10,33)
+                                                    NOT
+                                                    BoolLit @ (10,34)
+                                                        false
+                                        Unary @ (10,43)
+                                            NOT
+                                            Unary @ (10,44)
+                                                NOT
+                                                BoolLit @ (10,45)
+                                                    true
+                            LocalVarDef @ (11,14)
+                                TBool @ (11,9)
+                                b2
+                                Binary @ (11,43)
+                                    EQ
+                                    Binary @ (11,35)
+                                        NE
+                                        Binary @ (11,26)
+                                            EQ
+                                            Binary @ (11,21)
+                                                LE
+                                                IntLit @ (11,19)
+                                                    1
+                                                IntLit @ (11,24)
+                                                    2
+                                            Binary @ (11,31)
+                                                GT
+                                                IntLit @ (11,29)
+                                                    3
+                                                IntLit @ (11,33)
+                                                    4
+                                        BoolLit @ (11,38)
+                                            true
+                                    BoolLit @ (11,46)
+                                        false
+                            LocalVarDef @ (12,17)
+                                TClass @ (12,9)
+                                    A
+                                a
+                                Binary @ (12,33)
+                                    ADD
+                                    ClassCast @ (12,31)
+                                        IntLit @ (12,31)
+                                            1
+                                        A
+                                    Call @ (12,38)
+                                        VarSel @ (12,35)
+                                            <none>
+                                            foo
+                                        List
+                                            <empty>
+                            LocalVarDef @ (13,17)
+                                TClass @ (13,9)
+                                    A
+                                b
+                                ClassCast @ (13,48)
+                                    ClassCast @ (13,48)
+                                        Call @ (13,48)
+                                            VarSel @ (13,45)
+                                                This @ (13,40)
+                                                foo
+                                            List
+                                                <empty>
+                                        A
+                                    B

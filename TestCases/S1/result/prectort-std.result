@@ -1,0 +1,306 @@
+TopLevel @ (4,1)
+    List
+        ClassDef @ (4,1)
+            Main
+            <none>
+            List
+                MethodDef @ (5,17)
+                    STATIC
+                    main
+                    TVoid @ (5,12)
+                    List
+                        <empty>
+                    Block @ (5,24)
+                        List
+                            LocalVarDef @ (6,13)
+                                TInt @ (6,9)
+                                a
+                                Binary @ (6,19)
+                                    OR
+                                    VarSel @ (6,17)
+                                        <none>
+                                        a
+                                    Binary @ (6,25)
+                                        AND
+                                        VarSel @ (6,23)
+                                            <none>
+                                            b
+                                        VarSel @ (6,28)
+                                            <none>
+                                            c
+                            LocalVarDef @ (7,13)
+                                TInt @ (7,9)
+                                a
+                                Binary @ (7,26)
+                                    OR
+                                    Binary @ (7,20)
+                                        OR
+                                        VarSel @ (7,18)
+                                            <none>
+                                            a
+                                        VarSel @ (7,23)
+                                            <none>
+                                            b
+                                    VarSel @ (7,29)
+                                        <none>
+                                        c
+                            LocalVarDef @ (8,13)
+                                TInt @ (8,9)
+                                a
+                                Binary @ (8,29)
+                                    AND
+                                    Binary @ (8,23)
+                                        EQ
+                                        Unary @ (8,19)
+                                            NOT
+                                            VarSel @ (8,20)
+                                                <none>
+                                                a
+                                        VarSel @ (8,26)
+                                            <none>
+                                            b
+                                    Binary @ (8,35)
+                                        EQ
+                                        VarSel @ (8,33)
+                                            <none>
+                                            c
+                                        VarSel @ (8,38)
+                                            <none>
+                                            d
+                            LocalVarDef @ (9,13)
+                                TInt @ (9,9)
+                                a
+                                Binary @ (9,26)
+                                    EQ
+                                    Binary @ (9,20)
+                                        LE
+                                        VarSel @ (9,18)
+                                            <none>
+                                            a
+                                        VarSel @ (9,23)
+                                            <none>
+                                            b
+                                    Binary @ (9,32)
+                                        GT
+                                        VarSel @ (9,30)
+                                            <none>
+                                            c
+                                        VarSel @ (9,34)
+                                            <none>
+                                            d
+                            LocalVarDef @ (10,13)
+                                TInt @ (10,9)
+                                a
+                                Binary @ (10,49)
+                                    SUB
+                                    Binary @ (10,26)
+                                        ADD
+                                        Binary @ (10,21)
+                                            ADD
+                                            VarSel @ (10,19)
+                                                <none>
+                                                a
+                                            VarSel @ (10,23)
+                                                <none>
+                                                b
+                                        Binary @ (10,43)
+                                            DIV
+                                            Binary @ (10,38)
+                                                MUL
+                                                Binary @ (10,33)
+                                                    MOD
+                                                    VarSel @ (10,31)
+                                                        <none>
+                                                        c
+                                                    IntLit @ (10,35)
+                                                        6
+                                                IntLit @ (10,40)
+                                                    2
+                                            IntLit @ (10,45)
+                                                3
+                                    Binary @ (10,54)
+                                        MUL
+                                        VarSel @ (10,52)
+                                            <none>
+                                            d
+                                        IntLit @ (10,56)
+                                            2
+                            LocalVarDef @ (11,13)
+                                TInt @ (11,9)
+                                a
+                                Binary @ (11,32)
+                                    OR
+                                    Binary @ (11,24)
+                                        MUL
+                                        Unary @ (11,20)
+                                            NOT
+                                            VarSel @ (11,21)
+                                                <none>
+                                                a
+                                        Unary @ (11,27)
+                                            NEG
+                                            VarSel @ (11,28)
+                                                <none>
+                                                b
+                                    Binary @ (11,50)
+                                        MUL
+                                        ClassCast @ (11,47)
+                                            VarSel @ (11,47)
+                                                <none>
+                                                b
+                                            A
+                                        Unary @ (11,53)
+                                            NOT
+                                            VarSel @ (11,54)
+                                                <none>
+                                                a
+                            LocalVarDef @ (12,13)
+                                TInt @ (12,9)
+                                a
+                                Call @ (12,36)
+                                    VarSel @ (12,35)
+                                        Call @ (12,30)
+                                            VarSel @ (12,29)
+                                                IndexSel @ (12,24)
+                                                    VarSel @ (12,22)
+                                                        VarSel @ (12,20)
+                                                            <none>
+                                                            a
+                                                        b
+                                                    VarSel @ (12,25)
+                                                        <none>
+                                                        c
+                                                d
+                                            List
+                                                VarSel @ (12,31)
+                                                    <none>
+                                                    e
+                                        f
+                                    List
+                                        VarSel @ (12,37)
+                                            <none>
+                                            g
+                            LocalVarDef @ (13,13)
+                                TInt @ (13,9)
+                                a
+                                Call @ (13,29)
+                                    VarSel @ (13,28)
+                                        IndexSel @ (13,23)
+                                            VarSel @ (13,21)
+                                                VarSel @ (13,19)
+                                                    <none>
+                                                    a
+                                                b
+                                            VarSel @ (13,24)
+                                                <none>
+                                                c
+                                        d
+                                    List
+                                        Call @ (13,31)
+                                            VarSel @ (13,30)
+                                                <none>
+                                                e
+                                            List
+                                                VarSel @ (13,32)
+                                                    <none>
+                                                    f
+                            LocalVarDef @ (14,13)
+                                TInt @ (14,9)
+                                a
+                                Binary @ (14,27)
+                                    ADD
+                                    Unary @ (14,18)
+                                        NOT
+                                        Call @ (14,21)
+                                            VarSel @ (14,20)
+                                                <none>
+                                                a
+                                            List
+                                                VarSel @ (14,22)
+                                                    <none>
+                                                    b
+                                    Binary @ (14,49)
+                                        MUL
+                                        ClassCast @ (14,43)
+                                            Call @ (14,43)
+                                                VarSel @ (14,42)
+                                                    <none>
+                                                    a
+                                                List
+                                                    VarSel @ (14,44)
+                                                        <none>
+                                                        b
+                                            A
+                                        Unary @ (14,52)
+                                            NEG
+                                            Call @ (14,55)
+                                                VarSel @ (14,54)
+                                                    <none>
+                                                    a
+                                                List
+                                                    VarSel @ (14,56)
+                                                        <none>
+                                                        b
+                            LocalVarDef @ (15,13)
+                                TInt @ (15,9)
+                                a
+                                Binary @ (15,77)
+                                    MUL
+                                    Binary @ (15,41)
+                                        MOD
+                                        Unary @ (15,19)
+                                            NOT
+                                            VarSel @ (15,35)
+                                                IndexSel @ (15,30)
+                                                    Call @ (15,26)
+                                                        VarSel @ (15,25)
+                                                            VarSel @ (15,23)
+                                                                <none>
+                                                                a
+                                                            b
+                                                        List
+                                                            VarSel @ (15,27)
+                                                                <none>
+                                                                c
+                                                    VarSel @ (15,31)
+                                                        <none>
+                                                        d
+                                                e
+                                        ClassCast @ (15,71)
+                                            VarSel @ (15,71)
+                                                IndexSel @ (15,66)
+                                                    Call @ (15,62)
+                                                        VarSel @ (15,61)
+                                                            VarSel @ (15,59)
+                                                                <none>
+                                                                a
+                                                            b
+                                                        List
+                                                            VarSel @ (15,63)
+                                                                <none>
+                                                                c
+                                                    VarSel @ (15,67)
+                                                        <none>
+                                                        d
+                                                e
+                                            A
+                                    Unary @ (15,81)
+                                        NOT
+                                        Unary @ (15,83)
+                                            NEG
+                                            VarSel @ (15,99)
+                                                IndexSel @ (15,94)
+                                                    Call @ (15,90)
+                                                        VarSel @ (15,89)
+                                                            VarSel @ (15,87)
+                                                                <none>
+                                                                a
+                                                            b
+                                                        List
+                                                            VarSel @ (15,91)
+                                                                <none>
+                                                                c
+                                                    VarSel @ (15,95)
+                                                        <none>
+                                                        d
+                                                e

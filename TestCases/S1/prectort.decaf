@@ -1,0 +1,18 @@
+// Precedence torture
+// only for parsing
+
+class Main {
+    static void main() {
+        int a = a || b && c;                        // a || (b && c)
+        int a = a || b || c;                        // (a || b) || c
+        int a = !a == b && c == d;                  // ((!a) == b) && (c == d)
+        int a = a <= b == c > d;                    // (a <= b) == (c > d)
+        int a = a + b + c%6*2/3 - d*2;              // ((a + b) + (((c % 6) * 2) / 3)) - (d * 2)
+        int a = !a * -b || (class A) b * !a;        // (((!a) * (-b)) || (((class A) b) * (!a)))
+        int a = a.b[c].d(e).f(g);                   // (((((a.b)[c]).d)(e)).f)(g)
+        int a = a.b[c].d(e(f));                     // (((a.b)[c]).d)(e(f))
+        int a = !a(b) + (class A) a(b) * -a(b);     // (!(a(b))) + (((class A) (a(b))) * (-(a(b))))
+        int a = !a.b(c)[d].e % (class A) a.b(c)[d].e * !-a.b(c)[d].e;
+            // ((!((((a.b)(c))[d]).e))   %   ((class A) ((((a.b)(c))[d]).e)))  *  (!(-((((a.b)(c))[d]).e)))
+    }
+}
