@@ -1,0 +1,5 @@
+class Main {
+    String main() {
+	var q = new int[2];
+    }
+}
