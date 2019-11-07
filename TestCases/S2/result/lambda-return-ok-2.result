@@ -1,0 +1,424 @@
+GLOBAL SCOPE:
+    (1,1) -> class A
+    (2,1) -> class B : A
+    (3,1) -> class C : A
+    (5,1) -> class Main
+    CLASS SCOPE OF 'A':
+        <empty>
+    CLASS SCOPE OF 'B':
+        <empty>
+    CLASS SCOPE OF 'C':
+        <empty>
+    CLASS SCOPE OF 'Main':
+        (6,17) -> STATIC function main : () => void
+        FORMAL SCOPE OF 'main':
+            <empty>
+            LOCAL SCOPE:
+                (7,13) -> variable test : (class A, class B) => (class B, class B) => class A
+                (7,20) -> function lambda@(7,20) : (class A, class B) => (class B, class B) => class A
+                (14,13) -> variable f : (int, int) => (int, class B, (class A, class A) => int[]) => class C
+                (14,17) -> function lambda@(14,17) : (int, int) => (int, class B, (class A, class A) => int[]) => class C
+                (24,13) -> variable g : int => (int, class B, ((class B, class B) => class A, class A) => class B) => class A
+                (24,17) -> function lambda@(24,17) : int => (int, class B, ((class B, class B) => class A, class A) => class B) => class A
+                FORMAL SCOPE OF 'lambda@(7,20)':
+                    (7,33) -> variable @a : class A
+                    (7,44) -> variable @b : class B
+                    LOCAL SCOPE:
+                        <empty>
+                        LOCAL SCOPE:
+                            (9,24) -> function lambda@(9,24) : (class A, class B) => class A
+                            FORMAL SCOPE OF 'lambda@(9,24)':
+                                (9,37) -> variable @a1 : class A
+                                (9,49) -> variable @b1 : class B
+                                LOCAL SCOPE:
+                                    <empty>
+                        LOCAL SCOPE:
+                            (11,24) -> function lambda@(11,24) : (class B, class A) => class B
+                            FORMAL SCOPE OF 'lambda@(11,24)':
+                                (11,37) -> variable @b2 : class B
+                                (11,49) -> variable @a2 : class A
+                                LOCAL SCOPE:
+                                    <empty>
+                FORMAL SCOPE OF 'lambda@(14,17)':
+                    (14,26) -> variable @x : int
+                    (14,33) -> variable @y : int
+                    LOCAL SCOPE:
+                        (20,17) -> variable z : int
+                        (21,20) -> function lambda@(21,20) : (int, class A, (class B, class A) => int[]) => class C
+                        LOCAL SCOPE:
+                            (15,22) -> variable i : int
+                            (16,21) -> variable z : class A
+                            (17,21) -> variable nul : (int, class B, (class A, class B) => int[]) => null
+                            (17,27) -> function lambda@(17,27) : (int, class B, (class A, class B) => int[]) => null
+                            FORMAL SCOPE OF 'lambda@(17,27)':
+                                (17,36) -> variable @a : int
+                                (17,47) -> variable @b : class B
+                                (17,74) -> variable @c : (class A, class B) => int[]
+                                LOCAL SCOPE:
+                                    <empty>
+                        FORMAL SCOPE OF 'lambda@(21,20)':
+                            (21,29) -> variable @a : int
+                            (21,40) -> variable @b : class A
+                            (21,67) -> variable @c : (class B, class A) => int[]
+                            LOCAL SCOPE:
+                                <empty>
+                FORMAL SCOPE OF 'lambda@(24,17)':
+                    (24,26) -> variable @x : int
+                    LOCAL SCOPE:
+                        <empty>
+                        LOCAL SCOPE:
+                            (26,24) -> function lambda@(26,24) : (int, class A, ((class B, class A) => class A, class A) => class A) => class B
+                            FORMAL SCOPE OF 'lambda@(26,24)':
+                                (26,33) -> variable @a : int
+                                (26,44) -> variable @b : class A
+                                (26,91) -> variable @c : ((class B, class A) => class A, class A) => class A
+                                LOCAL SCOPE:
+                                    <empty>
+                        LOCAL SCOPE:
+                            <empty>
+                            LOCAL SCOPE:
+                                (28,24) -> function lambda@(28,24) : (int, class A, ((class B, class B) => class A, class B) => class A) => class A
+                                FORMAL SCOPE OF 'lambda@(28,24)':
+                                    (28,33) -> variable @a : int
+                                    (28,44) -> variable @b : class A
+                                    (28,91) -> variable @c : ((class B, class B) => class A, class B) => class A
+                                    LOCAL SCOPE:
+                                        <empty>
+                            LOCAL SCOPE:
+                                <empty>
+                                LOCAL SCOPE:
+                                    (30,24) -> function lambda@(30,24) : (int, class A, ((class B, class A) => class A, class C) => class A) => class C
+                                    FORMAL SCOPE OF 'lambda@(30,24)':
+                                        (30,33) -> variable @a : int
+                                        (30,44) -> variable @b : class A
+                                        (30,91) -> variable @c : ((class B, class A) => class A, class C) => class A
+                                        LOCAL SCOPE:
+                                            <empty>
+                                LOCAL SCOPE:
+                                    <empty>
+                                    LOCAL SCOPE:
+                                        (32,24) -> function lambda@(32,24) : (int, class A, ((class B, class B) => class B, class A) => class A) => class B
+                                        FORMAL SCOPE OF 'lambda@(32,24)':
+                                            (32,33) -> variable @a : int
+                                            (32,44) -> variable @b : class A
+                                            (32,91) -> variable @c : ((class B, class B) => class B, class A) => class A
+                                            LOCAL SCOPE:
+                                                <empty>
+                                    LOCAL SCOPE:
+                                        <empty>
+                                        LOCAL SCOPE:
+                                            (34,24) -> function lambda@(34,24) : (int, class A, ((class B, class A) => class B, class B) => class A) => class B
+                                            FORMAL SCOPE OF 'lambda@(34,24)':
+                                                (34,33) -> variable @a : int
+                                                (34,44) -> variable @b : class A
+                                                (34,91) -> variable @c : ((class B, class A) => class B, class B) => class A
+                                                LOCAL SCOPE:
+                                                    <empty>
+                                        LOCAL SCOPE:
+                                            <empty>
+                                            LOCAL SCOPE:
+                                                (36,24) -> function lambda@(36,24) : (int, class A, ((class B, class A) => class B, class C) => class A) => class B
+                                                FORMAL SCOPE OF 'lambda@(36,24)':
+                                                    (36,33) -> variable @a : int
+                                                    (36,44) -> variable @b : class A
+                                                    (36,91) -> variable @c : ((class B, class A) => class B, class C) => class A
+                                                    LOCAL SCOPE:
+                                                        <empty>
+                                            LOCAL SCOPE:
+                                                <empty>
+                                                LOCAL SCOPE:
+                                                    (38,24) -> function lambda@(38,24) : (int, class A, ((class B, class B) => class C, class A) => class A) => class A
+                                                    FORMAL SCOPE OF 'lambda@(38,24)':
+                                                        (38,33) -> variable @a : int
+                                                        (38,44) -> variable @b : class A
+                                                        (38,91) -> variable @c : ((class B, class B) => class C, class A) => class A
+                                                        LOCAL SCOPE:
+                                                            <empty>
+                                                LOCAL SCOPE:
+                                                    <empty>
+                                                    LOCAL SCOPE:
+                                                        (40,24) -> function lambda@(40,24) : (int, class A, ((class A, class B) => class C, class B) => class A) => class A
+                                                        FORMAL SCOPE OF 'lambda@(40,24)':
+                                                            (40,33) -> variable @a : int
+                                                            (40,44) -> variable @b : class A
+                                                            (40,91) -> variable @c : ((class A, class B) => class C, class B) => class A
+                                                            LOCAL SCOPE:
+                                                                <empty>
+                                                    LOCAL SCOPE:
+                                                        <empty>
+                                                        LOCAL SCOPE:
+                                                            (42,24) -> function lambda@(42,24) : (int, class A, ((class B, class B) => class C, class C) => class A) => class C
+                                                            FORMAL SCOPE OF 'lambda@(42,24)':
+                                                                (42,33) -> variable @a : int
+                                                                (42,44) -> variable @b : class A
+                                                                (42,91) -> variable @c : ((class B, class B) => class C, class C) => class A
+                                                                LOCAL SCOPE:
+                                                                    <empty>
+                                                        LOCAL SCOPE:
+                                                            <empty>
+                                                            LOCAL SCOPE:
+                                                                (44,24) -> function lambda@(44,24) : (int, class A, ((class B, class B) => class A, class A) => class B) => class A
+                                                                FORMAL SCOPE OF 'lambda@(44,24)':
+                                                                    (44,33) -> variable @a : int
+                                                                    (44,44) -> variable @b : class A
+                                                                    (44,91) -> variable @c : ((class B, class B) => class A, class A) => class B
+                                                                    LOCAL SCOPE:
+                                                                        <empty>
+                                                            LOCAL SCOPE:
+                                                                <empty>
+                                                                LOCAL SCOPE:
+                                                                    (46,24) -> function lambda@(46,24) : (int, class A, ((class A, class A) => class A, class B) => class B) => class C
+                                                                    FORMAL SCOPE OF 'lambda@(46,24)':
+                                                                        (46,33) -> variable @a : int
+                                                                        (46,44) -> variable @b : class A
+                                                                        (46,91) -> variable @c : ((class A, class A) => class A, class B) => class B
+                                                                        LOCAL SCOPE:
+                                                                            <empty>
+                                                                LOCAL SCOPE:
+                                                                    <empty>
+                                                                    LOCAL SCOPE:
+                                                                        (48,24) -> function lambda@(48,24) : (int, class A, ((class B, class B) => class A, class C) => class B) => class A
+                                                                        FORMAL SCOPE OF 'lambda@(48,24)':
+                                                                            (48,33) -> variable @a : int
+                                                                            (48,44) -> variable @b : class A
+                                                                            (48,91) -> variable @c : ((class B, class B) => class A, class C) => class B
+                                                                            LOCAL SCOPE:
+                                                                                <empty>
+                                                                    LOCAL SCOPE:
+                                                                        <empty>
+                                                                        LOCAL SCOPE:
+                                                                            (50,24) -> function lambda@(50,24) : (int, class A, ((class B, class A) => class B, class A) => class B) => class A
+                                                                            FORMAL SCOPE OF 'lambda@(50,24)':
+                                                                                (50,33) -> variable @a : int
+                                                                                (50,44) -> variable @b : class A
+                                                                                (50,91) -> variable @c : ((class B, class A) => class B, class A) => class B
+                                                                                LOCAL SCOPE:
+                                                                                    <empty>
+                                                                        LOCAL SCOPE:
+                                                                            <empty>
+                                                                            LOCAL SCOPE:
+                                                                                (52,24) -> function lambda@(52,24) : (int, class A, ((class A, class A) => class B, class B) => class B) => class A
+                                                                                FORMAL SCOPE OF 'lambda@(52,24)':
+                                                                                    (52,33) -> variable @a : int
+                                                                                    (52,44) -> variable @b : class A
+                                                                                    (52,91) -> variable @c : ((class A, class A) => class B, class B) => class B
+                                                                                    LOCAL SCOPE:
+                                                                                        <empty>
+                                                                            LOCAL SCOPE:
+                                                                                <empty>
+                                                                                LOCAL SCOPE:
+                                                                                    (54,24) -> function lambda@(54,24) : (int, class A, ((class A, class A) => class B, class C) => class B) => class C
+                                                                                    FORMAL SCOPE OF 'lambda@(54,24)':
+                                                                                        (54,33) -> variable @a : int
+                                                                                        (54,44) -> variable @b : class A
+                                                                                        (54,91) -> variable @c : ((class A, class A) => class B, class C) => class B
+                                                                                        LOCAL SCOPE:
+                                                                                            <empty>
+                                                                                LOCAL SCOPE:
+                                                                                    <empty>
+                                                                                    LOCAL SCOPE:
+                                                                                        (56,24) -> function lambda@(56,24) : (int, class A, ((class B, class B) => class C, class A) => class B) => class B
+                                                                                        FORMAL SCOPE OF 'lambda@(56,24)':
+                                                                                            (56,33) -> variable @a : int
+                                                                                            (56,44) -> variable @b : class A
+                                                                                            (56,91) -> variable @c : ((class B, class B) => class C, class A) => class B
+                                                                                            LOCAL SCOPE:
+                                                                                                <empty>
+                                                                                    LOCAL SCOPE:
+                                                                                        <empty>
+                                                                                        LOCAL SCOPE:
+                                                                                            (58,24) -> function lambda@(58,24) : (int, class A, ((class B, class A) => class C, class B) => class B) => class C
+                                                                                            FORMAL SCOPE OF 'lambda@(58,24)':
+                                                                                                (58,33) -> variable @a : int
+                                                                                                (58,44) -> variable @b : class A
+                                                                                                (58,91) -> variable @c : ((class B, class A) => class C, class B) => class B
+                                                                                                LOCAL SCOPE:
+                                                                                                    <empty>
+                                                                                        LOCAL SCOPE:
+                                                                                            <empty>
+                                                                                            LOCAL SCOPE:
+                                                                                                (60,24) -> function lambda@(60,24) : (int, class A, ((class B, class A) => class C, class C) => class B) => class A
+                                                                                                FORMAL SCOPE OF 'lambda@(60,24)':
+                                                                                                    (60,33) -> variable @a : int
+                                                                                                    (60,44) -> variable @b : class A
+                                                                                                    (60,91) -> variable @c : ((class B, class A) => class C, class C) => class B
+                                                                                                    LOCAL SCOPE:
+                                                                                                        <empty>
+                                                                                            LOCAL SCOPE:
+                                                                                                <empty>
+                                                                                                LOCAL SCOPE:
+                                                                                                    (62,24) -> function lambda@(62,24) : (int, class B, ((class A, class B) => class A, class A) => class A) => class C
+                                                                                                    FORMAL SCOPE OF 'lambda@(62,24)':
+                                                                                                        (62,33) -> variable @a : int
+                                                                                                        (62,44) -> variable @b : class B
+                                                                                                        (62,91) -> variable @c : ((class A, class B) => class A, class A) => class A
+                                                                                                        LOCAL SCOPE:
+                                                                                                            <empty>
+                                                                                                LOCAL SCOPE:
+                                                                                                    <empty>
+                                                                                                    LOCAL SCOPE:
+                                                                                                        (64,24) -> function lambda@(64,24) : (int, class B, ((class B, class B) => class A, class B) => class A) => class A
+                                                                                                        FORMAL SCOPE OF 'lambda@(64,24)':
+                                                                                                            (64,33) -> variable @a : int
+                                                                                                            (64,44) -> variable @b : class B
+                                                                                                            (64,91) -> variable @c : ((class B, class B) => class A, class B) => class A
+                                                                                                            LOCAL SCOPE:
+                                                                                                                <empty>
+                                                                                                    LOCAL SCOPE:
+                                                                                                        <empty>
+                                                                                                        LOCAL SCOPE:
+                                                                                                            (66,24) -> function lambda@(66,24) : (int, class B, ((class B, class A) => class A, class C) => class A) => class B
+                                                                                                            FORMAL SCOPE OF 'lambda@(66,24)':
+                                                                                                                (66,33) -> variable @a : int
+                                                                                                                (66,44) -> variable @b : class B
+                                                                                                                (66,91) -> variable @c : ((class B, class A) => class A, class C) => class A
+                                                                                                                LOCAL SCOPE:
+                                                                                                                    <empty>
+                                                                                                        LOCAL SCOPE:
+                                                                                                            <empty>
+                                                                                                            LOCAL SCOPE:
+                                                                                                                (68,24) -> function lambda@(68,24) : (int, class B, ((class B, class A) => class B, class A) => class A) => class A
+                                                                                                                FORMAL SCOPE OF 'lambda@(68,24)':
+                                                                                                                    (68,33) -> variable @a : int
+                                                                                                                    (68,44) -> variable @b : class B
+                                                                                                                    (68,91) -> variable @c : ((class B, class A) => class B, class A) => class A
+                                                                                                                    LOCAL SCOPE:
+                                                                                                                        <empty>
+                                                                                                            LOCAL SCOPE:
+                                                                                                                <empty>
+                                                                                                                LOCAL SCOPE:
+                                                                                                                    (70,24) -> function lambda@(70,24) : (int, class B, ((class A, class B) => class B, class B) => class A) => class C
+                                                                                                                    FORMAL SCOPE OF 'lambda@(70,24)':
+                                                                                                                        (70,33) -> variable @a : int
+                                                                                                                        (70,44) -> variable @b : class B
+                                                                                                                        (70,91) -> variable @c : ((class A, class B) => class B, class B) => class A
+                                                                                                                        LOCAL SCOPE:
+                                                                                                                            <empty>
+                                                                                                                LOCAL SCOPE:
+                                                                                                                    <empty>
+                                                                                                                    LOCAL SCOPE:
+                                                                                                                        (72,24) -> function lambda@(72,24) : (int, class B, ((class B, class B) => class B, class C) => class A) => class C
+                                                                                                                        FORMAL SCOPE OF 'lambda@(72,24)':
+                                                                                                                            (72,33) -> variable @a : int
+                                                                                                                            (72,44) -> variable @b : class B
+                                                                                                                            (72,91) -> variable @c : ((class B, class B) => class B, class C) => class A
+                                                                                                                            LOCAL SCOPE:
+                                                                                                                                <empty>
+                                                                                                                    LOCAL SCOPE:
+                                                                                                                        <empty>
+                                                                                                                        LOCAL SCOPE:
+                                                                                                                            (74,24) -> function lambda@(74,24) : (int, class B, ((class A, class B) => class C, class A) => class A) => class A
+                                                                                                                            FORMAL SCOPE OF 'lambda@(74,24)':
+                                                                                                                                (74,33) -> variable @a : int
+                                                                                                                                (74,44) -> variable @b : class B
+                                                                                                                                (74,91) -> variable @c : ((class A, class B) => class C, class A) => class A
+                                                                                                                                LOCAL SCOPE:
+                                                                                                                                    <empty>
+                                                                                                                        LOCAL SCOPE:
+                                                                                                                            <empty>
+                                                                                                                            LOCAL SCOPE:
+                                                                                                                                (76,24) -> function lambda@(76,24) : (int, class B, ((class B, class B) => class C, class B) => class A) => class A
+                                                                                                                                FORMAL SCOPE OF 'lambda@(76,24)':
+                                                                                                                                    (76,33) -> variable @a : int
+                                                                                                                                    (76,44) -> variable @b : class B
+                                                                                                                                    (76,91) -> variable @c : ((class B, class B) => class C, class B) => class A
+                                                                                                                                    LOCAL SCOPE:
+                                                                                                                                        <empty>
+                                                                                                                            LOCAL SCOPE:
+                                                                                                                                <empty>
+                                                                                                                                LOCAL SCOPE:
+                                                                                                                                    (78,24) -> function lambda@(78,24) : (int, class B, ((class B, class A) => class C, class C) => class A) => class A
+                                                                                                                                    FORMAL SCOPE OF 'lambda@(78,24)':
+                                                                                                                                        (78,33) -> variable @a : int
+                                                                                                                                        (78,44) -> variable @b : class B
+                                                                                                                                        (78,91) -> variable @c : ((class B, class A) => class C, class C) => class A
+                                                                                                                                        LOCAL SCOPE:
+                                                                                                                                            <empty>
+                                                                                                                                LOCAL SCOPE:
+                                                                                                                                    <empty>
+                                                                                                                                    LOCAL SCOPE:
+                                                                                                                                        (80,24) -> function lambda@(80,24) : (int, class B, ((class A, class A) => class A, class A) => class B) => class A
+                                                                                                                                        FORMAL SCOPE OF 'lambda@(80,24)':
+                                                                                                                                            (80,33) -> variable @a : int
+                                                                                                                                            (80,44) -> variable @b : class B
+                                                                                                                                            (80,91) -> variable @c : ((class A, class A) => class A, class A) => class B
+                                                                                                                                            LOCAL SCOPE:
+                                                                                                                                                <empty>
+                                                                                                                                    LOCAL SCOPE:
+                                                                                                                                        <empty>
+                                                                                                                                        LOCAL SCOPE:
+                                                                                                                                            (82,24) -> function lambda@(82,24) : (int, class B, ((class B, class B) => class A, class B) => class B) => class C
+                                                                                                                                            FORMAL SCOPE OF 'lambda@(82,24)':
+                                                                                                                                                (82,33) -> variable @a : int
+                                                                                                                                                (82,44) -> variable @b : class B
+                                                                                                                                                (82,91) -> variable @c : ((class B, class B) => class A, class B) => class B
+                                                                                                                                                LOCAL SCOPE:
+                                                                                                                                                    <empty>
+                                                                                                                                        LOCAL SCOPE:
+                                                                                                                                            <empty>
+                                                                                                                                            LOCAL SCOPE:
+                                                                                                                                                (84,24) -> function lambda@(84,24) : (int, class B, ((class B, class A) => class A, class C) => class B) => class A
+                                                                                                                                                FORMAL SCOPE OF 'lambda@(84,24)':
+                                                                                                                                                    (84,33) -> variable @a : int
+                                                                                                                                                    (84,44) -> variable @b : class B
+                                                                                                                                                    (84,91) -> variable @c : ((class B, class A) => class A, class C) => class B
+                                                                                                                                                    LOCAL SCOPE:
+                                                                                                                                                        <empty>
+                                                                                                                                            LOCAL SCOPE:
+                                                                                                                                                <empty>
+                                                                                                                                                LOCAL SCOPE:
+                                                                                                                                                    (86,24) -> function lambda@(86,24) : (int, class B, ((class A, class B) => class B, class A) => class B) => class B
+                                                                                                                                                    FORMAL SCOPE OF 'lambda@(86,24)':
+                                                                                                                                                        (86,33) -> variable @a : int
+                                                                                                                                                        (86,44) -> variable @b : class B
+                                                                                                                                                        (86,91) -> variable @c : ((class A, class B) => class B, class A) => class B
+                                                                                                                                                        LOCAL SCOPE:
+                                                                                                                                                            <empty>
+                                                                                                                                                LOCAL SCOPE:
+                                                                                                                                                    <empty>
+                                                                                                                                                    LOCAL SCOPE:
+                                                                                                                                                        (88,24) -> function lambda@(88,24) : (int, class B, ((class A, class B) => class B, class B) => class B) => class C
+                                                                                                                                                        FORMAL SCOPE OF 'lambda@(88,24)':
+                                                                                                                                                            (88,33) -> variable @a : int
+                                                                                                                                                            (88,44) -> variable @b : class B
+                                                                                                                                                            (88,91) -> variable @c : ((class A, class B) => class B, class B) => class B
+                                                                                                                                                            LOCAL SCOPE:
+                                                                                                                                                                <empty>
+                                                                                                                                                    LOCAL SCOPE:
+                                                                                                                                                        <empty>
+                                                                                                                                                        LOCAL SCOPE:
+                                                                                                                                                            (90,24) -> function lambda@(90,24) : (int, class B, ((class A, class A) => class B, class C) => class B) => class A
+                                                                                                                                                            FORMAL SCOPE OF 'lambda@(90,24)':
+                                                                                                                                                                (90,33) -> variable @a : int
+                                                                                                                                                                (90,44) -> variable @b : class B
+                                                                                                                                                                (90,91) -> variable @c : ((class A, class A) => class B, class C) => class B
+                                                                                                                                                                LOCAL SCOPE:
+                                                                                                                                                                    <empty>
+                                                                                                                                                        LOCAL SCOPE:
+                                                                                                                                                            <empty>
+                                                                                                                                                            LOCAL SCOPE:
+                                                                                                                                                                (92,24) -> function lambda@(92,24) : (int, class B, ((class A, class B) => class C, class A) => class B) => class C
+                                                                                                                                                                FORMAL SCOPE OF 'lambda@(92,24)':
+                                                                                                                                                                    (92,33) -> variable @a : int
+                                                                                                                                                                    (92,44) -> variable @b : class B
+                                                                                                                                                                    (92,91) -> variable @c : ((class A, class B) => class C, class A) => class B
+                                                                                                                                                                    LOCAL SCOPE:
+                                                                                                                                                                        <empty>
+                                                                                                                                                            LOCAL SCOPE:
+                                                                                                                                                                <empty>
+                                                                                                                                                                LOCAL SCOPE:
+                                                                                                                                                                    (94,24) -> function lambda@(94,24) : (int, class B, ((class B, class B) => class C, class B) => class B) => class B
+                                                                                                                                                                    FORMAL SCOPE OF 'lambda@(94,24)':
+                                                                                                                                                                        (94,33) -> variable @a : int
+                                                                                                                                                                        (94,44) -> variable @b : class B
+                                                                                                                                                                        (94,91) -> variable @c : ((class B, class B) => class C, class B) => class B
+                                                                                                                                                                        LOCAL SCOPE:
+                                                                                                                                                                            <empty>
+                                                                                                                                                                LOCAL SCOPE:
+                                                                                                                                                                    (96,24) -> function lambda@(96,24) : (int, class B, ((class A, class A) => class C, class C) => class B) => class C
+                                                                                                                                                                    FORMAL SCOPE OF 'lambda@(96,24)':
+                                                                                                                                                                        (96,33) -> variable @a : int
+                                                                                                                                                                        (96,44) -> variable @b : class B
+                                                                                                                                                                        (96,91) -> variable @c : ((class A, class A) => class C, class C) => class B
+                                                                                                                                                                        LOCAL SCOPE:
+                                                                                                                                                                            <empty>

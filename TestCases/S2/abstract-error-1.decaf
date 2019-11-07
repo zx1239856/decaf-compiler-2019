@@ -1,0 +1,4 @@
+abstract class Main {
+    abstract void foo();
+    static void main() {}
+}

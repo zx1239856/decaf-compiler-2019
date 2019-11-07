@@ -1,0 +1,106 @@
+GLOBAL SCOPE:
+    (3,1) -> class Main
+    CLASS SCOPE OF 'Main':
+        (4,17) -> STATIC function main : () => void
+        FORMAL SCOPE OF 'main':
+            <empty>
+            LOCAL SCOPE:
+                (5,13) -> variable intarr_map : (int => int) => int[] => int[]
+                (5,26) -> function lambda@(5,26) : (int => int) => int[] => int[]
+                (12,13) -> variable print_filter : (int => bool) => int[] => void
+                (12,28) -> function lambda@(12,28) : (int => bool) => int[] => void
+                (19,13) -> variable print_arr : int[] => void
+                (19,25) -> function lambda@(19,25) : int[] => void
+                (25,13) -> variable dotintint : (int => int) => (int => int) => int => int
+                (25,25) -> function lambda@(25,25) : (int => int) => (int => int) => int => int
+                (27,13) -> variable kcuf : int => int => int => int => int
+                (27,20) -> function lambda@(27,20) : int => int => int => int => int
+                (29,13) -> variable plus1 : int => int
+                (29,21) -> function lambda@(29,21) : int => int
+                (30,13) -> variable times3 : int => int
+                (30,22) -> function lambda@(30,22) : int => int
+                (32,13) -> variable arr : int[]
+                (33,13) -> variable arr2 : int[]
+                (36,13) -> variable pred : int => bool
+                (36,20) -> function lambda@(36,20) : int => bool
+                (37,13) -> variable pf : int[] => void
+                (40,13) -> variable map : (int => int) => int[] => int[]
+                (41,23) -> function lambda@(41,23) : int => int
+                (52,23) -> function lambda@(52,23) : int => int
+                FORMAL SCOPE OF 'lambda@(5,26)':
+                    (5,40) -> variable @f : int => int
+                    LOCAL SCOPE:
+                        (5,46) -> function lambda@(5,46) : int[] => int[]
+                        FORMAL SCOPE OF 'lambda@(5,46)':
+                            (5,57) -> variable @arr : int[]
+                            LOCAL SCOPE:
+                                (6,17) -> variable l : int
+                                (7,17) -> variable rv : int[]
+                                LOCAL SCOPE:
+                                    (8,22) -> variable i : int
+                FORMAL SCOPE OF 'lambda@(12,28)':
+                    (12,43) -> variable @f : int => bool
+                    LOCAL SCOPE:
+                        (12,49) -> function lambda@(12,49) : int[] => void
+                        FORMAL SCOPE OF 'lambda@(12,49)':
+                            (12,60) -> variable @arr : int[]
+                            LOCAL SCOPE:
+                                (13,17) -> variable l : () => int
+                                LOCAL SCOPE:
+                                    (14,22) -> variable i : int
+                                    LOCAL SCOPE:
+                                        <empty>
+                FORMAL SCOPE OF 'lambda@(19,25)':
+                    (19,36) -> variable @arr : int[]
+                    LOCAL SCOPE:
+                        <empty>
+                        LOCAL SCOPE:
+                            (20,22) -> variable i : int
+                FORMAL SCOPE OF 'lambda@(25,25)':
+                    (25,39) -> variable @f : int => int
+                    LOCAL SCOPE:
+                        (25,45) -> function lambda@(25,45) : (int => int) => int => int
+                        FORMAL SCOPE OF 'lambda@(25,45)':
+                            (25,59) -> variable @g : int => int
+                            LOCAL SCOPE:
+                                (25,65) -> function lambda@(25,65) : int => int
+                                FORMAL SCOPE OF 'lambda@(25,65)':
+                                    (25,74) -> variable @x : int
+                                    LOCAL SCOPE:
+                                        <empty>
+                FORMAL SCOPE OF 'lambda@(27,20)':
+                    (27,29) -> variable @x : int
+                    LOCAL SCOPE:
+                        (27,35) -> function lambda@(27,35) : int => int => int => int
+                        FORMAL SCOPE OF 'lambda@(27,35)':
+                            (27,44) -> variable @y : int
+                            LOCAL SCOPE:
+                                (27,50) -> function lambda@(27,50) : int => int => int
+                                FORMAL SCOPE OF 'lambda@(27,50)':
+                                    (27,59) -> variable @z : int
+                                    LOCAL SCOPE:
+                                        (27,65) -> function lambda@(27,65) : int => int
+                                        FORMAL SCOPE OF 'lambda@(27,65)':
+                                            (27,73) -> variable @w : int
+                                            LOCAL SCOPE:
+                                                <empty>
+                FORMAL SCOPE OF 'lambda@(29,21)':
+                    (29,30) -> variable @x : int
+                    LOCAL SCOPE:
+                        <empty>
+                FORMAL SCOPE OF 'lambda@(30,22)':
+                    (30,31) -> variable @x : int
+                    LOCAL SCOPE:
+                        <empty>
+                FORMAL SCOPE OF 'lambda@(36,20)':
+                    (36,29) -> variable @x : int
+                    LOCAL SCOPE:
+                        <empty>
+                FORMAL SCOPE OF 'lambda@(41,23)':
+                    (41,32) -> variable @x : int
+                    LOCAL SCOPE:
+                        <empty>
+                FORMAL SCOPE OF 'lambda@(52,23)':
+                    (52,32) -> variable @x : int
+                    LOCAL SCOPE:
+                        <empty>

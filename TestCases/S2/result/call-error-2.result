@@ -1,0 +1,5 @@
+*** Error at (14,11): function 'a1' expects 2 argument(s) but 1 given
+*** Error at (15,11): function 'a1' expects 2 argument(s) but 1 given
+*** Error at (21,57): int is not a callable type
+*** Error at (23,57): lambda expression expects 1 argument(s) but 2 given
+*** Error at (25,28): function 'addn' expects 2 argument(s) but 1 given

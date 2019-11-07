@@ -1,0 +1,152 @@
+GLOBAL SCOPE:
+    (1,10) -> ABSTRACT class A
+    (9,10) -> ABSTRACT class B : A
+    (17,1) -> class C : B
+    (25,10) -> ABSTRACT class D : C
+    (35,1) -> class E : C
+    (42,10) -> ABSTRACT class F : D
+    (46,1) -> class Main : D
+    CLASS SCOPE OF 'A':
+        (2,9) -> variable u : int
+        (3,19) -> ABSTRACT function a : () => void
+        (4,19) -> ABSTRACT function b : () => void
+        (5,19) -> ABSTRACT function c : () => void
+        (6,19) -> ABSTRACT function d : () => void
+        FORMAL SCOPE OF 'a':
+            (3,19) -> variable @this : class A
+        FORMAL SCOPE OF 'b':
+            (4,19) -> variable @this : class A
+        FORMAL SCOPE OF 'c':
+            (5,19) -> variable @this : class A
+        FORMAL SCOPE OF 'd':
+            (6,19) -> variable @this : class A
+    CLASS SCOPE OF 'B':
+        (10,9) -> variable v : int
+        (11,19) -> ABSTRACT function a : () => void
+        (12,10) -> function b : () => void
+        (13,19) -> ABSTRACT function e : () => void
+        (14,10) -> function f : () => void
+        FORMAL SCOPE OF 'a':
+            (11,19) -> variable @this : class B
+        FORMAL SCOPE OF 'b':
+            (12,10) -> variable @this : class B
+            LOCAL SCOPE:
+                <empty>
+        FORMAL SCOPE OF 'e':
+            (13,19) -> variable @this : class B
+        FORMAL SCOPE OF 'f':
+            (14,10) -> variable @this : class B
+            LOCAL SCOPE:
+                <empty>
+    CLASS SCOPE OF 'C':
+        (18,10) -> function a : () => void
+        (19,10) -> function c : () => void
+        (20,10) -> function d : () => void
+        (21,10) -> function e : () => void
+        (22,10) -> function f : () => void
+        FORMAL SCOPE OF 'a':
+            (18,10) -> variable @this : class C
+            LOCAL SCOPE:
+                <empty>
+        FORMAL SCOPE OF 'c':
+            (19,10) -> variable @this : class C
+            LOCAL SCOPE:
+                <empty>
+        FORMAL SCOPE OF 'd':
+            (20,10) -> variable @this : class C
+            LOCAL SCOPE:
+                <empty>
+        FORMAL SCOPE OF 'e':
+            (21,10) -> variable @this : class C
+            LOCAL SCOPE:
+                <empty>
+        FORMAL SCOPE OF 'f':
+            (22,10) -> variable @this : class C
+            LOCAL SCOPE:
+                <empty>
+    CLASS SCOPE OF 'D':
+        (27,10) -> function c : () => void
+        (28,10) -> function d : () => void
+        (29,10) -> function e : () => void
+        (30,10) -> function f : () => void
+        (31,19) -> ABSTRACT function g : (int, bool) => void
+        (32,22) -> ABSTRACT function h : (class D, class E) => class C
+        FORMAL SCOPE OF 'c':
+            (27,10) -> variable @this : class D
+            LOCAL SCOPE:
+                <empty>
+        FORMAL SCOPE OF 'd':
+            (28,10) -> variable @this : class D
+            LOCAL SCOPE:
+                <empty>
+        FORMAL SCOPE OF 'e':
+            (29,10) -> variable @this : class D
+            LOCAL SCOPE:
+                <empty>
+        FORMAL SCOPE OF 'f':
+            (30,10) -> variable @this : class D
+            LOCAL SCOPE:
+                <empty>
+        FORMAL SCOPE OF 'g':
+            (31,19) -> variable @this : class D
+            (31,25) -> variable @x : int
+            (31,33) -> variable @y : bool
+        FORMAL SCOPE OF 'h':
+            (32,22) -> variable @this : class D
+            (32,32) -> variable @d : class D
+            (32,43) -> variable @e : class E
+    CLASS SCOPE OF 'E':
+        (37,10) -> function a : () => void
+        (38,10) -> function d : () => void
+        (39,10) -> function g : (int, bool) => void
+        FORMAL SCOPE OF 'a':
+            (37,10) -> variable @this : class E
+            LOCAL SCOPE:
+                <empty>
+        FORMAL SCOPE OF 'd':
+            (38,10) -> variable @this : class E
+            LOCAL SCOPE:
+                <empty>
+        FORMAL SCOPE OF 'g':
+            (39,10) -> variable @this : class E
+            (39,16) -> variable @x : int
+            (39,24) -> variable @y : bool
+            LOCAL SCOPE:
+                <empty>
+    CLASS SCOPE OF 'F':
+        (43,22) -> ABSTRACT function h : (class A, class B) => class F
+        FORMAL SCOPE OF 'h':
+            (43,22) -> variable @this : class F
+            (43,32) -> variable @a : class A
+            (43,43) -> variable @b : class B
+    CLASS SCOPE OF 'Main':
+        (47,10) -> function a : () => void
+        (48,10) -> function d : () => void
+        (49,10) -> function g : (int, bool) => void
+        (50,13) -> function h : (class B, class C) => class D
+        (51,17) -> STATIC function main : () => void
+        FORMAL SCOPE OF 'a':
+            (47,10) -> variable @this : class Main
+            LOCAL SCOPE:
+                <empty>
+        FORMAL SCOPE OF 'd':
+            (48,10) -> variable @this : class Main
+            LOCAL SCOPE:
+                <empty>
+        FORMAL SCOPE OF 'g':
+            (49,10) -> variable @this : class Main
+            (49,16) -> variable @x : int
+            (49,24) -> variable @y : bool
+            LOCAL SCOPE:
+                <empty>
+        FORMAL SCOPE OF 'h':
+            (50,13) -> variable @this : class Main
+            (50,23) -> variable @b : class B
+            (50,34) -> variable @c : class C
+            LOCAL SCOPE:
+                <empty>
+        FORMAL SCOPE OF 'main':
+            <empty>
+            LOCAL SCOPE:
+                (54,17) -> variable c : class C
+                (56,17) -> variable e : class E

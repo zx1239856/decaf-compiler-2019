@@ -1,0 +1,37 @@
+class Main {
+    static void main() {
+        var abs = fun (int x) {
+            if (x >= 0)
+                return x;
+            else
+                return -x;
+        };
+
+        var print = fun (int x) {
+            if (x < 0) return;
+            Print(x);
+        };
+
+        var print2 = fun (int n, int[] a) {
+            for (int i = 0; i < n; i = i + 1) {
+                if (a[i] == 0) {
+                    return;
+                }
+                Print(a[i]);
+            }
+        };
+
+        var f = fun (int x) => fun (int y) => fun (int z) => x * x + y * y + z * z;
+        var g = fun (bool z) {
+            if (z) {
+                return fun (int(int) x) => fun (int(int) y) {
+                    Print(2333);
+                };
+            } else {
+                return fun (int(int) y) => fun (int(int) x) {
+                    Print("2333");
+                };
+            }
+        };
+    }
+}

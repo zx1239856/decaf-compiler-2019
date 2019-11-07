@@ -1,0 +1,23 @@
+// Call : Expr (Expr)
+
+class Main {
+    static void main() {
+        var a = 4(3);
+        var b = 2 + fun ()=>0;
+        var c = 2 + 3(6);
+
+        var f = fun (int x) => fun (int y) => x + y;
+        var g = f(233);
+        int[] arr = new int[10];
+        var len = arr.length;
+        var len2 = len;
+        var len3 = len2.length;
+        var len4 = fun(int[] array) => array.length;
+
+        g.length();
+        arr.length();
+        len(233);
+        len3(len2());
+        var arr2 = new int[(fun(int() x) => x)(len4(arr))()];
+    }
+}

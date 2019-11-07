@@ -2,6 +2,8 @@ package decaf.frontend.scope;
 
 import decaf.frontend.symbol.MethodSymbol;
 
+import java.util.Optional;
+
 /**
  * Formal scope: stores parameter variable symbols. It is owned by a method symbol.
  */
@@ -29,8 +31,8 @@ public class FormalScope extends Scope {
      *
      * @return local scope
      */
-    public LocalScope nestedLocalScope() {
-        return nested;
+    public Optional<LocalScope> nestedLocalScope() {
+        return Optional.ofNullable(nested);
     }
 
     /**

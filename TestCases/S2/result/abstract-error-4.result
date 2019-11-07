@@ -1,0 +1,11 @@
+*** Error at (11,19): overriding method 'a' doesn't match the type signature in class 'A'
+*** Error at (17,1): 'C' is not abstract and does not override all abstract methods
+*** Error at (25,19): declaration of 'a' here conflicts with earlier declaration at (18,10)
+*** Error at (27,17): declaration of 'd' here conflicts with earlier declaration at (6,19)
+*** Error at (34,1): 'E' is not abstract and does not override all abstract methods
+*** Error at (35,9): overriding variable is not allowed for var 'v'
+*** Error at (36,9): overriding method 'a' doesn't match the type signature in class 'C'
+*** Error at (37,17): declaration of 'd' here conflicts with earlier declaration at (6,19)
+*** Error at (38,24): declaration of 'x' here conflicts with earlier declaration at (38,16)
+*** Error at (45,1): 'Main' is not abstract and does not override all abstract methods
+*** Error at (49,13): overriding method 'h' doesn't match the type signature in class 'F'

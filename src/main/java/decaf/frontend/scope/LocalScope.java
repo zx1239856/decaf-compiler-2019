@@ -32,5 +32,7 @@ public class LocalScope extends Scope {
         return nested;
     }
 
+    public List<LambdaScope> nestedLambdaScopes = new ArrayList<>();
+
     private List<LocalScope> nested = new ArrayList<>();
 }

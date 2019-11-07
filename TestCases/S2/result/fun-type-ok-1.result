@@ -1,0 +1,30 @@
+GLOBAL SCOPE:
+    (1,1) -> class A
+    (3,1) -> class Main : A
+    CLASS SCOPE OF 'A':
+        <empty>
+    CLASS SCOPE OF 'Main':
+        (4,12) -> variable a1 : () => void
+        (6,26) -> variable a2 : (bool, int[]) => class A
+        (8,24) -> function a3 : (int => int)[] => class A[][] => int[]
+        (13,46) -> STATIC function a5 : () => (() => int)[] => (() => (bool => string) => string)[]
+        (18,18) -> variable a6 : class A => int
+        (20,52) -> variable a7 : (() => (() => (() => (() => ((() => void) => (() => (() => (() => (() => void)[])[])[])[])[])[])[])[])[]
+        (22,34) -> variable a8 : (() => void) => (() => void) => (() => void) => void
+        (24,42) -> variable a9 : (((((() => void) => void) => void) => void) => void) => void
+        (26,17) -> STATIC function main : () => void
+        FORMAL SCOPE OF 'a3':
+            (8,24) -> variable @this : class Main
+            (8,38) -> variable @a4 : (int => int)[]
+            LOCAL SCOPE:
+                (9,28) -> variable v : class A[][] => int[]
+        FORMAL SCOPE OF 'a5':
+            <empty>
+            LOCAL SCOPE:
+                (14,43) -> variable v : (() => int)[] => (() => (bool => string) => string)[]
+        FORMAL SCOPE OF 'main':
+            <empty>
+            LOCAL SCOPE:
+                (27,16) -> variable x : () => void
+                (28,25) -> variable y : class Main => int
+                (29,56) -> variable z : (() => (() => (() => (() => ((() => void) => (() => (() => (() => (() => void)[])[])[])[])[])[])[])[])[]

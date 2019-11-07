@@ -61,15 +61,15 @@ public interface TacEmitter extends Visitor<FuncVisitor> {
             mv.visitStoreTo(addr, assign.rhs.val);
         } else if (assign.lhs instanceof Tree.VarSel) {
             var v = (Tree.VarSel) assign.lhs;
-            if (v.symbol.isMemberVar()) {
-                var object = v.receiver.get();
-                object.accept(this, mv);
-                assign.rhs.accept(this, mv);
-                mv.visitMemberWrite(object.val, v.symbol.getOwner().name, v.name, assign.rhs.val);
-            } else { // local or param
-                assign.rhs.accept(this, mv);
-                mv.visitAssign(v.symbol.temp, assign.rhs.val);
-            }
+//            if (v.symbol.isMemberVar()) {
+//                var object = v.receiver.get();
+//                object.accept(this, mv);
+//                assign.rhs.accept(this, mv);
+//                mv.visitMemberWrite(object.val, v.symbol.getOwner().name, v.name, assign.rhs.val);
+//            } else { // local or param
+//                assign.rhs.accept(this, mv);
+//                mv.visitAssign(v.symbol.temp, assign.rhs.val);
+//            }
         }
     }
 
@@ -238,13 +238,13 @@ public interface TacEmitter extends Visitor<FuncVisitor> {
 
     @Override
     default void visitVarSel(Tree.VarSel expr, FuncVisitor mv) {
-        if (expr.symbol.isMemberVar()) {
-            var object = expr.receiver.get();
-            object.accept(this, mv);
-            expr.val = mv.visitMemberAccess(object.val, expr.symbol.getOwner().name, expr.name);
-        } else { // local or param
-            expr.val = expr.symbol.temp;
-        }
+//        if (expr.symbol.isMemberVar()) {
+//            var object = expr.receiver.get();
+//            object.accept(this, mv);
+//            expr.val = mv.visitMemberAccess(object.val, expr.symbol.getOwner().name, expr.name);
+//        } else { // local or param
+//            expr.val = expr.symbol.temp;
+//        }
     }
 
     @Override

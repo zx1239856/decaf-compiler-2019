@@ -4,15 +4,13 @@ import decaf.frontend.scope.GlobalScope;
 import decaf.frontend.scope.LocalScope;
 import decaf.frontend.symbol.ClassSymbol;
 import decaf.frontend.symbol.MethodSymbol;
+import decaf.frontend.symbol.Symbol;
 import decaf.frontend.symbol.VarSymbol;
 import decaf.frontend.type.FunType;
 import decaf.frontend.type.Type;
 import decaf.lowlevel.instr.Temp;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * All kinds of tree node in the abstract syntax tree.
@@ -219,6 +217,8 @@ public abstract class Tree {
         }
 
         public boolean isAbstract() { return modifiers.isAbstract(); }
+
+        public boolean isPlain() { return !modifiers.isStatic() && !modifiers.isAbstract(); }
 
         @Override
         public Object treeElementAt(int index) {
@@ -488,6 +488,8 @@ public abstract class Tree {
         public List<LocalVarDef> params;
         public Optional<Block> block;
         public Optional<Expr> expr;
+        // for type check
+        public MethodSymbol symbol;
 
         public Lambda(List<LocalVarDef> params, Optional<Block> block, Optional<Expr> expr, Pos pos) {
             super(Kind.LAMBDA, "Lambda", pos);
@@ -1117,8 +1119,9 @@ public abstract class Tree {
         // For convenience
         public String name;
         // For type check
-        public VarSymbol symbol;
+        public Symbol symbol;
         public boolean isClassName = false;
+        public boolean isArrayLength = false;
 
         public VarSel(Optional<Expr> receiver, Id variable, Pos pos) {
             super(Kind.VAR_SEL, "VarSel", pos);

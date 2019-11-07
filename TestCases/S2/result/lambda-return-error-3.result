@@ -1,0 +1,3 @@
+*** Error at (53,38): incompatible operands: (int, int) => class B = (int, int) => class C
+*** Error at (53,59): missing return statement: control reaches end of non-void block
+*** Error at (61,39): incompatible operands: (int, int) => class G = (int, int) => class C

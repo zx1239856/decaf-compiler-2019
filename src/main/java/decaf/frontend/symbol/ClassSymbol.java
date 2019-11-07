@@ -7,6 +7,7 @@ import decaf.frontend.type.ClassType;
 import decaf.lowlevel.tac.ClassInfo;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.TreeSet;
 
 /**
@@ -18,6 +19,7 @@ public final class ClassSymbol extends Symbol {
 
     public final ClassType type;
 
+    public Set<MethodSymbol> non_overridden_methods;
     /**
      * Associated class scope of this class.
      */
@@ -56,6 +58,8 @@ public final class ClassSymbol extends Symbol {
         main = true;
     }
 
+    public void setAbstract() { is_abstract = true; }
+
     /**
      * Is it a main function?
      *
@@ -65,9 +69,11 @@ public final class ClassSymbol extends Symbol {
         return main;
     }
 
+    public boolean isAbstract() { return is_abstract; }
+
     @Override
     protected String str() {
-        return "class " + name + parentSymbol.map(classSymbol -> " : " + classSymbol.name).orElse("");
+        return (is_abstract ? "ABSTRACT " : "") + "class " + name + parentSymbol.map(classSymbol -> " : " + classSymbol.name).orElse("");
     }
 
     /**
@@ -99,4 +105,5 @@ public final class ClassSymbol extends Symbol {
     }
 
     private boolean main;
+    private boolean is_abstract;
 }

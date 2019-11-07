@@ -1,0 +1,46 @@
+class Main {
+    int val;
+    static void main() {
+        var f = fun (int x) {
+            int x;
+            int y = x;
+            var f = fun (int y) => x + y;
+        };
+
+        int a = 0;
+        for (int i = 0; i < 10; i = i + 1) {
+            fun (int i) {
+                int a = a + i;
+            };
+        }
+
+        var f1 = fun(int x) {
+            int g1;
+            var f2 = fun(int y) {
+                int g2;
+                var f3 = fun(int z) {
+                    int g3;
+                    var f4 = fun(int u) {
+                        int g4;
+                        var f5 = fun(int v) {
+                            var f1 = f5;
+                            var f2 = f1;
+                            var f3 = f2;
+                            var f4 = f3;
+                            var f5 = f4;
+                            var x = new Main();
+                            var u = v;
+                            var val = f;
+                            var g3 = g3;
+                            var h4 = h4;
+                        };
+                        int h4;
+                    };
+                    int h3;
+                };
+                int h2;
+            };
+            int h1;
+        };
+    }
+}

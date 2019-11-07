@@ -1,0 +1,85 @@
+GLOBAL SCOPE:
+    (1,1) -> class Main
+    CLASS SCOPE OF 'Main':
+        (2,17) -> STATIC function main : () => void
+        FORMAL SCOPE OF 'main':
+            <empty>
+            LOCAL SCOPE:
+                (3,18) -> variable fib : int => int
+                (4,13) -> variable fib_ : int => int
+                (4,20) -> function lambda@(4,20) : int => int
+                (13,13) -> variable f : int => void
+                (13,17) -> function lambda@(13,17) : int => void
+                (22,13) -> variable a : int
+                (29,13) -> variable f1 : int => void
+                (29,18) -> function lambda@(29,18) : int => void
+                FORMAL SCOPE OF 'lambda@(4,20)':
+                    (4,29) -> variable @n : int
+                    LOCAL SCOPE:
+                        <empty>
+                        LOCAL SCOPE:
+                            <empty>
+                        LOCAL SCOPE:
+                            <empty>
+                FORMAL SCOPE OF 'lambda@(13,17)':
+                    (13,26) -> variable @x : int
+                    LOCAL SCOPE:
+                        (14,17) -> variable g : int => int
+                        (14,21) -> function lambda@(14,21) : int => int
+                        (15,17) -> variable h : int => void
+                        (15,21) -> function lambda@(15,21) : int => void
+                        FORMAL SCOPE OF 'lambda@(14,21)':
+                            (14,30) -> variable @y : int
+                            LOCAL SCOPE:
+                                <empty>
+                        FORMAL SCOPE OF 'lambda@(15,21)':
+                            (15,30) -> variable @z : int
+                            LOCAL SCOPE:
+                                (17,21) -> variable g1 : int => int
+                LOCAL SCOPE:
+                    (23,18) -> variable i : int
+                    (24,13) -> function lambda@(24,13) : int => void
+                    FORMAL SCOPE OF 'lambda@(24,13)':
+                        (24,22) -> variable @j : int
+                        LOCAL SCOPE:
+                            (25,21) -> variable b : int
+                FORMAL SCOPE OF 'lambda@(29,18)':
+                    (29,26) -> variable @x : int
+                    LOCAL SCOPE:
+                        (30,17) -> variable g1 : int
+                        (31,17) -> variable f2 : int => void
+                        (31,22) -> function lambda@(31,22) : int => void
+                        (54,23) -> variable h1 : int => void
+                        FORMAL SCOPE OF 'lambda@(31,22)':
+                            (31,30) -> variable @y : int
+                            LOCAL SCOPE:
+                                (32,21) -> variable g2 : int
+                                (33,21) -> variable f3 : int => void
+                                (33,26) -> function lambda@(33,26) : int => void
+                                (52,21) -> variable h2 : int => void
+                                FORMAL SCOPE OF 'lambda@(33,26)':
+                                    (33,34) -> variable @z : int
+                                    LOCAL SCOPE:
+                                        (34,25) -> variable g3 : int
+                                        (35,25) -> variable f4 : int => void
+                                        (35,30) -> function lambda@(35,30) : int => void
+                                        (50,25) -> variable h3 : int
+                                        FORMAL SCOPE OF 'lambda@(35,30)':
+                                            (35,38) -> variable @u : int
+                                            LOCAL SCOPE:
+                                                (36,29) -> variable g4 : int
+                                                (37,29) -> variable f5 : int => void
+                                                (37,34) -> function lambda@(37,34) : int => void
+                                                (48,29) -> variable h4 : int
+                                                FORMAL SCOPE OF 'lambda@(37,34)':
+                                                    (37,42) -> variable @v : int
+                                                    LOCAL SCOPE:
+                                                        (38,33) -> variable i1 : int
+                                                        (39,33) -> variable i2 : int
+                                                        (40,33) -> variable i3 : int
+                                                        (41,33) -> variable i4 : int
+                                                        (42,33) -> variable i5 : int
+                                                        (43,33) -> variable j1 : int
+                                                        (44,33) -> variable j2 : int
+                                                        (45,33) -> variable j3 : int => void
+                                                        (46,33) -> variable j4 : int => int

@@ -1,0 +1,95 @@
+GLOBAL SCOPE:
+    (1,1) -> class A
+    (2,1) -> class B : A
+    (3,1) -> class C : A
+    (5,1) -> class Main
+    CLASS SCOPE OF 'A':
+        <empty>
+    CLASS SCOPE OF 'B':
+        <empty>
+    CLASS SCOPE OF 'C':
+        <empty>
+    CLASS SCOPE OF 'Main':
+        (6,14) -> variable fib_ : int => int
+        (8,10) -> function calc_fib : () => void
+        (22,17) -> STATIC function apply : ((int, bool[] => int, class B) => (int, class Main) => void, int) => void
+        (26,17) -> STATIC function main : () => void
+        FORMAL SCOPE OF 'calc_fib':
+            (8,10) -> variable @this : class Main
+            LOCAL SCOPE:
+                (9,13) -> variable fib : int => int
+                (9,19) -> function lambda@(9,19) : int => int
+                FORMAL SCOPE OF 'lambda@(9,19)':
+                    (9,28) -> variable @n : int
+                    LOCAL SCOPE:
+                        <empty>
+                        LOCAL SCOPE:
+                            <empty>
+                        LOCAL SCOPE:
+                            <empty>
+                LOCAL SCOPE:
+                    (18,18) -> variable i : int
+        FORMAL SCOPE OF 'apply':
+            (22,71) -> variable @f : (int, bool[] => int, class B) => (int, class Main) => void
+            (22,78) -> variable @x : int
+            LOCAL SCOPE:
+                (23,13) -> variable g : (int, bool[] => int, class B) => (int, class Main) => void
+        FORMAL SCOPE OF 'main':
+            <empty>
+            LOCAL SCOPE:
+                (27,13) -> variable test : int => (string[], ((class B, class B) => class A, class A) => class B, class B) => class A
+                (27,20) -> function lambda@(27,20) : int => (string[], ((class B, class B) => class A, class A) => class B, class B) => class A
+                (40,13) -> variable arg : ((class B, class B) => class A, class A) => class B
+                (40,19) -> function lambda@(40,19) : ((class B, class B) => class A, class A) => class B
+                (46,15) -> variable b : int[]
+                (47,13) -> variable len : int[] => () => int
+                (47,19) -> function lambda@(47,19) : int[] => () => int
+                (49,12) -> function lambda@(49,12) : int => int
+                (50,10) -> function lambda@(50,10) : int => int
+                FORMAL SCOPE OF 'lambda@(27,20)':
+                    (27,29) -> variable @x : int
+                    LOCAL SCOPE:
+                        <empty>
+                        LOCAL SCOPE:
+                            (29,24) -> function lambda@(29,24) : (string[], ((class A, class B) => class A, class B) => class A, class B) => class C
+                            FORMAL SCOPE OF 'lambda@(29,24)':
+                                (29,38) -> variable @a : string[]
+                                (29,85) -> variable @b : ((class A, class B) => class A, class B) => class A
+                                (29,96) -> variable @c : class B
+                                LOCAL SCOPE:
+                                    (30,23) -> function lambda@(30,23) : (class A, class B) => class B
+                                    FORMAL SCOPE OF 'lambda@(30,23)':
+                                        (30,36) -> variable @u : class A
+                                        (30,47) -> variable @v : class B
+                                        LOCAL SCOPE:
+                                            <empty>
+                        LOCAL SCOPE:
+                            (34,24) -> function lambda@(34,24) : (string[], ((class B, class A) => class B, class A) => class B, class A) => class B
+                            FORMAL SCOPE OF 'lambda@(34,24)':
+                                (34,38) -> variable @a : string[]
+                                (34,85) -> variable @b : ((class B, class A) => class B, class A) => class B
+                                (34,96) -> variable @c : class A
+                                LOCAL SCOPE:
+                                    (35,23) -> function lambda@(35,23) : (class B, class A) => class B
+                                    FORMAL SCOPE OF 'lambda@(35,23)':
+                                        (35,36) -> variable @u : class B
+                                        (35,47) -> variable @v : class A
+                                        LOCAL SCOPE:
+                                            <empty>
+                FORMAL SCOPE OF 'lambda@(40,19)':
+                    (40,50) -> variable @a : (class B, class B) => class A
+                    (40,61) -> variable @b : class A
+                    LOCAL SCOPE:
+                        <empty>
+                FORMAL SCOPE OF 'lambda@(47,19)':
+                    (47,30) -> variable @arr : int[]
+                    LOCAL SCOPE:
+                        <empty>
+                FORMAL SCOPE OF 'lambda@(49,12)':
+                    (49,20) -> variable @x : int
+                    LOCAL SCOPE:
+                        <empty>
+                FORMAL SCOPE OF 'lambda@(50,10)':
+                    (50,19) -> variable @x : int
+                    LOCAL SCOPE:
+                        <empty>

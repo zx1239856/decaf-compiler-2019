@@ -1,0 +1,21 @@
+*** Error at (15,23): can not reference a non-static field 'f' from static method 'main'
+*** Error at (17,23): can not reference a non-static field 'vf' from static method 'main'
+*** Error at (24,11): field 'vf' of 'class A' not accessible here
+*** Error at (36,28): cannot access field 'f' from 'class Main'
+*** Error at (38,28): cannot access field 'vf' from 'class Main'
+*** Error at (42,26): field 'vf' of 'class A' not accessible here
+*** Error at (44,26): cannot access field 'f' from 'class A'
+*** Error at (46,26): cannot access field 'vf' from 'class A'
+*** Error at (48,11): cannot assign value to class member method 'f'
+*** Error at (49,12): cannot assign value to class member method 'sf'
+*** Error at (52,16): cannot assign value to class member method 'f'
+*** Error at (53,17): cannot assign value to class member method 'sf'
+*** Error at (56,14): cannot access field 'f' from 'class Main'
+*** Error at (57,17): cannot assign value to class member method 'sf'
+*** Error at (58,14): cannot access field 'vf' from 'class Main'
+*** Error at (60,13): cannot assign value to class member method 'f'
+*** Error at (61,14): cannot assign value to class member method 'sf'
+*** Error at (62,11): field 'vf' of 'class A' not accessible here
+*** Error at (64,11): cannot access field 'f' from 'class A'
+*** Error at (65,14): cannot assign value to class member method 'sf'
+*** Error at (66,11): cannot access field 'vf' from 'class A'

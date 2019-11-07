@@ -1,0 +1,5 @@
+*** Error at (5,10): arguments in function type must be non-void known type
+*** Error at (5,16): arguments in function type must be non-void known type
+*** Error at (5,22): arguments in function type must be non-void known type
+*** Error at (7,30): arguments in function type must be non-void known type
+*** Error at (11,18): arguments in function type must be non-void known type

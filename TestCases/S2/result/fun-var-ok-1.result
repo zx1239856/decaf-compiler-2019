@@ -1,0 +1,55 @@
+GLOBAL SCOPE:
+    (1,1) -> class A
+    (7,1) -> class Main
+    CLASS SCOPE OF 'A':
+        (2,9) -> function f : int => int
+        (3,16) -> STATIC function sf : int => int
+        (4,14) -> variable vf : int => int
+        FORMAL SCOPE OF 'f':
+            (2,9) -> variable @this : class A
+            (2,15) -> variable @x : int
+            LOCAL SCOPE:
+                <empty>
+        FORMAL SCOPE OF 'sf':
+            (3,23) -> variable @x : int
+            LOCAL SCOPE:
+                <empty>
+    CLASS SCOPE OF 'Main':
+        (8,9) -> variable v : int
+        (10,9) -> function f : int => int
+        (11,16) -> STATIC function sf : int => int
+        (12,14) -> variable vf : int => int
+        (14,17) -> STATIC function main : () => void
+        (22,10) -> function trueMain : () => void
+        FORMAL SCOPE OF 'f':
+            (10,9) -> variable @this : class Main
+            (10,15) -> variable @x : int
+            LOCAL SCOPE:
+                <empty>
+        FORMAL SCOPE OF 'sf':
+            (11,23) -> variable @x : int
+            LOCAL SCOPE:
+                <empty>
+        FORMAL SCOPE OF 'main':
+            <empty>
+            LOCAL SCOPE:
+                (16,18) -> variable f2 : int => int
+        FORMAL SCOPE OF 'trueMain':
+            (22,10) -> variable @this : class Main
+            LOCAL SCOPE:
+                (23,17) -> variable a : class A
+                (25,19) -> function lambda@(25,19) : int => int
+                (27,18) -> variable f1 : int => int
+                (28,18) -> variable f2 : int => int
+                (29,18) -> variable f3 : int => int
+                (31,18) -> variable f4 : int => int
+                (32,18) -> variable f5 : int => int
+                (33,18) -> variable f6 : int => int
+                (36,18) -> variable f8 : int => int
+                (39,18) -> variable f10 : int => int
+                (40,18) -> variable f11 : int => int
+                (44,18) -> variable f14 : int => int
+                FORMAL SCOPE OF 'lambda@(25,19)':
+                    (25,28) -> variable @x : int
+                    LOCAL SCOPE:
+                        <empty>

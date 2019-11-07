@@ -1,0 +1,36 @@
+class A {}
+class B extends A {}
+class C extends A {}
+
+class Main {
+    static void main() {
+        var test = fun (class A a, class B b) {
+            if (false)
+                return fun (class A a1, class B b1) => a;
+            else
+                return fun (class B b2, class C a2) => b;
+        };
+
+        var f = fun (int x, int y) {
+            for (int i = 0; i < 10; i = i + 1) {
+                var z = new A();
+                var nul = fun (int a, class B b, int[](class A, class B) c) { return z; return new B(); };
+                if (instanceof(z, B)) return nul;
+            }
+            var z = x;
+            return fun (int a, class A b, int[](class B, class A) c) => new C();
+        };
+
+        var g = fun (int x) {
+            if (x > 0) {
+                return fun(int a, class B b, class A(class A(class C, class B), class B) c) {
+                    return new B();
+                };
+            } else if (x < 0) {
+                return fun (int a, class A b, class B(class B(class B, class A), class A) c) {
+                    return new C();
+                };
+            }
+        };
+    }
+}

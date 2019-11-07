@@ -1,0 +1,47 @@
+class A {
+    int f(int x) { return x - 1; }
+    static int sf(int x) { return x + 1; }
+    int(int) vf;
+}
+
+class Main {
+    int v;
+
+    int f(int x) { return x + v; }
+    static int sf(int x) { return x + 2; }
+    int(int) vf;
+
+    static void main() {
+        // int(int) f1 = f;                    // bad
+        int(int) f2 = sf;
+        // int(int) f3 = vf;                   // bad
+
+        new Main().trueMain();
+    }
+
+    void trueMain() {
+        class A a = new A();
+        // a.vf = fun (int x) => x * 1;        // bad
+        this.vf = fun (int x) => x * 2;
+
+        int(int) f1 = f;
+        int(int) f2 = sf;
+        int(int) f3 = vf;
+
+        int(int) f4 = this.f;
+        int(int) f5 = this.sf;
+        int(int) f6 = this.vf;
+
+        // int(int) f7 = Main.f;               // bad
+        int(int) f8 = Main.sf;
+        // int(int) f9 = Main.vf;              // bad
+
+        int(int) f10 = a.f;
+        int(int) f11 = a.sf;
+        // int(int) f12 = a.vf;                // bad
+
+        // int(int) f13 = A.f;                 // bad
+        int(int) f14 = A.sf;
+        // int(int) f15 = A.vf;                // bad
+    }
+}

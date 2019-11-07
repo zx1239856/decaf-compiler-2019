@@ -99,6 +99,10 @@ public abstract class Scope implements Iterable<Symbol> {
         return false;
     }
 
+    public boolean isLambdaScope() {
+        return false;
+    }
+
     public boolean isFormalOrLocalScope() {
         return isFormalScope() || isLocalScope();
     }

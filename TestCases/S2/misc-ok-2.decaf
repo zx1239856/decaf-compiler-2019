@@ -1,0 +1,54 @@
+class A {}
+class B extends A {}
+class C extends A {}
+
+class Main {
+    int(int) fib_;
+
+    void calc_fib() {
+        var fib = fun (int n) {
+            if (n < 2) {
+                return 1;
+            } else {
+                return fib_(n - 1) + fib_(n - 2);
+            }
+        };
+        fib_ = fib;
+
+        for (var i = 0; i < 20; i = i + 1)
+            Print(i, " ", fib(i));
+    }
+
+    static void apply(void(int, class Main)(int,int(bool[]), class B) f, int x) {
+        var g = f;
+    }
+
+    static void main() {
+        var test = fun (int x) {
+            if (x > 0) {
+                return fun (string[] a, class A(class A(class A, class B), class B) b, class B c) {
+                    b(fun (class A u, class B v) => c, new B());
+                    return new C();
+                };
+            } else {
+                return fun (string[] a, class B(class B(class B, class A), class A) b, class A c) {
+                    b(fun (class B u, class A v) => u, new C());
+                    return new B();
+                };
+            }
+        };
+        var arg = fun (class A(class B, class B) a, class A b) {
+            a(new B(), new B());
+            return new B();
+        };
+        test(1)(new string[10], arg, new B());
+
+        int[] b = new int[10];
+        var len = fun (int[] arr) => arr.length;
+
+        b[(fun(int x) => x)(len(b)())] = 1;
+        (fun (int x) => x+b[0])(-1);
+
+        new Main().calc_fib();
+    }
+}

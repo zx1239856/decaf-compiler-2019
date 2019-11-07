@@ -1,0 +1,13 @@
+class A {}
+
+class Main extends A {
+    void() a1;
+    void(void)(void)(void) a2;
+    void(void())(void())(void()) a3;
+    void(void(void(void(void(void))))) a4;
+    void(void(void(void(void(void()))))) a5;
+
+    static void main() {
+        int(int, void) f;
+    }
+}

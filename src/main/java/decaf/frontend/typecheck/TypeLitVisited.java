@@ -2,11 +2,17 @@ package decaf.frontend.typecheck;
 
 import decaf.driver.ErrorIssuer;
 import decaf.driver.error.BadArrElementError;
+import decaf.driver.error.BadVoidArgError;
 import decaf.driver.error.ClassNotFoundError;
 import decaf.frontend.scope.ScopeStack;
 import decaf.frontend.tree.Tree;
 import decaf.frontend.tree.Visitor;
 import decaf.frontend.type.BuiltInType;
+import decaf.frontend.type.FunType;
+import decaf.frontend.type.Type;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Infer the types of type literals in the abstract syntax tree.
@@ -60,4 +66,24 @@ public interface TypeLitVisited extends Visitor<ScopeStack>, ErrorIssuer {
         }
     }
 
+    @Override
+    default void visitTLambda(Tree.TLambda that, ScopeStack ctx) {
+        that.returnType.accept(this, ctx);
+        boolean errorInParam = false;
+        List<Type> argTypes = new ArrayList<>();
+        for (var type : that.paramType) {
+            type.accept(this, ctx);
+            if(type.type.eq(BuiltInType.ERROR))
+                errorInParam = true;
+            else if(type.type.eq(BuiltInType.VOID)) {
+                issue(new BadVoidArgError(type.pos));
+                errorInParam = true;
+            }
+            argTypes.add(type.type);
+        }
+        if(that.returnType.type.eq(BuiltInType.ERROR) || errorInParam)
+            that.type = BuiltInType.ERROR;
+        else
+            that.type = new FunType(that.returnType.type, argTypes);
+    }
 }

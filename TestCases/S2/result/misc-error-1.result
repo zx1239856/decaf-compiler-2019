@@ -1,0 +1,7 @@
+*** Error at (13,33): undeclared variable 'l'
+*** Error at (19,33): undeclared variable 'a'
+*** Error at (20,23): undeclared variable 'a'
+*** Error at (26,95): undeclared variable 'kcuf'
+*** Error at (36,13): cannot declare identifier 'pf' as void type
+*** Error at (36,28): incompatible argument 1: int => bool given, int[] expected
+*** Error at (39,36): incompatible operands: (int => int) => int[] => int[] = (int => bool) => int[] => void

@@ -1,0 +1,20 @@
+class Main {
+    int[][] z;
+    static void main() {
+        var foo = fun(int x, int y, int z) => new Main();
+        int a = 0;
+        int b = 0;
+        int c = 0;
+        var e = a + b(c)(d);
+
+        var f = fun (int[] x) => fun (int[] y) => x;
+        var g = f(new int[10]);
+        var h = g(new int[10])[2 * 3];
+        f(new int[10])(f, new int[10])[4 * 5];
+        g(f, new int[10])[4 * 5];
+
+        int x = f(g);
+        int y = 0;
+        foo(x, y).z[a](b)[c].d();
+    }
+}

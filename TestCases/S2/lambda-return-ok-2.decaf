@@ -1,0 +1,100 @@
+class A {}
+class B extends A {}
+class C extends A {}
+
+class Main {
+    static void main() {
+        var test = fun (class A a, class B b) {
+            if (false)
+                return fun (class A a1, class B b1) => a;
+            else
+                return fun (class B b2, class A a2) => b;
+        };
+
+        var f = fun (int x, int y) {
+            for (int i = 0; i < 10; i = i + 1) {
+                var z = new A();
+                var nul = fun (int a, class B b, int[](class A, class B) c) { return null; return null; };
+                return nul;
+            }
+            var z = x;
+            return fun (int a, class A b, int[](class B, class A) c) => new C();
+        };
+
+        var g = fun (int x) {
+            if (x == 0) {
+                return fun (int a, class A b, class A(class A(class B, class A), class A) c) => new B();
+            } else if (x == 1) {
+                return fun (int a, class A b, class A(class A(class B, class B), class B) c) => new A();
+            } else if (x == 2) {
+                return fun (int a, class A b, class A(class A(class B, class A), class C) c) => new C();
+            } else if (x == 3) {
+                return fun (int a, class A b, class A(class B(class B, class B), class A) c) => new B();
+            } else if (x == 4) {
+                return fun (int a, class A b, class A(class B(class B, class A), class B) c) => new B();
+            } else if (x == 5) {
+                return fun (int a, class A b, class A(class B(class B, class A), class C) c) => new B();
+            } else if (x == 6) {
+                return fun (int a, class A b, class A(class C(class B, class B), class A) c) => new A();
+            } else if (x == 7) {
+                return fun (int a, class A b, class A(class C(class A, class B), class B) c) => new A();
+            } else if (x == 8) {
+                return fun (int a, class A b, class A(class C(class B, class B), class C) c) => new C();
+            } else if (x == 9) {
+                return fun (int a, class A b, class B(class A(class B, class B), class A) c) => new A();
+            } else if (x == 10) {
+                return fun (int a, class A b, class B(class A(class A, class A), class B) c) => new C();
+            } else if (x == 11) {
+                return fun (int a, class A b, class B(class A(class B, class B), class C) c) => new A();
+            } else if (x == 12) {
+                return fun (int a, class A b, class B(class B(class B, class A), class A) c) => new A();
+            } else if (x == 13) {
+                return fun (int a, class A b, class B(class B(class A, class A), class B) c) => new A();
+            } else if (x == 14) {
+                return fun (int a, class A b, class B(class B(class A, class A), class C) c) => new C();
+            } else if (x == 15) {
+                return fun (int a, class A b, class B(class C(class B, class B), class A) c) => new B();
+            } else if (x == 16) {
+                return fun (int a, class A b, class B(class C(class B, class A), class B) c) => new C();
+            } else if (x == 17) {
+                return fun (int a, class A b, class B(class C(class B, class A), class C) c) => new A();
+            } else if (x == 18) {
+                return fun (int a, class B b, class A(class A(class A, class B), class A) c) => new C();
+            } else if (x == 19) {
+                return fun (int a, class B b, class A(class A(class B, class B), class B) c) => new A();
+            } else if (x == 20) {
+                return fun (int a, class B b, class A(class A(class B, class A), class C) c) => new B();
+            } else if (x == 21) {
+                return fun (int a, class B b, class A(class B(class B, class A), class A) c) => new A();
+            } else if (x == 22) {
+                return fun (int a, class B b, class A(class B(class A, class B), class B) c) => new C();
+            } else if (x == 23) {
+                return fun (int a, class B b, class A(class B(class B, class B), class C) c) => new C();
+            } else if (x == 24) {
+                return fun (int a, class B b, class A(class C(class A, class B), class A) c) => new A();
+            } else if (x == 25) {
+                return fun (int a, class B b, class A(class C(class B, class B), class B) c) => new A();
+            } else if (x == 26) {
+                return fun (int a, class B b, class A(class C(class B, class A), class C) c) => new A();
+            } else if (x == 27) {
+                return fun (int a, class B b, class B(class A(class A, class A), class A) c) => new A();
+            } else if (x == 28) {
+                return fun (int a, class B b, class B(class A(class B, class B), class B) c) => new C();
+            } else if (x == 29) {
+                return fun (int a, class B b, class B(class A(class B, class A), class C) c) => new A();
+            } else if (x == 30) {
+                return fun (int a, class B b, class B(class B(class A, class B), class A) c) => new B();
+            } else if (x == 31) {
+                return fun (int a, class B b, class B(class B(class A, class B), class B) c) => new C();
+            } else if (x == 32) {
+                return fun (int a, class B b, class B(class B(class A, class A), class C) c) => new A();
+            } else if (x == 33) {
+                return fun (int a, class B b, class B(class C(class A, class B), class A) c) => new C();
+            } else if (x == 34) {
+                return fun (int a, class B b, class B(class C(class B, class B), class B) c) => new B();
+            } else {
+                return fun (int a, class B b, class B(class C(class A, class A), class C) c) => new C();
+            }
+        };
+    }
+}

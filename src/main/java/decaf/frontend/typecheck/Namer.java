@@ -12,11 +12,10 @@ import decaf.frontend.type.BuiltInType;
 import decaf.frontend.type.ClassType;
 import decaf.frontend.type.FunType;
 import decaf.frontend.type.Type;
+import decaf.lowlevel.log.IndentPrinter;
+import decaf.printing.PrettyScope;
 
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Optional;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * The namer phase: resolve all symbols defined in the abstract syntax tree and store them in symbol tables (i.e.
@@ -27,6 +26,16 @@ public class Namer extends Phase<Tree.TopLevel, Tree.TopLevel> implements TypeLi
     public Namer(Config config) {
         super("namer", config);
     }
+
+//    // TODO: DEL THIS
+//    @Override
+//    public void onSucceed(Tree.TopLevel tree) {
+//        if (config.target.equals(Config.Target.PA2)) {
+//            var printer = new PrettyScope(new IndentPrinter(config.output));
+//            printer.pretty(tree.globalScope);
+//            printer.flush();
+//        }
+//    }
 
     @Override
     public Tree.TopLevel transform(Tree.TopLevel tree) {
@@ -85,9 +94,10 @@ public class Namer extends Phase<Tree.TopLevel, Tree.TopLevel> implements TypeLi
 
         // Finally, let's locate the main class, whose name is 'Main', and contains a method like:
         //  static void main() { ... }
+        // and is not abstract
         boolean found = false;
         for (var clazz : classes.values()) {
-            if (clazz.name.equals("Main")) {
+            if (clazz.name.equals("Main") && !clazz.isAbstract()) {
                 var symbol = clazz.symbol.scope.find("main");
                 if (symbol.isPresent() && symbol.get().isMethodSymbol()) {
                     var method = (MethodSymbol) symbol.get();
@@ -168,21 +178,25 @@ public class Namer extends Phase<Tree.TopLevel, Tree.TopLevel> implements TypeLi
             global.declare(symbol);
             clazz.symbol = symbol;
         }
+        if (clazz.isAbstract())
+            clazz.symbol.setAbstract();
     }
 
     @Override
     public void visitClassDef(Tree.ClassDef clazz, ScopeStack ctx) {
         if (clazz.resolved) return;
-
+        clazz.symbol.non_overridden_methods = new HashSet<>();
         if (clazz.hasParent()) {
             clazz.superClass.accept(this, ctx);
+            clazz.symbol.non_overridden_methods.addAll(clazz.superClass.symbol.non_overridden_methods);
         }
-
         ctx.open(clazz.symbol.scope);
         for (var field : clazz.fields) {
             field.accept(this, ctx);
         }
         ctx.close();
+        if (!clazz.symbol.non_overridden_methods.isEmpty() && !clazz.isAbstract())
+            issue(new NotFullyOverrideError(clazz.name, clazz.pos));
         clazz.resolved = true;
     }
 
@@ -216,10 +230,13 @@ public class Namer extends Phase<Tree.TopLevel, Tree.TopLevel> implements TypeLi
     public void visitMethodDef(Tree.MethodDef method, ScopeStack ctx) {
         var earlier = ctx.findConflict(method.name);
         if (earlier.isPresent()) {
-            if (earlier.get().isMethodSymbol()) { // may be overriden
+            if (earlier.get().isMethodSymbol()) { // may be overridden
                 var suspect = (MethodSymbol) earlier.get();
-                if (suspect.domain() != ctx.currentScope() && !suspect.isStatic() && !method.isStatic()) {
-                    // Only non-static methods can be overriden, but the type signature must be equivalent.
+                if (suspect.domain() != ctx.currentScope() &&
+                        (!suspect.isStatic() && method.isPlain()) || (suspect.isAbstract() && method.isAbstract())) {
+                    // Type signature must be equivalent to override.
+                    // Three types of override are allowed:
+                    // plain <- plain (generic) || abstract <- plain || abstract <- abstract
                     var formal = new FormalScope();
                     typeMethod(method, ctx, formal);
                     if (method.type.subtypeOf(suspect.type)) { // override success
@@ -230,6 +247,9 @@ public class Namer extends Phase<Tree.TopLevel, Tree.TopLevel> implements TypeLi
                         ctx.open(formal);
                         method.body.ifPresent(objects -> objects.accept(this, ctx));
                         ctx.close();
+                        method.symbol.owner.non_overridden_methods.remove(suspect);
+                        if (method.isAbstract())
+                            method.symbol.owner.non_overridden_methods.add(method.symbol);
                     } else {
                         issue(new BadOverrideError(method.pos, method.name, suspect.owner.name));
                     }
@@ -248,9 +268,14 @@ public class Namer extends Phase<Tree.TopLevel, Tree.TopLevel> implements TypeLi
                 ctx.currentClass());
         ctx.declare(symbol);
         method.symbol = symbol;
-        ctx.open(formal);
-        method.body.get().accept(this, ctx);
-        ctx.close();
+        method.body.ifPresent(objects -> {
+            ctx.open(formal);
+            objects.accept(this, ctx);
+            ctx.close();
+        });
+        // add abstract method to non-overridden method
+        if (method.isAbstract())
+            method.symbol.owner.non_overridden_methods.add(symbol);
     }
 
     private void typeMethod(Tree.MethodDef method, ScopeStack ctx, FormalScope formal) {
@@ -278,7 +303,7 @@ public class Namer extends Phase<Tree.TopLevel, Tree.TopLevel> implements TypeLi
 
     @Override
     public void visitLocalVarDef(Tree.LocalVarDef def, ScopeStack ctx) {
-        def.typeLit.get().accept(this, ctx);
+        def.typeLit.ifPresent(objects -> objects.accept(this, ctx));
 
         var earlier = ctx.findConflict(def.name);
         if (earlier.isPresent()) {
@@ -286,16 +311,23 @@ public class Namer extends Phase<Tree.TopLevel, Tree.TopLevel> implements TypeLi
             return;
         }
 
-        if (def.typeLit.get().type.eq(BuiltInType.VOID)) {
-            issue(new BadVarTypeError(def.pos, def.name));
-            return;
-        }
+        if (def.typeLit.isPresent()) {
+            if (def.typeLit.get().type.eq(BuiltInType.VOID)) {
+                issue(new BadVarTypeError(def.pos, def.name));
+                return;
+            }
 
-        if (def.typeLit.get().type.noError()) {
-            var symbol = new VarSymbol(def.name, def.typeLit.get().type, def.id.pos);
+            if (def.typeLit.get().type.noError()) {
+                var symbol = new VarSymbol(def.name, def.typeLit.get().type, def.id.pos);
+                ctx.declare(symbol);
+                def.symbol = symbol;
+            }
+        } else {
+            var symbol = new VarSymbol(def.name, null, def.id.pos);
             ctx.declare(symbol);
             def.symbol = symbol;
         }
+        // otherwise, we need local type deduction, which will be the responsibility of type checker
     }
 
     @Override

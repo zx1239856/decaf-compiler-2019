@@ -1,0 +1,28 @@
+GLOBAL SCOPE:
+    (1,1) -> class Main
+    CLASS SCOPE OF 'Main':
+        (2,10) -> variable e : bool
+        (4,17) -> STATIC function print : int => void
+        (9,17) -> STATIC function main : () => void
+        FORMAL SCOPE OF 'print':
+            (4,27) -> variable @x : int
+            LOCAL SCOPE:
+                (5,13) -> variable y : int
+        FORMAL SCOPE OF 'main':
+            <empty>
+            LOCAL SCOPE:
+                (10,13) -> variable a : int
+                (11,13) -> variable b : int
+                (12,13) -> variable c : int
+                (14,13) -> variable d : bool
+                (16,13) -> variable e : class Main
+                (18,13) -> variable f : int[]
+                (20,13) -> variable g : bool
+                (21,13) -> variable h : bool
+                (23,13) -> variable i : bool
+                (25,13) -> variable j : int
+                (26,13) -> variable k : int
+                (27,13) -> variable l : class Main[][]
+                (28,13) -> variable m : class Main[]
+                (29,13) -> variable n : class Main
+                (30,13) -> variable o : null

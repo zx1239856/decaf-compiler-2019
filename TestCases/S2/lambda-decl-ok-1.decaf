@@ -1,0 +1,57 @@
+class Main {
+    static void main() {
+        int(int) fib;
+        var fib_ = fun (int n) {
+            if (n < 2) {
+                return 1;
+            } else {
+                return fib(n - 1) + fib(n - 2);
+            }
+        };
+        fib = fib_;
+
+        var f = fun (int x) {
+            var g = fun (int y) => x + y;
+            var h = fun (int z) {
+                // var f1 = f;
+                var g1 = g;
+                // var h1 = h;
+            };
+        };
+
+        int a = 0;
+        for (int i = 0; i < 10; i = i + 1) {
+            fun (int j) {
+                int b = a + j;
+            };
+        }
+
+        var f1 = fun(int x) {
+            int g1;
+            var f2 = fun(int y) {
+                int g2;
+                var f3 = fun(int z) {
+                    int g3;
+                    var f4 = fun(int u) {
+                        int g4;
+                        var f5 = fun(int v) {
+                            var i1 = x;
+                            var i2 = g1;
+                            var i3 = g2;
+                            var i4 = g3;
+                            var i5 = g4;
+                            var j1 = i1;
+                            var j2 = i2 + u;
+                            var j3 = f;
+                            var j4 = fib;
+                        };
+                        int h4 = g4;
+                    };
+                    int h3 = x / y % z;
+                };
+                var h2 = f3;
+            };
+            void(int) h1 = f2;
+        };
+    }
+}

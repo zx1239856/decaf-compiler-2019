@@ -1,0 +1,10 @@
+class Foo {
+    abstract int foo();
+    abstract string bar();
+}
+
+class Main extends Foo {
+    int foo() { return 1; }
+    string bar() { return "bar"; }
+    static void main() {}
+}

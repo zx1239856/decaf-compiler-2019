@@ -1,0 +1,47 @@
+class Main {
+    int v;
+    class Main m;
+
+    void foo() {
+        var x = "byyl";
+        var f = fun(int a) {
+            var y = "PA2";
+            a = 1;
+            var g = fun(string xx, string yy) {
+                v = 1;
+                m = null;
+                string z = "fzyxqzgbyq";
+                z = yy;
+                if (z != xx) {
+                    z = xx;
+                    xx = yy;
+                    yy = z;
+                }
+                return z;
+            };
+            y = x;
+            // x = undecl;             // bad
+            // undecl = y;             // bad
+            m = new Main();
+            this.v = 2;
+            m.v = 3;
+            return;
+        };
+    }
+
+    static void main() {
+        var x = new int[10];
+        var m = new Main();
+        var addx = fun() {
+            x[0] = x[0] + 1;
+            int y = 0;
+            var addy = fun(int k) {
+                // y = y + 1;          // bad
+                k = y;
+                m.v = 1;
+            };
+            y = -1;
+            // m = null;               // bad
+        };
+    }
+}

@@ -1,0 +1,6 @@
+*** Error at (5,18): int is not a callable type
+*** Error at (6,19): incompatible operands: int + () => int
+*** Error at (7,22): int is not a callable type
+*** Error at (14,25): cannot access field 'length' from '() => int'
+*** Error at (17,11): cannot access field 'length' from 'int => int'
+*** Error at (19,12): function 'len' expects 0 argument(s) but 1 given

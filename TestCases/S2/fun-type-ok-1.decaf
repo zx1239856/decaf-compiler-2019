@@ -1,0 +1,31 @@
+class A {}
+
+class Main extends A {
+    void() a1;
+
+    class A(bool, int[]) a2;
+
+    int[](class A[][]) a3(int(int)[] a4) {
+        int[](class A[][]) v;
+        return v;
+    }
+
+    static string(string(bool))()[](int()[]) a5() {
+        string(string(bool))()[](int()[]) v;
+        return v;
+    }
+
+    int(class A) a6;
+
+    void()[]()[]()[]()[](void())[]()[]()[]()[]()[] a7;
+
+    void(void())(void())(void()) a8;
+
+    void(void(void(void(void(void()))))) a9;
+
+    static void main() {
+        void() x = new Main().a1;
+        int(class Main) y = new Main().a6;
+        void()[]()[]()[]()[](void())[]()[]()[]()[]()[] z = new Main().a7;
+    }
+}

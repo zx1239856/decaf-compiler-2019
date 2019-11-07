@@ -1,0 +1,76 @@
+GLOBAL SCOPE:
+    (3,1) -> class Main
+    CLASS SCOPE OF 'Main':
+        (4,17) -> STATIC function niam : () => void
+        (18,17) -> STATIC function main : () => void
+        FORMAL SCOPE OF 'niam':
+            <empty>
+            LOCAL SCOPE:
+                (5,13) -> variable y : int
+                (7,13) -> variable f : int => int
+                (7,17) -> function lambda@(7,17) : int => int
+                (8,13) -> variable a : int => void
+                (8,17) -> function lambda@(8,17) : int => void
+                (12,18) -> variable f1 : int => int
+                (12,23) -> function lambda@(12,23) : int => int
+                (13,24) -> variable a1 : (int, int) => void
+                (13,29) -> function lambda@(13,29) : (int, int) => void
+                FORMAL SCOPE OF 'lambda@(7,17)':
+                    (7,26) -> variable @x : int
+                    LOCAL SCOPE:
+                        <empty>
+                FORMAL SCOPE OF 'lambda@(8,17)':
+                    (8,26) -> variable @x : int
+                    LOCAL SCOPE:
+                        <empty>
+                FORMAL SCOPE OF 'lambda@(12,23)':
+                    (12,32) -> variable @x : int
+                    LOCAL SCOPE:
+                        <empty>
+                FORMAL SCOPE OF 'lambda@(13,29)':
+                    (13,38) -> variable @x : int
+                    (13,45) -> variable @z : int
+                    LOCAL SCOPE:
+                        <empty>
+        FORMAL SCOPE OF 'main':
+            <empty>
+            LOCAL SCOPE:
+                (19,13) -> variable addn : (int, int) => int
+                (19,20) -> function lambda@(19,20) : (int, int) => int
+                (20,23) -> variable addc : int => int => int
+                (20,30) -> function lambda@(20,30) : int => int => int
+                (21,13) -> variable badadd2 : int => int => int
+                (21,23) -> function lambda@(21,23) : int => int => int
+                (22,13) -> variable add2 : int => int
+                (22,21) -> function lambda@(22,21) : int => int => int
+                (24,13) -> variable add2c : int => int
+                (25,13) -> variable badadd2c : int
+                FORMAL SCOPE OF 'lambda@(19,20)':
+                    (19,29) -> variable @x : int
+                    (19,36) -> variable @y : int
+                    LOCAL SCOPE:
+                        <empty>
+                FORMAL SCOPE OF 'lambda@(20,30)':
+                    (20,39) -> variable @x : int
+                    LOCAL SCOPE:
+                        (20,45) -> function lambda@(20,45) : int => int
+                        FORMAL SCOPE OF 'lambda@(20,45)':
+                            (20,54) -> variable @y : int
+                            LOCAL SCOPE:
+                                <empty>
+                FORMAL SCOPE OF 'lambda@(21,23)':
+                    (21,32) -> variable @x : int
+                    LOCAL SCOPE:
+                        (21,38) -> function lambda@(21,38) : int => int
+                        FORMAL SCOPE OF 'lambda@(21,38)':
+                            (21,47) -> variable @y : int
+                            LOCAL SCOPE:
+                                <empty>
+                FORMAL SCOPE OF 'lambda@(22,21)':
+                    (22,30) -> variable @x : int
+                    LOCAL SCOPE:
+                        (22,36) -> function lambda@(22,36) : int => int
+                        FORMAL SCOPE OF 'lambda@(22,36)':
+                            (22,45) -> variable @y : int
+                            LOCAL SCOPE:
+                                <empty>

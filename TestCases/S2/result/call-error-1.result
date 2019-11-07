@@ -1,0 +1,9 @@
+*** Error at (8,22): int is not a callable type
+*** Error at (13,23): lambda expression expects 1 argument(s) but 2 given
+*** Error at (13,24): incompatible argument 1: int[] => int[] => int[] given, int[] expected
+*** Error at (14,10): function 'g' expects 1 argument(s) but 2 given
+*** Error at (14,11): incompatible argument 1: int[] => int[] => int[] given, int[] expected
+*** Error at (16,15): incompatible operands: int = int[] => int[]
+*** Error at (16,19): incompatible argument 1: int[] => int[] given, int[] expected
+*** Error at (18,12): function 'foo' expects 3 argument(s) but 2 given
+*** Error at (18,23): int[] is not a callable type

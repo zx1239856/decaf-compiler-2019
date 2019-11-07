@@ -1,0 +1,14 @@
+*** Error at (5,13): declaration of 'a' here conflicts with earlier declaration at (4,20)
+*** Error at (8,21): declaration of 'b' here conflicts with earlier declaration at (6,13)
+*** Error at (10,14): cannot declare identifier 'c' as void type
+*** Error at (11,9): array element type must be non-void known type
+*** Error at (13,10): declaration of 'a' here conflicts with earlier declaration at (2,9)
+*** Error at (18,10): declaration of 'print' here conflicts with earlier declaration at (15,10)
+*** Error at (26,9): declaration of 'b' here conflicts with earlier declaration at (25,9)
+*** Error at (32,13): declaration of 'a' here conflicts with earlier declaration at (31,20)
+*** Error at (40,9): overriding variable is not allowed for var 'a'
+*** Error at (42,16): declaration of 'b' here conflicts with earlier declaration at (25,9)
+*** Error at (46,10): declaration of 'func' here conflicts with earlier declaration at (28,17)
+*** Error at (49,10): overriding method 'func2' doesn't match the type signature in class 'A'
+*** Error at (49,35): declaration of 'b' here conflicts with earlier declaration at (49,27)
+*** Error at (52,9): declaration of 'func1' here conflicts with earlier declaration at (31,10)
