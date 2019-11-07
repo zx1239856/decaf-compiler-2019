@@ -83,8 +83,6 @@ public class Typer extends Phase<Tree.TopLevel, Tree.TopLevel> implements TypeLi
 
     @Override
     public void visitBlock(Tree.Block block, ScopeStack ctx) {
-        if (block.scope == null)
-            block.scope = new LocalScope(ctx.currentScope());
         ctx.open(block.scope);
         for (var stmt : block.stmts) {
             stmt.accept(this, ctx);
@@ -130,8 +128,6 @@ public class Typer extends Phase<Tree.TopLevel, Tree.TopLevel> implements TypeLi
 
     @Override
     public void visitFor(Tree.For loop, ScopeStack ctx) {
-        if (loop.scope == null)
-            loop.scope = new LocalScope(ctx.currentScope());
         ctx.open(loop.scope);
         loop.init.accept(this, ctx);
         checkTestExpr(loop.cond, ctx);
@@ -158,10 +154,6 @@ public class Typer extends Phase<Tree.TopLevel, Tree.TopLevel> implements TypeLi
         var actual = stmt.expr.map(e -> e.type).orElse(BuiltInType.VOID);
         if (actual.noError() && !actual.subtypeOf(expected)) {
             issue(new BadReturnTypeError(stmt.pos, expected.toString(), actual.toString()));
-        }
-        if (ctx.currentMethod().scope.isLambdaScope()) {
-            var scope = (LambdaScope) ctx.currentMethod().scope;
-            scope.returnStmtList.add(stmt);
         }
         stmt.returns = stmt.expr.isPresent();
     }
@@ -456,7 +448,8 @@ public class Typer extends Phase<Tree.TopLevel, Tree.TopLevel> implements TypeLi
         var it = expr.index.type;
 
         if (!at.isArrayType()) {
-            issue(new NotArrayError(expr.array.pos));
+            if(!at.eq(BuiltInType.ERROR))  // do not report errors cause by others
+                issue(new NotArrayError(expr.array.pos));
             expr.type = BuiltInType.ERROR;
             return;
         }
@@ -560,7 +553,7 @@ public class Typer extends Phase<Tree.TopLevel, Tree.TopLevel> implements TypeLi
         }
     }
 
-    private Type getLambdaReturnType(List<Tree.Return> returnStmts, Pos pos) {
+    private Type getLambdaReturnType(List<Tree.Return> returnStmts) {
         if (returnStmts.size() == 0) {
             return BuiltInType.VOID;
         } else {
@@ -575,49 +568,39 @@ public class Typer extends Phase<Tree.TopLevel, Tree.TopLevel> implements TypeLi
             }
             var res = getTypeBound(types, true);
             if(!hasError && res.eq(BuiltInType.ERROR))
-                issue(new IncompatReturnError(pos));
+                return null;  // indicates newly generated err
             return res;
         }
     }
 
     @Override
     public void visitLambda(Tree.Lambda that, ScopeStack ctx) {
-        Type returnType = BuiltInType.ERROR;
-
-        var formal = new LambdaScope(ctx.currentScope());
-        var argTypes = new ArrayList<Type>();
-        var type = new FunType(returnType, argTypes);
-        that.symbol = new LambdaSymbol(type, formal, that.pos);
-        ctx.currentScope().declare(that.symbol);
-        ctx.open(formal);
-        for (var param : that.params) {
-            param.accept(this, ctx);
-            argTypes.add(param.typeLit.get().type);
-        }
-
+        Type returnType;
+        var scope = (LambdaScope)that.symbol.scope;
+        ctx.open(scope);
         if (that.isBlock()) {
             var block = that.block.get();
             block.accept(this, ctx);
-            returnType = getLambdaReturnType(formal.returnStmtList, block.pos);
+            returnType = getLambdaReturnType(scope.returnStmtList);
+            boolean hasErr = false;
+            if(returnType == null) {
+                returnType = BuiltInType.ERROR;
+                hasErr = true;
+            }
             if (!returnType.isVoidType() && !block.returns) {
                 issue(new MissingReturnError(block.pos));
             }
+            if(hasErr) {
+                issue(new IncompatReturnError(block.pos));
+            }
         } else {
-            var local = new LocalScope(ctx.currentScope());
-            ctx.open(local);
             var expr = that.expr.get();
             expr.accept(this, ctx);
             returnType = expr.type;
-            ctx.close();
         }
+        that.symbol.type.returnType = returnType;
+        that.type = that.symbol.type;
         ctx.close();
-        if (returnType.eq(BuiltInType.ERROR)) {
-            that.type = BuiltInType.ERROR;
-        } else {
-            var corrType = new FunType(returnType, argTypes);
-            that.symbol.type = corrType;
-            that.type = corrType;
-        }
     }
 
     @Override
@@ -644,10 +627,9 @@ public class Typer extends Phase<Tree.TopLevel, Tree.TopLevel> implements TypeLi
             String calleeName = "";
             if(expr.callee instanceof Tree.VarSel) {
                 var node = (Tree.VarSel) expr.callee;
-                calleeName = node.name;
-            } else if(expr.callee instanceof Tree.Lambda) {
-                var node = (Tree.Lambda) expr.callee;
-                calleeName = node.symbol.name;
+                calleeName = "function '" + node.name + "'";
+            } else {
+                calleeName = "lambda expression";
             }
             // check signature compatibility
             if (calleeType.arity() != args.size()) {
@@ -702,31 +684,6 @@ public class Typer extends Phase<Tree.TopLevel, Tree.TopLevel> implements TypeLi
 
     @Override
     public void visitLocalVarDef(Tree.LocalVarDef stmt, ScopeStack ctx) {
-        if (stmt.symbol == null) {
-            // no evaluate during Namer phase
-            stmt.typeLit.ifPresent(objects -> objects.accept(this, ctx)); // for args in lambda
-            var earlier = ctx.findConflict(stmt.name);
-            if (earlier.isPresent()) {
-                issue(new DeclConflictError(stmt.pos, stmt.name, earlier.get().pos));
-                return;
-            }
-            if (stmt.typeLit.isPresent()) {
-                if (stmt.typeLit.get().type.eq(BuiltInType.VOID)) {
-                    issue(new BadVarTypeError(stmt.pos, stmt.name));
-                    return;
-                }
-
-                if (stmt.typeLit.get().type.noError()) {
-                    var symbol = new VarSymbol(stmt.name, stmt.typeLit.get().type, stmt.id.pos);
-                    ctx.declare(symbol);
-                    stmt.symbol = symbol;
-                }
-            } else {
-                var symbol = new VarSymbol(stmt.name, null, stmt.id.pos);
-                ctx.declare(symbol);
-                stmt.symbol = symbol;
-            }
-        }
         stmt.initVal.ifPresent(initVal -> {
             localVarDefPos = Optional.ofNullable(stmt.id.pos);
             initVal.accept(this, ctx);

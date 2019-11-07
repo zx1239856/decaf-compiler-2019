@@ -14,7 +14,7 @@ public class LocalScope extends Scope {
         if (parent.isFormalScope()) {
             ((FormalScope) parent).setNested(this);
         } else {
-            ((LocalScope) parent).nested.add(this);
+            ((LocalScope) parent).nestedScopes.add(this);
         }
     }
 
@@ -23,16 +23,5 @@ public class LocalScope extends Scope {
         return true;
     }
 
-    /**
-     * Collect all local scopes defined inside this scope.
-     *
-     * @return local scopes
-     */
-    public List<LocalScope> nestedLocalScopes() {
-        return nested;
-    }
-
-    public List<LambdaScope> nestedLambdaScopes = new ArrayList<>();
-
-    private List<LocalScope> nested = new ArrayList<>();
+    public List<Scope> nestedScopes = new ArrayList<>();
 }

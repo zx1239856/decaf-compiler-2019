@@ -5,6 +5,7 @@ import decaf.driver.Phase;
 import decaf.driver.error.*;
 import decaf.frontend.scope.*;
 import decaf.frontend.symbol.ClassSymbol;
+import decaf.frontend.symbol.LambdaSymbol;
 import decaf.frontend.symbol.MethodSymbol;
 import decaf.frontend.symbol.VarSymbol;
 import decaf.frontend.tree.Tree;
@@ -12,8 +13,6 @@ import decaf.frontend.type.BuiltInType;
 import decaf.frontend.type.ClassType;
 import decaf.frontend.type.FunType;
 import decaf.frontend.type.Type;
-import decaf.lowlevel.log.IndentPrinter;
-import decaf.printing.PrettyScope;
 
 import java.util.*;
 
@@ -278,6 +277,33 @@ public class Namer extends Phase<Tree.TopLevel, Tree.TopLevel> implements TypeLi
             method.symbol.owner.non_overridden_methods.add(symbol);
     }
 
+    @Override
+    public void visitLambda(Tree.Lambda that, ScopeStack ctx) {
+        var formal = new LambdaScope(ctx.currentScope());
+        var argTypes = new ArrayList<Type>();
+        var type = new FunType(BuiltInType.ERROR, argTypes);  // return type need to be deduced
+        var symbol = new LambdaSymbol(type, formal, that.pos);
+        ctx.declare(symbol);
+        that.symbol = symbol;
+        ctx.open(formal);
+        // type lambda params
+        for (var param : that.params) {
+            param.accept(this, ctx);
+            argTypes.add(param.typeLit.get().type);
+        }
+        if (that.isBlock()) {
+            var block = that.block.get();
+            block.accept(this, ctx);
+        } else {
+            var local = new LocalScope(ctx.currentScope());
+            ctx.open(local);
+            var expr = that.expr.get();
+            expr.accept(this, ctx);
+            ctx.close();
+        }
+        ctx.close();
+    }
+
     private void typeMethod(Tree.MethodDef method, ScopeStack ctx, FormalScope formal) {
         method.returnType.accept(this, ctx);
         ctx.open(formal);
@@ -304,36 +330,41 @@ public class Namer extends Phase<Tree.TopLevel, Tree.TopLevel> implements TypeLi
     @Override
     public void visitLocalVarDef(Tree.LocalVarDef def, ScopeStack ctx) {
         def.typeLit.ifPresent(objects -> objects.accept(this, ctx));
-
+        boolean error = false;
         var earlier = ctx.findConflict(def.name);
         if (earlier.isPresent()) {
             issue(new DeclConflictError(def.pos, def.name, earlier.get().pos));
-            return;
+            error = true;
         }
 
-        if (def.typeLit.isPresent()) {
-            if (def.typeLit.get().type.eq(BuiltInType.VOID)) {
-                issue(new BadVarTypeError(def.pos, def.name));
-                return;
-            }
+        if (!error) {
+            if (def.typeLit.isPresent()) {
+                if (def.typeLit.get().type.eq(BuiltInType.VOID)) {
+                    issue(new BadVarTypeError(def.pos, def.name));
+                    return;
+                }
 
-            if (def.typeLit.get().type.noError()) {
-                var symbol = new VarSymbol(def.name, def.typeLit.get().type, def.id.pos);
+                if (def.typeLit.get().type.noError()) {
+                    var symbol = new VarSymbol(def.name, def.typeLit.get().type, def.id.pos);
+                    ctx.declare(symbol);
+                    def.symbol = symbol;
+                }
+            } else {
+                // otherwise, we need local type deduction, which will be the responsibility of type checker
+                var symbol = new VarSymbol(def.name, null, def.id.pos);
                 ctx.declare(symbol);
                 def.symbol = symbol;
             }
-        } else {
-            var symbol = new VarSymbol(def.name, null, def.id.pos);
-            ctx.declare(symbol);
-            def.symbol = symbol;
         }
-        // otherwise, we need local type deduction, which will be the responsibility of type checker
+
+        def.initVal.ifPresent(v -> visitNode(v, ctx));
     }
 
     @Override
     public void visitFor(Tree.For loop, ScopeStack ctx) {
         loop.scope = new LocalScope(ctx.currentScope());
         ctx.open(loop.scope);
+        visitNode(loop.cond, ctx);
         loop.init.accept(this, ctx);
         for (var stmt : loop.body.stmts) {
             stmt.accept(this, ctx);
@@ -345,11 +376,84 @@ public class Namer extends Phase<Tree.TopLevel, Tree.TopLevel> implements TypeLi
     public void visitIf(Tree.If stmt, ScopeStack ctx) {
         stmt.trueBranch.accept(this, ctx);
         stmt.falseBranch.ifPresent(b -> b.accept(this, ctx));
+        visitNode(stmt.cond, ctx);
     }
 
     @Override
     public void visitWhile(Tree.While loop, ScopeStack ctx) {
         loop.body.accept(this, ctx);
+        visitNode(loop.cond, ctx);
     }
 
+    @Override
+    public void visitAssign(Tree.Assign that, ScopeStack ctx) {
+        visitNode(that.rhs, ctx);
+    }
+
+    @Override
+    public void visitExprEval(Tree.ExprEval that, ScopeStack ctx) {
+        visitNode(that.expr, ctx);
+    }
+
+    @Override
+    public void visitReturn(Tree.Return that, ScopeStack ctx) {
+        that.expr.ifPresent(v -> visitNode(v, ctx));
+        if (ctx.currentMethod().scope.isLambdaScope()) {
+            var scope = (LambdaScope) ctx.currentMethod().scope;
+            scope.returnStmtList.add(that);
+        }
+    }
+
+    @Override
+    public void visitVarSel(Tree.VarSel that, ScopeStack ctx) {
+        that.receiver.ifPresent(v -> visitNode(v, ctx));
+    }
+
+    @Override
+    public void visitIndexSel(Tree.IndexSel that, ScopeStack ctx) {
+        visitNode(that.array, ctx);
+        visitNode(that.index, ctx);
+    }
+
+    @Override
+    public void visitUnary(Tree.Unary that, ScopeStack ctx) {
+        visitNode(that.operand, ctx);
+    }
+
+    @Override
+    public void visitBinary(Tree.Binary that, ScopeStack ctx) {
+        visitNode(that.lhs, ctx);
+        visitNode(that.rhs, ctx);
+    }
+
+    @Override
+    public void visitNewArray(Tree.NewArray that, ScopeStack ctx) {
+        visitNode(that.length, ctx);
+    }
+
+    @Override
+    public void visitClassTest(Tree.ClassTest that, ScopeStack ctx) {
+        visitNode(that.obj, ctx);
+    }
+
+
+    @Override
+    public void visitClassCast(Tree.ClassCast that, ScopeStack ctx) {
+        visitNode(that.obj, ctx);
+    }
+
+
+    @Override
+    public void visitCall(Tree.Call that, ScopeStack ctx) {
+        visitNode(that.callee, ctx);
+    }
+
+    @Override
+    public void visitPrint(Tree.Print that, ScopeStack ctx) {
+        that.exprs.forEach(obj -> visitNode(obj, ctx));
+    }
+
+    private void visitNode(Tree.Expr expr, ScopeStack ctx) {
+        expr.accept(this, ctx);
+    }
 }

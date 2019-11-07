@@ -12,7 +12,7 @@ public class LambdaScope extends FormalScope{
         super();
         assert parent.isLocalScope();
         var par = (LocalScope)parent;
-        par.nestedLambdaScopes.add(this);
+        par.nestedScopes.add(this);
     }
 
     @Override

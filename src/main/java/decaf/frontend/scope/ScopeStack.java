@@ -66,8 +66,8 @@ public class ScopeStack {
      * @return method symbol
      */
     public MethodSymbol currentMethod() {
-        Objects.requireNonNull(currMethod);
-        return currMethod;
+        Objects.requireNonNull(currMethods.peek());
+        return currMethods.peek();
     }
 
     /**
@@ -88,7 +88,7 @@ public class ScopeStack {
             currClass = classScope.getOwner();
         } else if (scope.isFormalScope()) {
             var formalScope = (FormalScope) scope;
-            currMethod = formalScope.getOwner();
+            currMethods.push(formalScope.getOwner());
         }
         scopeStack.push(scope);
     }
@@ -107,6 +107,8 @@ public class ScopeStack {
             while (!scopeStack.isEmpty()) {
                 scopeStack.pop();
             }
+        } else if (scope.isFormalScope()) {
+            currMethods.pop();
         }
     }
 
@@ -193,7 +195,7 @@ public class ScopeStack {
 
     private Stack<Scope> scopeStack = new Stack<>();
     private ClassSymbol currClass;
-    private MethodSymbol currMethod;
+    private Stack<MethodSymbol> currMethods = new Stack<>();
 
     private Optional<Symbol> findWhile(String key, Predicate<Scope> cond, Predicate<Symbol> validator) {
         ListIterator<Scope> iter = scopeStack.listIterator(scopeStack.size());
