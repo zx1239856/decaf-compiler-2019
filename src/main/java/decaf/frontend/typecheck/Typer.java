@@ -98,6 +98,23 @@ public class Typer extends Phase<Tree.TopLevel, Tree.TopLevel> implements TypeLi
         var lt = stmt.lhs.type;
         var rt = stmt.rhs.type;
 
+        if (stmt.lhs instanceof Tree.VarSel) {
+            var lhs = (Tree.VarSel) stmt.lhs;
+            if (lhs.symbol != null) {
+                if (lhs.symbol.isMethodSymbol()) {
+                    MethodSymbol symbol = (MethodSymbol) lhs.symbol;
+                    issue(new InvalidAssignError(stmt.pos, symbol.name, true));
+                } else if (lhs.symbol.isVarSymbol() && ctx.currentMethod().scope.isLambdaScope()) {
+                    var symbol = (VarSymbol) lhs.symbol;
+                    var scope = (LambdaScope) ctx.currentMethod().scope;
+                    if (symbol.isLocalVar() && !scope.isInLambda(symbol.name)) {
+                        // captured local var, forbidden
+                        issue(new InvalidAssignError(stmt.pos, "", false));
+                    }
+                }
+            }
+        }
+
         if (lt.noError() && !rt.subtypeOf(lt)) {
             issue(new IncompatBinOpError(stmt.pos, lt.toString(), "=", rt.toString()));
         }
@@ -328,38 +345,42 @@ public class Typer extends Phase<Tree.TopLevel, Tree.TopLevel> implements TypeLi
             // Variable, which should be complicated since a legal variable could refer to a local var,
             // a visible member var, and a class name.
             var symbol = ctx.lookupBefore(expr.name, localVarDefPos.orElse(expr.pos));
+            var scope = ctx.currentMethod().scope;
             if (symbol.isPresent()) {
-                if (symbol.get().isVarSymbol()) {
-                    var var = (VarSymbol) symbol.get();
-                    expr.symbol = var;
-                    expr.type = var.type;
-                    if (var.isMemberVar()) {
-                        if (ctx.currentMethod().isStatic()) {
-                            issue(new RefNonStaticError(expr.pos, ctx.currentMethod().name, expr.name));
-                        } else {
-                            expr.setThis();
+                // check case: var a = fun() => a;
+                if (!scope.isLambdaScope() || !((LambdaScope) scope).isInForbidden(expr.name)) {
+                    if (symbol.get().isVarSymbol()) {
+                        var var = (VarSymbol) symbol.get();
+                        expr.symbol = var;
+                        expr.type = var.type;
+                        if (var.isMemberVar()) {
+                            if (ctx.currentMethod().isStatic()) {
+                                issue(new RefNonStaticError(expr.pos, ctx.currentMethod().name, expr.name));
+                            } else {
+                                expr.setThis();
+                            }
                         }
-                    }
-                    return;
-                } else if (symbol.get().isMethodSymbol()) {
-                    var var = (MethodSymbol) symbol.get();
-                    expr.symbol = var;
-                    expr.type = var.type;
-                    if (!var.isStatic()) {
-                        if (ctx.currentMethod().isStatic()) {
-                            issue(new RefNonStaticError(expr.pos, ctx.currentMethod().name, expr.name));
-                        } else {
-                            expr.setThis();
+                        return;
+                    } else if (symbol.get().isMethodSymbol()) {
+                        var var = (MethodSymbol) symbol.get();
+                        expr.symbol = var;
+                        expr.type = var.type;
+                        if (!var.isStatic()) {
+                            if (ctx.currentMethod().isStatic()) {
+                                issue(new RefNonStaticError(expr.pos, ctx.currentMethod().name, expr.name));
+                            } else {
+                                expr.setThis();
+                            }
                         }
+                        return;
                     }
-                    return;
-                }
 
-                if (symbol.get().isClassSymbol() && allowClassNameVar) { // special case: a class name
-                    var clazz = (ClassSymbol) symbol.get();
-                    expr.type = clazz.type;
-                    expr.isClassName = true;
-                    return;
+                    if (symbol.get().isClassSymbol() && allowClassNameVar) { // special case: a class name
+                        var clazz = (ClassSymbol) symbol.get();
+                        expr.type = clazz.type;
+                        expr.isClassName = true;
+                        return;
+                    }
                 }
             }
 
@@ -448,7 +469,7 @@ public class Typer extends Phase<Tree.TopLevel, Tree.TopLevel> implements TypeLi
         var it = expr.index.type;
 
         if (!at.isArrayType()) {
-            if(!at.eq(BuiltInType.ERROR))  // do not report errors cause by others
+            if (!at.eq(BuiltInType.ERROR))  // do not report errors cause by others
                 issue(new NotArrayError(expr.array.pos));
             expr.type = BuiltInType.ERROR;
             return;
@@ -567,7 +588,7 @@ public class Typer extends Phase<Tree.TopLevel, Tree.TopLevel> implements TypeLi
                 }
             }
             var res = getTypeBound(types, true);
-            if(!hasError && res.eq(BuiltInType.ERROR))
+            if (!hasError && res.eq(BuiltInType.ERROR))
                 return null;  // indicates newly generated err
             return res;
         }
@@ -576,21 +597,21 @@ public class Typer extends Phase<Tree.TopLevel, Tree.TopLevel> implements TypeLi
     @Override
     public void visitLambda(Tree.Lambda that, ScopeStack ctx) {
         Type returnType;
-        var scope = (LambdaScope)that.symbol.scope;
+        var scope = (LambdaScope) that.symbol.scope;
         ctx.open(scope);
         if (that.isBlock()) {
             var block = that.block.get();
             block.accept(this, ctx);
             returnType = getLambdaReturnType(scope.returnStmtList);
             boolean hasErr = false;
-            if(returnType == null) {
+            if (returnType == null) {
                 returnType = BuiltInType.ERROR;
                 hasErr = true;
             }
             if (!returnType.isVoidType() && !block.returns) {
                 issue(new MissingReturnError(block.pos));
             }
-            if(hasErr) {
+            if (hasErr) {
                 issue(new IncompatReturnError(block.pos));
             }
         } else {
@@ -625,7 +646,7 @@ public class Typer extends Phase<Tree.TopLevel, Tree.TopLevel> implements TypeLi
                 arg.accept(this, ctx);
             }
             String calleeName = "";
-            if(expr.callee instanceof Tree.VarSel) {
+            if (expr.callee instanceof Tree.VarSel) {
                 var node = (Tree.VarSel) expr.callee;
                 calleeName = "function '" + node.name + "'";
             } else {
@@ -692,9 +713,11 @@ public class Typer extends Phase<Tree.TopLevel, Tree.TopLevel> implements TypeLi
             var rt = initVal.type;
 
             if (lt == null) {
-                stmt.symbol.type = initVal.type;
                 if (initVal.type.eq(BuiltInType.VOID)) {
                     issue(new BadVarTypeError(stmt.pos, stmt.name));
+                    stmt.symbol.type = BuiltInType.ERROR;
+                } else {
+                    stmt.symbol.type = initVal.type;
                 }
             } else {
                 if (lt.noError() && (!rt.subtypeOf(lt))) {

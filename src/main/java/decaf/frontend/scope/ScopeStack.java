@@ -1,6 +1,7 @@
 package decaf.frontend.scope;
 
 import decaf.frontend.symbol.ClassSymbol;
+import decaf.frontend.symbol.LambdaSymbol;
 import decaf.frontend.symbol.MethodSymbol;
 import decaf.frontend.symbol.Symbol;
 import decaf.frontend.tree.Pos;
@@ -66,8 +67,10 @@ public class ScopeStack {
      * @return method symbol
      */
     public MethodSymbol currentMethod() {
-        Objects.requireNonNull(currMethods.peek());
-        return currMethods.peek();
+        if(currMethods.size() > 0) {
+            return currMethods.peek();
+        } else
+            return null;
     }
 
     /**
@@ -191,6 +194,11 @@ public class ScopeStack {
      */
     public void declare(Symbol symbol) {
         currentScope().declare(symbol);
+        var currMethod = currentMethod();
+        if(currMethod != null && currMethod.scope.isLambdaScope()) {
+            var scope = (LambdaScope) currMethod.scope;
+            scope.putInLambda(symbol);
+        }
     }
 
     private Stack<Scope> scopeStack = new Stack<>();

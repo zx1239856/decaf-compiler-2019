@@ -4,10 +4,7 @@ import decaf.driver.Config;
 import decaf.driver.Phase;
 import decaf.driver.error.*;
 import decaf.frontend.scope.*;
-import decaf.frontend.symbol.ClassSymbol;
-import decaf.frontend.symbol.LambdaSymbol;
-import decaf.frontend.symbol.MethodSymbol;
-import decaf.frontend.symbol.VarSymbol;
+import decaf.frontend.symbol.*;
 import decaf.frontend.tree.Tree;
 import decaf.frontend.type.BuiltInType;
 import decaf.frontend.type.ClassType;
@@ -21,20 +18,11 @@ import java.util.*;
  * scopes).
  */
 public class Namer extends Phase<Tree.TopLevel, Tree.TopLevel> implements TypeLitVisited {
+    private Symbol currentAssign;
 
     public Namer(Config config) {
         super("namer", config);
     }
-
-//    // TODO: DEL THIS
-//    @Override
-//    public void onSucceed(Tree.TopLevel tree) {
-//        if (config.target.equals(Config.Target.PA2)) {
-//            var printer = new PrettyScope(new IndentPrinter(config.output));
-//            printer.pretty(tree.globalScope);
-//            printer.flush();
-//        }
-//    }
 
     @Override
     public Tree.TopLevel transform(Tree.TopLevel tree) {
@@ -279,10 +267,13 @@ public class Namer extends Phase<Tree.TopLevel, Tree.TopLevel> implements TypeLi
 
     @Override
     public void visitLambda(Tree.Lambda that, ScopeStack ctx) {
-        var formal = new LambdaScope(ctx.currentScope());
+        var formal = new LambdaScope(ctx.currentScope(), ctx.currentMethod().scope);
+        if (currentAssign != null) {
+            formal.putInForbidden(currentAssign);
+        }
         var argTypes = new ArrayList<Type>();
         var type = new FunType(BuiltInType.ERROR, argTypes);  // return type need to be deduced
-        var symbol = new LambdaSymbol(type, formal, that.pos);
+        var symbol = new LambdaSymbol(type, formal, that.pos, ctx.currentMethod().isStatic());
         ctx.declare(symbol);
         that.symbol = symbol;
         ctx.open(formal);
@@ -357,7 +348,11 @@ public class Namer extends Phase<Tree.TopLevel, Tree.TopLevel> implements TypeLi
             }
         }
 
-        def.initVal.ifPresent(v -> visitNode(v, ctx));
+        def.initVal.ifPresent(v -> {
+            currentAssign = def.symbol;
+            visitNode(v, ctx);
+            currentAssign = null;
+        });
     }
 
     @Override
@@ -387,6 +382,7 @@ public class Namer extends Phase<Tree.TopLevel, Tree.TopLevel> implements TypeLi
 
     @Override
     public void visitAssign(Tree.Assign that, ScopeStack ctx) {
+        visitNode(that.lhs, ctx);
         visitNode(that.rhs, ctx);
     }
 
@@ -446,6 +442,7 @@ public class Namer extends Phase<Tree.TopLevel, Tree.TopLevel> implements TypeLi
     @Override
     public void visitCall(Tree.Call that, ScopeStack ctx) {
         visitNode(that.callee, ctx);
+        that.args.forEach(v -> visitNode(v, ctx));
     }
 
     @Override
