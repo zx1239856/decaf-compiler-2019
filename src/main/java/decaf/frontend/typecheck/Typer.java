@@ -476,7 +476,7 @@ public class Typer extends Phase<Tree.TopLevel, Tree.TopLevel> implements TypeLi
         }
 
         expr.type = ((ArrayType) at).elementType;
-        if (!it.eq(BuiltInType.INT)) {
+        if (!it.eq(BuiltInType.INT) && !it.eq(BuiltInType.ERROR)) {
             issue(new SubNotIntError(expr.pos));
         }
     }
