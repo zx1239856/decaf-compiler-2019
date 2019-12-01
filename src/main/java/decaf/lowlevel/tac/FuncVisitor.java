@@ -227,8 +227,8 @@ public class FuncVisitor {
         return vtbl;
     }
 
-    public Temp wrapArrayLength(Temp array, Pos pos) {
-        var label = ctx.getGlobalLabel("array$" + pos.line + "_" + pos.column + "$len");
+    public Temp wrapArrayLength(Temp array) {
+        var label = ctx.getGlobalLabel("array$len");
         int index = ctx.indexInGlobalTable(label);
         if(index == -1) {
             var visitor = new FuncVisitor(label, 1, ctx);
@@ -268,8 +268,8 @@ public class FuncVisitor {
         return block;
     }
 
-    public Temp wrapMemberMethod(Temp object, Pos pos, String clazz, String method, int numArgs, boolean needReturn) {
-        var label = ctx.getGlobalLabel(clazz + "$" + pos.line + "_" + pos.column + "$" + method);
+    public Temp wrapMemberMethod(Temp object, String clazz, String method, int numArgs, boolean needReturn) {
+        var label = ctx.getGlobalLabel(clazz + "$" + method);
         int index = ctx.indexInGlobalTable(label);
         if(index == -1) {
             // Mechanism

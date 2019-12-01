@@ -261,7 +261,7 @@ public interface TacEmitter extends Visitor<FuncVisitor> {
             if (object.val == null) {
                 object.accept(this, mv);
             }
-            expr.val = mv.wrapArrayLength(object.val, object.pos);
+            expr.val = mv.wrapArrayLength(object.val);
         } else {
             if (expr.symbol instanceof VarSymbol) {
                 var symbol = (VarSymbol) expr.symbol;
@@ -292,7 +292,7 @@ public interface TacEmitter extends Visitor<FuncVisitor> {
                     if (object.val == null) {
                         object.accept(this, mv);
                     }
-                    expr.val = mv.wrapMemberMethod(object.val, symbol.owner.pos, symbol.owner.name, symbol.name, symbol.type.arity(), symbol.type.hasReturn());
+                    expr.val = mv.wrapMemberMethod(object.val, symbol.owner.name, symbol.name, symbol.type.arity(), symbol.type.hasReturn());
                 }
             }
         }

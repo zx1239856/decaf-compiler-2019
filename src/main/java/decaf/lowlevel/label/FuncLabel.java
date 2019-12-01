@@ -45,4 +45,14 @@ public class FuncLabel extends Label {
             return name;
         }
     };
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj == this)
+            return true;
+        if(!(obj instanceof FuncLabel))
+            return false;
+        FuncLabel o = (FuncLabel)obj;
+        return o.name.equals(this.name);
+    }
 }
