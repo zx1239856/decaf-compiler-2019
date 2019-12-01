@@ -1,9 +1,12 @@
 package decaf.lowlevel.tac;
 
+import decaf.frontend.tree.Pos;
 import decaf.lowlevel.instr.Temp;
 import decaf.lowlevel.label.FuncLabel;
 import decaf.lowlevel.label.Label;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -186,6 +189,110 @@ public class FuncVisitor {
      */
     public void visitMemberWrite(Temp object, String clazz, String variable, Temp value) {
         visitStoreTo(object, ctx.getOffset(clazz, variable), value);
+    }
+
+    public Temp visitCallByAddress(Temp entry, List<Temp> args, boolean needReturn) {
+        Temp temp = null;
+        for(var arg : args) {
+            func.add(new TacInstr.Parm(arg));
+        }
+        if(needReturn) {
+            temp = freshTemp();
+            func.add(new TacInstr.IndirectCall(temp, entry));
+        }
+        else {
+            func.add(new TacInstr.IndirectCall(entry));
+        }
+        return temp;
+    }
+
+    public FuncVisitor getLambdaVisitor(Pos pos, int numArgs) {
+        var label = ctx.getGlobalLabel("lambda$" + pos.line + "$" + pos.column);
+        ctx.putInGlobalTable(label);
+        // this label will not duplicate, ignore checking
+        return new FuncVisitor(label, numArgs + 1, ctx);
+    }
+
+    public int getOffsetInGlobalTable() {
+        int index = ctx.indexInGlobalTable(entry);
+        if(index < 0)
+            return index;
+        else
+            return 8 + 4 * index;
+    }
+
+    public Temp loadGlobalVtbl() {
+        Temp vtbl = freshTemp();
+        func.add(new TacInstr.LoadVTbl(vtbl, ctx.getGlobalTable()));
+        return vtbl;
+    }
+
+    public Temp wrapArrayLength(Temp array, Pos pos) {
+        var label = ctx.getGlobalLabel("array$len$" + pos.line + "$" + pos.column);
+        int index = ctx.indexInGlobalTable(label);
+        if(index == -1) {
+            var visitor = new FuncVisitor(label, 1, ctx);
+            var arr = visitor.visitLoadFrom(visitor.argsTemps[0], 4);
+            var len = visitor.visitLoadFrom(arr, -4);
+            visitor.visitReturn(len);
+            visitor.visitEnd();
+            index = ctx.putInGlobalTable(label);
+        }
+        var offset = 8 + 4 * index;
+        var vtbl = loadGlobalVtbl();
+        var wrapperAddr = visitLoadFrom(vtbl, offset);
+        var block = visitIntrinsicCall(Intrinsic.ALLOCATE, true, visitLoad(8));
+        visitStoreTo(block, 4, array);
+        visitStoreTo(block, wrapperAddr);
+        return block;
+    }
+
+    public Temp wrapStaticMethod(String clazz, String method, int numArgs, boolean needReturn) {
+        var label = ctx.getGlobalLabel(clazz + "$" + method);
+        int index = ctx.indexInGlobalTable(label);
+        if(index == -1) {
+            // no wrapper available, create one
+            var visitor = new FuncVisitor(label, numArgs + 1, ctx);
+            var list = new ArrayList<>(Arrays.asList(visitor.argsTemps).subList(1, visitor.argsTemps.length));
+            var ret = visitor.visitStaticCall(clazz, method, list, needReturn);
+            if(needReturn)
+                visitor.visitReturn(ret);
+            visitor.visitEnd();
+            index = ctx.putInGlobalTable(label);
+        }
+        var offset = 8 + 4 * index;
+        var vtbl = loadGlobalVtbl();
+        var block = visitIntrinsicCall(Intrinsic.ALLOCATE, true, visitLoad(4));
+        var wrapperAddr = visitLoadFrom(vtbl, offset);  // wrapper addr in virtual table
+        visitStoreTo(block, wrapperAddr);
+        return block;
+    }
+
+    public Temp wrapMemberMethod(Temp object, Pos pos, String clazz, String method, int numArgs, boolean needReturn) {
+        var label = ctx.getGlobalLabel(clazz + "$" + method + "$" + pos.line + "$" + pos.column);
+        int index = ctx.indexInGlobalTable(label);
+        if(index == -1) {
+            // Mechanism
+            // ReturnType wrapper(base_ptr, args) {
+            //     return *base_ptr(*(base_ptr+4), ...args);
+            // }
+            var visitor = new FuncVisitor(label, numArgs + 1, ctx);
+            var obj = visitor.visitLoadFrom(visitor.argsTemps[0], 4);  // this ptr
+            var list = new ArrayList<>(Arrays.asList(visitor.argsTemps).subList(1, visitor.argsTemps.length));
+            var ret = visitor.visitMemberCall(obj, clazz, method, list, needReturn);
+            if(needReturn)
+                visitor.visitReturn(ret);
+            visitor.visitEnd();
+            index = ctx.putInGlobalTable(label);
+        }
+        // wrapper already present
+        var offset = 8 + 4 * index;
+        var vtbl = loadGlobalVtbl();
+        var wrapperAddr = visitLoadFrom(vtbl, offset);
+        var block = visitIntrinsicCall(Intrinsic.ALLOCATE, true, visitLoad(8));
+        visitStoreTo(block, 4, object);
+        visitStoreTo(block, wrapperAddr);
+        return block;
     }
 
     /**
@@ -404,6 +511,10 @@ public class FuncVisitor {
         return argsTemps[index];
     }
 
+    public Temp[] getArgTemps() {
+        return argsTemps;
+    }
+
     /**
      * Get total number of used temps so far.
      *
@@ -412,9 +523,9 @@ public class FuncVisitor {
     public int getUsedTemp() {
         return nextTempId;
     }
-
     FuncVisitor(FuncLabel entry, int numArgs, ProgramWriter.Context ctx) {
         this.ctx = ctx;
+        this.entry = entry;
         func = new TacFunc(entry, numArgs);
         visitLabel(entry);
         argsTemps = new Temp[numArgs];
@@ -422,6 +533,8 @@ public class FuncVisitor {
             argsTemps[i] = freshTemp();
         }
     }
+
+    private FuncLabel entry;
 
     private TacFunc func;
 

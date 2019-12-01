@@ -1,0 +1,19 @@
+// Computing Fibonacci Sequence
+
+class Main {
+
+    // the main entry
+    static void main() {
+        int x = 2; 
+        int y = 3;
+        bool a = true;
+        string s = "Hello THU";
+        Print(x,"\n");
+        Print(y,"\n");
+        Print(x+y,"\n");
+        Print(x*y,"\n");
+        Print(a,"\n");
+        Print(s,"\n");
+    }
+}
+

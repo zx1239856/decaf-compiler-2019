@@ -349,6 +349,24 @@ public class Typer extends Phase<Tree.TopLevel, Tree.TopLevel> implements TypeLi
             if (symbol.isPresent()) {
                 // check case: var a = fun() => a;
                 if (!scope.isLambdaScope() || !((LambdaScope) scope).isInForbidden(expr.name)) {
+                    if(scope.isLambdaScope()) {
+                        var lScope = (LambdaScope)scope;
+                        if(!lScope.isInLambda(expr.name)) {
+                            var sym = symbol.get();
+                            if(sym.isVarSymbol()) {
+                                var vSym = (VarSymbol)sym;
+                                if(vSym.isMemberVar())  // capture `this`
+                                    lScope.putInCaptured(vSym.getOwner());
+                                else
+                                    lScope.putInCaptured(vSym);
+                            } else if(sym.isMethodSymbol()) {
+                                var mSym = (MethodSymbol)sym;
+                                if(!mSym.isStatic())  // only non-static methods need `this`
+                                    lScope.putInCaptured(mSym.owner);
+                            }
+                        }
+                    }
+
                     if (symbol.get().isVarSymbol()) {
                         var var = (VarSymbol) symbol.get();
                         expr.symbol = var;

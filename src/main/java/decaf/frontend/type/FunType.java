@@ -20,6 +20,10 @@ public final class FunType extends Type {
         return argTypes.size();
     }
 
+    public boolean hasReturn() {
+        return !this.returnType.isVoidType();
+    }
+
     @Override
     public boolean subtypeOf(Type type) {
         if (type.eq(BuiltInType.ERROR)) {

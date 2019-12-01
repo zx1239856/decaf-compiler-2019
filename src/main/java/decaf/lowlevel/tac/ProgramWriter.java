@@ -70,7 +70,9 @@ public class ProgramWriter {
      * @return TAC program
      */
     public TacProg visitEnd() {
-        return new TacProg(ctx.getVTables(), ctx.funcs);
+        var vtables = ctx.getVTables();
+        vtables.add(ctx.getGlobalTable());
+        return new TacProg(vtables, ctx.funcs);
     }
 
     private HashMap<String, ClassInfo> classes = new HashMap<>();
@@ -206,11 +208,30 @@ public class ProgramWriter {
             }
         }
 
+        FuncLabel getGlobalLabel(String name) {
+            return new FuncLabel("__Decaf__Global_Table", name);
+        }
+
+        int indexInGlobalTable(FuncLabel label) {
+            return globalTable.memberMethods.indexOf(label);
+        }
+
+        int putInGlobalTable(FuncLabel label) {
+            globalTable.memberMethods.add(label);
+            return globalTable.memberMethods.size() - 1;
+        }
+
+        VTable getGlobalTable() {
+            return globalTable;
+        }
+
         private Map<String, FuncLabel> labels = new TreeMap<>();
 
         private Map<String, VTable> vtables = new TreeMap<>();
 
         private Map<String, Integer> offsets = new TreeMap<>();
+
+        private VTable globalTable = new VTable("__Decaf__Global_Table", Optional.empty());
 
         List<TacFunc> funcs = new ArrayList<>();
 

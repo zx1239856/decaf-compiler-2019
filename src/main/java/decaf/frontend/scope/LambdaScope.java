@@ -3,10 +3,7 @@ package decaf.frontend.scope;
 import decaf.frontend.symbol.Symbol;
 import decaf.frontend.tree.Tree;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class LambdaScope extends FormalScope {
     public List<Tree.Return> returnStmtList = new ArrayList<>(); // for return type deduction
@@ -42,8 +39,22 @@ public class LambdaScope extends FormalScope {
         return forbiddenSymbols.containsKey(name);
     }
 
+    public void putInCaptured(Symbol symbol) {
+        capturedSymbols.put(symbol.name, symbol);
+    }
+
+    public Map<String, Symbol> getCapturedSymbols() {
+        return capturedSymbols;
+    }
+
     // to determine whether symbols are captured or defined
     private Map<String, Symbol> lambdaSymbols = new TreeMap<>();
 
     private Map<String, Symbol> forbiddenSymbols = new TreeMap<>();
+
+    private Map<String, Symbol> capturedSymbols = new TreeMap<>();
+
+    public Map<String, Integer> lambdaOffset = new HashMap<>();
+
+    public Map<String, Tree.Expr> symbolExpr = new HashMap<>();
 }

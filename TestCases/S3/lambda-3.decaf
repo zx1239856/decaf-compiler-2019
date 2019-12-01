@@ -1,0 +1,52 @@
+class Main {
+
+    static void f1() {
+        Print(2333);
+    }
+    static void f2() {
+        Print("3222");
+    }
+    static void main() {
+        var abs = fun (int x) {
+            if (x >= 0)
+                return x;
+            else
+                return -x;
+        };
+        Print(abs(100));
+        Print(abs(-100));
+
+        var print = fun (int x) {
+            if (x < 0) return;
+            Print(x);
+        };
+        print(100);
+        print(-100);
+        int[] c = new int[10];
+        c[0] = 1;
+        c[1] = 3;
+        c[2] = 5;
+        c[3] = 7;
+        c[4] = 9;
+        c[5] = 0;
+        var print2 = fun (int n, int[] a) {
+            for (int i = 0; i < n; i = i + 1) {
+                if (a[i] == 0) {
+                    return;
+                }
+                Print(a[i]);
+            }
+        };
+        print2(10,c);
+
+        var g = fun (bool z) {
+            if (z) {
+                return f1;
+            } else {
+                return f2;
+            }
+        };
+        g(true)();
+        g(false)();
+    }
+}

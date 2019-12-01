@@ -1,0 +1,31 @@
+class Main {
+    static void main() {
+        double(print);
+        filter(printi, even, 10);
+    }
+
+    static void print() {
+        Print("hello\n");
+    }
+
+    static void printi(int i) {
+        Print(i, " ");
+    }
+
+    static void double(void() f) {
+        f();
+        f();
+    }
+
+    static bool even(int i) {
+        return i % 2 == 0;
+    }
+
+    static void filter(void(int) f, bool(int) pred, int n) {
+        for (int i = 0; i < n; i = i + 1) {
+            if (pred(i)) {
+                f(i);
+            }
+        }
+    }
+}

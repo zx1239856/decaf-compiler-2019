@@ -1,17 +1,17 @@
 package decaf.frontend.tacgen;
 
+import decaf.frontend.scope.LambdaScope;
+import decaf.frontend.symbol.MethodSymbol;
+import decaf.frontend.symbol.VarSymbol;
 import decaf.frontend.tree.Tree;
 import decaf.frontend.tree.Visitor;
 import decaf.frontend.type.BuiltInType;
+import decaf.frontend.type.FunType;
 import decaf.lowlevel.instr.Temp;
 import decaf.lowlevel.label.Label;
-import decaf.lowlevel.tac.FuncVisitor;
-import decaf.lowlevel.tac.Intrinsic;
-import decaf.lowlevel.tac.RuntimeError;
-import decaf.lowlevel.tac.TacInstr;
+import decaf.lowlevel.tac.*;
 
-import java.util.ArrayList;
-import java.util.Stack;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -32,6 +32,8 @@ public interface TacEmitter extends Visitor<FuncVisitor> {
      * Push a label when entering a loop, and pop when leaving a loop.
      */
     Stack<Label> loopExits = new Stack<>();
+
+    Stack<LambdaScope> lambdaStack = new Stack<>();
 
     @Override
     default void visitBlock(Tree.Block block, FuncVisitor mv) {
@@ -61,15 +63,18 @@ public interface TacEmitter extends Visitor<FuncVisitor> {
             mv.visitStoreTo(addr, assign.rhs.val);
         } else if (assign.lhs instanceof Tree.VarSel) {
             var v = (Tree.VarSel) assign.lhs;
-//            if (v.symbol.isMemberVar()) {
-//                var object = v.receiver.get();
-//                object.accept(this, mv);
-//                assign.rhs.accept(this, mv);
-//                mv.visitMemberWrite(object.val, v.symbol.getOwner().name, v.name, assign.rhs.val);
-//            } else { // local or param
-//                assign.rhs.accept(this, mv);
-//                mv.visitAssign(v.symbol.temp, assign.rhs.val);
-//            }
+            if (v.symbol.isVarSymbol()) {
+                var vv = (VarSymbol) v.symbol;
+                if (vv.isMemberVar()) {
+                    var object = v.receiver.get();
+                    object.accept(this, mv);
+                    assign.rhs.accept(this, mv);
+                    mv.visitMemberWrite(object.val, vv.getOwner().name, v.name, assign.rhs.val);
+                } else { // local or param
+                    assign.rhs.accept(this, mv);
+                    mv.visitAssign(vv.temp, assign.rhs.val);
+                }
+            }
         }
     }
 
@@ -233,18 +238,64 @@ public interface TacEmitter extends Visitor<FuncVisitor> {
         };
         expr.lhs.accept(this, mv);
         expr.rhs.accept(this, mv);
+        // detect division by zero here
+        if (expr.op == Tree.BinaryOp.DIV || expr.op == Tree.BinaryOp.MOD) {
+            var zero = mv.visitLoad(0);
+            var error = mv.visitBinary(TacInstr.Binary.Op.EQU, expr.rhs.val, zero);
+            var handler = new Consumer<FuncVisitor>() {
+                @Override
+                public void accept(FuncVisitor v) {
+                    v.visitPrint(RuntimeError.DIV_BY_ZERO);
+                    v.visitIntrinsicCall(Intrinsic.HALT);
+                }
+            };
+            emitIfThen(error, handler, mv);
+        }
         expr.val = mv.visitBinary(op, expr.lhs.val, expr.rhs.val);
     }
 
     @Override
     default void visitVarSel(Tree.VarSel expr, FuncVisitor mv) {
-//        if (expr.symbol.isMemberVar()) {
-//            var object = expr.receiver.get();
-//            object.accept(this, mv);
-//            expr.val = mv.visitMemberAccess(object.val, expr.symbol.getOwner().name, expr.name);
-//        } else { // local or param
-//            expr.val = expr.symbol.temp;
-//        }
+        if (expr.isArrayLength) {
+            var object = expr.receiver.get();
+            if (object.val == null) {
+                object.accept(this, mv);
+            }
+            expr.val = mv.wrapArrayLength(object.val, object.pos);
+        } else {
+            if (expr.symbol instanceof VarSymbol) {
+                var symbol = (VarSymbol) expr.symbol;
+                if (symbol.isMemberVar()) {
+                    var object = expr.receiver.get();
+                    // the receiver `this` must be empty in lambda, which will be automatically handled
+                    if (object.val == null)
+                        object.accept(this, mv);
+                    expr.val = mv.visitMemberAccess(object.val, symbol.getOwner().name, expr.name);
+                } else { // local or param, need to hook
+                    if(lambdaStack.isEmpty()) {
+                        expr.val = symbol.temp;
+                    } else {
+                        var scope = lambdaStack.peek();
+                        int offset = scope.lambdaOffset.getOrDefault(expr.name, -1);
+                        if (offset > 0) {
+                            expr.val = mv.visitLoadFrom(mv.getArgTemp(0), offset);
+                            scope.symbolExpr.putIfAbsent(expr.name, expr);
+                        } else expr.val = symbol.temp;
+                    }
+                }
+            } else {
+                var symbol = (MethodSymbol) expr.symbol;
+                if (symbol.isStatic()) {
+                    expr.val = mv.wrapStaticMethod(symbol.owner.name, symbol.name, symbol.type.arity(), symbol.type.hasReturn());
+                } else {
+                    var object = expr.receiver.get();
+                    if (object.val == null) {
+                        object.accept(this, mv);
+                    }
+                    expr.val = mv.wrapMemberMethod(object.val, symbol.owner.pos, symbol.owner.name, symbol.name, symbol.type.arity(), symbol.type.hasReturn());
+                }
+            }
+        }
     }
 
     @Override
@@ -268,37 +319,110 @@ public interface TacEmitter extends Visitor<FuncVisitor> {
 
     @Override
     default void visitThis(Tree.This expr, FuncVisitor mv) {
-        expr.val = mv.getArgTemp(0);
+        if (lambdaStack.empty()) {
+            expr.val = mv.getArgTemp(0);
+        } else {
+            var scope = lambdaStack.peek();
+            var offsets = scope.lambdaOffset;
+            int offset = offsets.getOrDefault("this", -1);
+            assert offset > 0;  // `this` must be captured by lambda
+            expr.val = mv.visitLoadFrom(mv.getArgTemp(0), offset);
+            scope.symbolExpr.putIfAbsent("this", expr);
+        }
+    }
+
+    @Override
+    default void visitLambda(Tree.Lambda that, FuncVisitor mv) {
+        var scope = (LambdaScope) that.symbol.scope;
+        var captured = scope.getCapturedSymbols();
+        // allocate block mem
+        Temp addr = mv.visitIntrinsicCall(Intrinsic.ALLOCATE, true, mv.visitLoad(4 * (captured.size() + 1)));
+        // calc offsets
+        int curOffset = 4;
+        for (var entry : captured.entrySet()) {
+            if (entry.getValue().isClassSymbol())
+                scope.lambdaOffset.put("this", curOffset); // for convenience
+            else
+                scope.lambdaOffset.put(entry.getKey(), curOffset);
+            curOffset += 4;
+        }
+
+        // visit lambda body
+        lambdaStack.push(scope);
+        var visitor = mv.getLambdaVisitor(that.pos, that.params.size());
+        // remember to pass on params
+        var i = 1;
+        for (var param : that.params) {
+            param.symbol.temp = visitor.getArgTemp(i);
+            i++;
+        }
+        that.block.ifPresent(object -> {
+            object.accept(this, visitor);
+        });
+        that.expr.ifPresent(object -> {
+            object.accept(this, visitor);
+            if(that.symbol.type.hasReturn())
+                visitor.visitReturn(object.val);
+        });
+        visitor.visitEnd();
+        lambdaStack.pop();
+        int wrapperOffset = visitor.getOffsetInGlobalTable();
+        Temp wrapperAddr = mv.visitLoadFrom(mv.loadGlobalVtbl(), wrapperOffset);
+        mv.visitStoreTo(addr, wrapperAddr); // store func ptr
+        for(var entry : scope.lambdaOffset.entrySet()) {
+            var expr = scope.symbolExpr.get(entry.getKey());
+            if(!lambdaStack.empty()) {
+                var parent = lambdaStack.peek();
+                if(parent.getCapturedSymbols().containsKey(entry.getKey()))
+                    parent.symbolExpr.putIfAbsent(entry.getKey(), expr);
+            }
+            if(entry.getKey().equals("this")) {
+                // this
+                if(lambdaStack.empty()) {
+                    // outer scope, this is the first param
+                    mv.visitStoreTo(addr, entry.getValue(), mv.getArgTemp(0));
+                } else {
+                    // outer is lambda
+                    int offset = lambdaStack.peek().lambdaOffset.getOrDefault("this", -1);
+                    assert offset > 0;
+                    mv.visitStoreTo(addr, entry.getValue(), mv.visitLoadFrom(mv.getArgTemp(0), offset));
+                }
+            }
+            else {
+                // local var
+                Tree.VarSel varSel = (Tree.VarSel) expr;
+                if(lambdaStack.empty()) {
+                    mv.visitStoreTo(addr, entry.getValue(), ((VarSymbol)varSel.symbol).temp);
+                } else {
+                    var parent = lambdaStack.peek();
+                    if(parent.isInLambda(entry.getKey()))
+                        mv.visitStoreTo(addr, entry.getValue(), ((VarSymbol)varSel.symbol).temp);
+                    else {
+                        int offset = parent.lambdaOffset.getOrDefault(entry.getKey(), -1);
+                        assert offset > 0;
+                        mv.visitStoreTo(addr, entry.getValue(), mv.visitLoadFrom(mv.getArgTemp(0), offset));
+                    }
+                }
+            }
+        }
+        that.val = addr;
     }
 
     @Override
     default void visitCall(Tree.Call expr, FuncVisitor mv) {
-        if (expr.isArrayLength) { // special case for array.length()
-            //var array = expr.receiver.get();
-            //array.accept(this, mv);
-            //expr.val = mv.visitLoadFrom(array.val, -4);
-            return;
-        }
-
         expr.args.forEach(arg -> arg.accept(this, mv));
         var temps = new ArrayList<Temp>();
         expr.args.forEach(arg -> temps.add(arg.val));
 
-        if (expr.symbol.isStatic()) {
-            if (expr.symbol.type.returnType.isVoidType()) {
-                mv.visitStaticCall(expr.symbol.owner.name, expr.symbol.name, temps);
-            } else {
-                expr.val = mv.visitStaticCall(expr.symbol.owner.name, expr.symbol.name, temps, true);
-            }
-        } else {
-//            var object = expr.receiver.get();
-//            object.accept(this, mv);
-//            if (expr.symbol.type.returnType.isVoidType()) {
-//                mv.visitMemberCall(object.val, expr.symbol.owner.name, expr.symbol.name, temps);
-//            } else {
-//                expr.val = mv.visitMemberCall(object.val, expr.symbol.owner.name, expr.symbol.name, temps, true);
-//            }
-        }
+        // type of callable exprs:
+        // direct var selection
+        // return value of a call
+        // lambda definition
+        if (expr.callee.val == null)
+            expr.callee.accept(this, mv);
+        var entry = mv.visitLoadFrom(expr.callee.val);
+        temps.add(0, expr.callee.val);
+        expr.val = mv.visitCallByAddress(entry, temps, ((FunType) expr.callee.type).hasReturn());
     }
 
     @Override

@@ -6,10 +6,7 @@ import decaf.frontend.symbol.MethodSymbol;
 import decaf.frontend.symbol.Symbol;
 import decaf.frontend.tree.Pos;
 
-import java.util.ListIterator;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Stack;
+import java.util.*;
 import java.util.function.Predicate;
 
 /**
@@ -94,6 +91,7 @@ public class ScopeStack {
             currMethods.push(formalScope.getOwner());
         }
         scopeStack.push(scope);
+        lambdaCapturedSymbols = new TreeMap<>();
     }
 
     /**
@@ -113,7 +111,17 @@ public class ScopeStack {
         } else if (scope.isFormalScope()) {
             currMethods.pop();
         }
+        if(scope.isLambdaScope()) {
+            var lScope = (LambdaScope)scope;
+            lambdaCapturedSymbols.forEach((key, value) -> {
+                if (!lScope.isInLambda(key))
+                    lScope.getCapturedSymbols().put(key, value);
+            });
+            lambdaCapturedSymbols = lScope.getCapturedSymbols();
+        }
     }
+
+    private Map<String, Symbol> lambdaCapturedSymbols = new TreeMap<>();
 
     /**
      * Lookup a symbol by name. By saying "lookup", the user expects that the symbol is found.
