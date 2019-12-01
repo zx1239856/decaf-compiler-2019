@@ -209,7 +209,7 @@ public class ProgramWriter {
         }
 
         FuncLabel getGlobalLabel(String name) {
-            return new FuncLabel("__Decaf__Global_Table", name);
+            return new FuncLabel(globalTableName, name);
         }
 
         int indexInGlobalTable(FuncLabel label) {
@@ -231,7 +231,9 @@ public class ProgramWriter {
 
         private Map<String, Integer> offsets = new TreeMap<>();
 
-        private VTable globalTable = new VTable("__Decaf__Global_Table", Optional.empty());
+        private final String globalTableName = "__DECAF_COMPILER_INTERNAL";
+
+        private VTable globalTable = new VTable(globalTableName, Optional.empty());
 
         List<TacFunc> funcs = new ArrayList<>();
 

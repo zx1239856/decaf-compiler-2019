@@ -1,0 +1,140 @@
+class Matrix {
+  // these methods are intended to be overridden by subclasses
+  // if only we had pure virtual/abstract methods in SOOP...
+    void Init() {}
+    void Set(int x, int y, int value) {} 
+    int Get(int x, int y) { return 0; }
+
+    void PrintMatrix() {
+        for (int i = 0; i < 10; i = i + 1) {
+            for (int j = 0; j < 10; j = j + 1) {
+                Print(this.Get(i,j), "\t");
+            }
+            Print("\n");
+        }
+    }
+    
+    void SeedMatrix() {
+        for (int i = 0; i < 5; i = i + 1) {
+            for (int j = 0; j < 5; j = j + 1) {
+                this.Set(i,j, i+j);
+            }
+        }
+        this.Set(2,3,4);
+        this.Set(4,6,2);
+        this.Set(2,3,5);
+        this.Set(0,0,1);
+        this.Set(1,6,3);
+        this.Set(7,7,7);
+    }
+}
+
+
+// Matrix as an array
+class DenseMatrix extends Matrix {
+    int[][] m;
+    void Init() {
+        // create mem
+        this.m = new int[][10];
+        for (int i = 0; i < 10; i = i + 1) {
+            this.m[i] = new int[10];
+        }
+        // set all to 0.
+        for (int i = 0; i < 10; i = i + 1) {
+            for (int j = 0; j < 10; j = j + 1) {
+                  this.m[i][j] = 0;
+            }
+        }
+    }
+    void Set(int x, int y, int value) {
+        this.m[x][y] = value;
+    }
+    int Get(int x, int y) {
+        return this.m[x][y];
+    }
+}
+
+
+class SparseItem {
+    int data;
+    int y;
+    class SparseItem next;
+    void Init(int d, int y, class SparseItem next) {
+        this.data = d;
+        this.y = y;
+        this.next = next;
+    }
+    class SparseItem GetNext() {
+        return next;
+    }
+    int GetY() {
+        return y;
+    }
+    int GetData() {
+        return data;
+    }
+    void SetData(int val) {
+        data = val;
+    }
+}
+
+// Matrix as linked lists
+class SparseMatrix extends Matrix {
+    class SparseItem[] m;
+    void Init() {
+        // create mem
+        this.m = new class SparseItem[10];
+        for (int i = 0; i < 10; i = i + 1) {
+            this.m[i] = null;
+        }
+    }
+  
+    class SparseItem Find(int x, int y) {
+        class SparseItem elem = this.m[x];
+        while (elem != null) {
+            if (elem.GetY() == y) {
+                  return elem;
+            }
+            elem = elem.GetNext();
+        }
+        return null;
+    }
+  
+    void Set(int x, int y, int value) {
+        class SparseItem elem = this.Find(x,y);
+        if (elem != null) {
+            elem.SetData(value);
+        } else {
+            elem = new SparseItem();
+            elem.Init(value, y, this.m[x]);
+            this.m[x] = elem;
+        }
+    }
+  
+    int Get(int x, int y) {
+        class SparseItem elem = this.Find(x,y);
+        if (elem != null) {
+            return elem.GetData();
+        } else {
+            return 0;
+        }
+    }
+}
+
+class Main {
+    static void main()  {
+        class Matrix m;
+        Print("Dense Rep \n");
+        m = new DenseMatrix();
+        m.Init();
+        m.SeedMatrix();
+        m.PrintMatrix();
+  
+  
+        Print("Sparse Rep \n");
+        m = new SparseMatrix();
+        m.Init();
+        m.SeedMatrix();
+        m.PrintMatrix();
+    }
+}
