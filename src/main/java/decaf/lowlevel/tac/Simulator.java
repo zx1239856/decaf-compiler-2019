@@ -31,7 +31,7 @@ public final class Simulator {
      *
      * @param program TAC program
      */
-    public void execute(TacProg program) {
+    public int execute(TacProg program) {
         // Initialize
         _memory = new Memory();
         _string_pool = new StringPool();
@@ -108,17 +108,17 @@ public final class Simulator {
         _halt = false;
 
         while (!_call_stack.isEmpty()) {
-            if (count >= 100000) {
-                throw new Error("Max instruction limitation 10,0000 exceeds, maybe your program cannot terminate?");
+            if (count >= 10000000) {
+                throw new Error("Max instruction limitation 10,000,000 exceeds, maybe your program cannot terminate?");
             }
 
-            if (_halt) {
-                return;
-            }
+            if (_halt)
+                break;
 
             _instrs.get(_pc).accept(executor);
             count++;
         }
+        return count;
     }
 
     /**

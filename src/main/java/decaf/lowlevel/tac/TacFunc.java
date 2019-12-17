@@ -20,6 +20,10 @@ public class TacFunc implements Comparable<TacFunc> {
         return instrSeq;
     }
 
+    public void setInstrSeq(List<TacInstr> instr) {
+        instrSeq = instr;
+    }
+
     public int getUsedTempCount() {
         return tempUsed;
     }

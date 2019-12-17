@@ -1,0 +1,91 @@
+class Main {
+    static void main() {
+        class Rng rng = Rng.make(19260817);
+        int[] a = new int[500];
+        int[] b = new int[500];
+        for (int i = 0; i < a.length(); i = i + 1) {
+            a[i] = rng.next() % 500;
+            b[i] = a[i];
+        }
+        QuickSort.sort(a, 0, a.length() - 1);
+        for (int i = 0; i < a.length(); i = i + 1) {
+            Print(a[i], " ");
+        }
+        Print("\n");
+        MergeSort.sort(b);
+        for (int i = 0; i < b.length(); i = i + 1) {
+            Print(b[i], " ");
+        }
+        Print("\n");
+    }
+}
+
+class Rng {
+    int seed;
+
+    static class Rng make(int seed) {
+        class Rng x = new Rng();
+        x.seed = seed;
+        return x;
+    }
+
+    int next() {
+        seed = (15625 * (seed % 10000) + 22221) % 65536;
+        return seed;
+    }
+}
+
+class QuickSort {
+    static void sort(int[] a, int lo, int hi) {
+         int i = lo;
+         int j = hi;
+         int pivot = a[lo + (hi - lo) / 2];
+         while (i <= j) {
+             while (a[i] < pivot) i = i + 1;
+             while (a[j] > pivot) j = j - 1;
+             if (i <= j) {
+                 int temp = a[i];
+                 a[i] = a[j];
+                 a[j] = temp;
+                 i = i + 1;
+                 j = j - 1;
+             }
+         }
+         if (lo < j) sort(a, lo, j);
+         if (i < hi) sort(a, i, hi);
+    }
+}
+
+class MergeSort {
+    static void sort(int[] a) {
+        sort_impl(a, 0, a.length(), new int[a.length()]);
+    }
+
+    static void sort_impl(int[] a, int lo, int hi, int[] aux) {
+        if (lo + 1 < hi) {
+            int mid = (lo + hi) / 2;
+            sort_impl(a, lo, mid, aux);
+            sort_impl(a, mid, hi, aux);
+            int i = lo;
+            int j = mid;
+            int k = 0;
+            while (i < mid && j < hi) {
+                if (a[j] < a[i]) {
+                    aux[k] = a[j];
+                    j = j + 1;
+                } else {
+                    aux[k] = a[i];
+                    i = i + 1;
+                }
+                k = k + 1;
+            }
+            for (; i < mid; i = i + 1) {
+                aux[k] = a[i];
+                k = k + 1;
+            }
+            for (i = 0; i < k; i = i + 1) {
+                a[i + lo] = aux[i];
+            }
+        }
+    }
+}

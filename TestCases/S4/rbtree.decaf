@@ -1,0 +1,247 @@
+class Main {
+    static void main() {
+        class Rng rng = Rng.make(19260817);
+        class RBTree t = RBTree.make1();
+        for (int n = 0; n < 5; n = n + 1) {
+            for (int i = 0; i < 500; i = i + 1) {
+                t.insert(rng.next() % 500);
+            }
+            for (int i = 0; i < 500; i = i + 1) {
+                t.delete(rng.next() % 500);
+            }
+        }
+        t.print();
+    }
+}
+
+class Rng {
+    int seed;
+
+    static class Rng make(int seed) {
+        class Rng x = new Rng();
+        x.seed = seed;
+        return x;
+    }
+
+    int next() {
+        seed = (15625 * (seed % 10000) + 22221) % 65536;
+        return seed;
+    }
+}
+
+class Node {
+    int key;
+    class Node l;
+    class Node r;
+    class Node p;
+    bool c; // false for black, true for red
+
+    static class Node make(class Node p, class Node nil, int key) {
+        class Node x = new Node();
+        x.key = key;
+        x.p = p;
+        x.l = nil;
+        x.r = nil;
+        x.c = true;
+        return x;
+    }
+}
+
+class RBTree extends Node { // extends is ONLY for accessing the field in Node
+    class Node root;
+    class Node nil;
+
+    static class RBTree make1() {
+        class RBTree x = new RBTree();
+        class Node nil = new Node(); // c default to false, key will never be used
+        nil.p = nil;
+        nil.l = nil;
+        nil.r = nil;
+        x.root = nil;
+        x.nil = nil;
+        return x;
+    }
+
+    void transplant(class Node t, class Node f) {
+        class Node p = t.p;
+        if (p == nil) {
+            root = f;
+        } else {
+            if (p.r == t) { p.r = f; } else { p.l = f; }
+        }
+        f.p = p;
+    }
+
+    void rotate(class Node x) {
+        class Node p = x.p;
+        class Node g = p.p;
+        x.p = g;
+        if (g == nil) {
+            root = x;
+        } else {
+            if (g.r == p) { g.r = x; } else { g.l = x; }
+        }
+        if (p.l == x) {
+            p.l = x.r;
+            x.r.p = p;
+            x.r = p;
+        } else {
+            p.r = x.l;
+            x.l.p = p;
+            x.l = p;
+        }
+        p.p = x;
+    }
+
+    void insert_fix(class Node x) {
+        while (x.p.c) { // p is always red (so p is never root)
+            class Node p = x.p;
+            class Node g = p.p;
+            bool l = g.l == p;
+            class Node u; // u is uncle
+            if (l) { u = g.l; } else { u = g.r; }
+            if (u.c) { // case 1: x.p & x.uncle are both red
+                p.c = false; // case 1: make x.p & x.uncle black, lift x to g
+                u.c = false;
+                g.c = true;
+                x = g;
+            } else {
+                if ((p.l == x) != l) { // case 2: x.uncle is black & x and x.p are not on the same side
+                    rotate(x); // case 2: x.uncle is black & x and x.p are not on the same side
+                    class Node tmp = x; x = p; p = tmp;
+                    g = p.p;
+                }
+                p.c = false; // case 3: x.uncle is black & x and x.p are on the same side
+                g.c = true;
+                rotate(p);
+            }
+        }
+        root.c = false;
+    }
+
+    void insert(int key) {
+        class Node x = root;
+        class Node p = nil;
+        while (x != nil) {
+            p = x;
+            if (x.key == key) {
+                return;
+            } else if (x.key < key) {
+                x = x.r;
+            } else {
+                x = x.l;
+            }
+        }
+        class Node y = Node.make(p, nil, key);
+        if (p == nil) {
+            root = y;
+        } else if (p.key < key) {
+            p.r = y;
+        } else {
+            p.l = y;
+        }
+        insert_fix(y);
+    }
+
+    void delete_fix(class Node x)
+    {
+        // first we give x a extra black, then the 'missing black count' (see in del) is fixed
+        // when x is _root or x is red, we can make the 'extra black' a real black
+        while (x != root && !x.c) { // x is always a non-root node with double black
+            class Node p = x.p;
+            bool l = p.l == x;
+            class Node s; // s is sibling
+            if (l) { s = p.r; } else { s = p.l; }
+            if (s.c) { // case 1: sibling is red
+                s.c = false;
+                p.c = true;
+                rotate(s);
+                if (l) { s = p.r; } else { s = p.l; } // (p is still x.p)
+            } if (!s.l.c && !s.r.c) { // case 2: sibling's both child are black
+                s.c = false;
+                x = p;
+            } else {
+                class Node same = s.r;
+                class Node against = s.l;
+                if (l) {
+                    class Node tmp = same; same = against; against = tmp;
+                }
+                if (!against.c) { // case 3: sibling's child against x's side is black
+                    same.c = false;
+                    s.c = true;
+                    rotate(same);
+                    if (l) {
+                        s = p.r;
+                        against = s.r;
+                    } else {
+                        s = p.l;
+                        against = s.l;
+                    } // (p is still x.p)
+                }
+                s.c = p.c; // case 4: sibling's child against x's side is red
+                p.c = false;
+                against.c = false;
+                rotate(s);
+                x = root; // break loop, by the way make sure root is black
+            }
+        }
+        x.c = false;
+    }
+
+    void delete(int key) {
+        // y is (to be deleted) or (to be moved to replace x)
+        // z is to fill y's place
+        class Node x = root;
+        while (x != nil) {
+            if (x.key == key) {
+                break;
+            } else if (x.key < key) {
+                x = x.r;
+            } else {
+                x = x.l;
+            }
+        }
+        class Node y = x;
+        class Node z;
+        bool old_c = y.c;
+        if (x.l == nil) {
+            z = x.r;
+            transplant(x, z);
+        } else if (x.r == nil) {
+            z = x.l;
+            transplant(x, z);
+        } else {
+            for (y = x.r; y.l != nil; y = y.l) { } // y will be the succ of x
+            old_c = y.c;
+            z = y.r;
+            if (y.p == x) { // if y is linked to x, y will replace x directly, no need to fill y's place
+                z.p = y; // set z.p = y (z may be 0)
+            } else { // z will fill y's place
+                transplant(y, z);
+                y.r = x.r;
+                y.r.p = y;
+            }
+            transplant(x, y);
+            y.l = x.l;
+            y.l.p = y;
+            y.c = x.c;
+        }
+        if (!old_c) { // if y is black, y's branch will miss a black count
+            delete_fix(z);
+        }
+    }
+
+    void print() {
+        print_impl(root);
+    }
+
+    void print_impl(class Node x) {
+        if (x == nil) {
+            return;
+        } else {
+            print_impl(x.l);
+            Print(x.key, " ");
+            print_impl(x.r);
+        }
+    }
+}

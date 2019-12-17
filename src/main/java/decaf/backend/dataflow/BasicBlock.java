@@ -30,7 +30,7 @@ public class BasicBlock<I extends PseudoInstr> implements Iterable<Loc<I>> {
     /**
      * Block id.
      */
-    public final int id;
+    public int id;
 
     /**
      * Entry label of this block, if any.

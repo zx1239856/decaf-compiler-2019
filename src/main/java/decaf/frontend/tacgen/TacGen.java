@@ -61,9 +61,10 @@ public class TacGen extends Phase<Tree.TopLevel, TacProg> implements TacEmitter 
 
     @Override
     public void onSucceed(TacProg program) {
-        if (config.target.equals(Config.Target.PA3)) {
+        if (config.target.equals(Config.Target.PA3) || config.target.equals(Config.Target.PA4)) {
             // First dump the tac program to file,
-            var path = config.dstPath.resolve(config.getSourceBaseName() + ".tac");
+            var path = config.target.equals(Config.Target.PA4) ? config.dstPath.resolve(config.getSourceBaseName() + "_orig.tac")
+                    : config.dstPath.resolve(config.getSourceBaseName() + ".tac");
             try {
                 var printer = new PrintWriter(path.toFile());
                 program.printTo(printer);
@@ -73,8 +74,14 @@ public class TacGen extends Phase<Tree.TopLevel, TacProg> implements TacEmitter 
             }
 
             // and then execute it using our simulator.
-            var simulator = new Simulator(System.in, config.output);
-            simulator.execute(program);
+            var simulator = new Simulator(System.in, config.target.equals(Config.Target.PA3) ? config.output : System.out);
+            int lines = simulator.execute(program);
+            path = config.dstPath.resolve(config.getSourceBaseName() + ".info");
+            try (var printer = new PrintWriter(path.toFile())){
+                printer.format("Lines executed: %d\n", lines);
+            } catch(FileNotFoundException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

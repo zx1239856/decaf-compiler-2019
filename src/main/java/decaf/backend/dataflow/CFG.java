@@ -29,8 +29,8 @@ public class CFG<I extends PseudoInstr> implements Iterable<BasicBlock<I>> {
     private List<Pair<Set<Integer>, Set<Integer>>> links;
 
     CFG(List<BasicBlock<I>> nodes, List<Pair<Integer, Integer>> edges) {
-        this.nodes = nodes;
-        this.edges = edges;
+        this.nodes = new ArrayList<>();
+        this.edges = new ArrayList<>();
 
         links = new ArrayList<>();
         for (var i = 0; i < nodes.size(); i++) {
@@ -43,6 +43,59 @@ public class CFG<I extends PseudoInstr> implements Iterable<BasicBlock<I>> {
             links.get(u).getRight().add(v); // u -> v
             links.get(v).getLeft().add(u); // v <- u
         }
+
+        List<Pair<Set<Integer>, Set<Integer>>> final_links = new ArrayList<>();
+
+        List<Integer> indexMapping = new ArrayList<>(nodes.size());
+
+        var visited = new ArrayList<Boolean>(nodes.size());
+        var reachable = new ArrayList<Boolean>(nodes.size());
+        for(int i = 0; i < nodes.size(); ++i) {
+            visited.add(i, false);
+            reachable.add(i, false);
+        }
+        var queue = new ArrayDeque<Integer>();
+        // bfs to test connectivity
+        if(nodes.size() > 0) {
+            queue.push(0);
+            reachable.set(0, true);
+        }
+        while(!queue.isEmpty()) {
+            int cand = queue.remove();
+            if(!visited.get(cand)) {
+                queue.addAll(getSucc(cand));
+                if(reachable.get(cand)) {
+                    for(var succ : getSucc(cand))
+                        reachable.set(succ, true);
+                }
+                visited.set(cand, true);
+            }
+        }
+
+        // remove nodes with zero in-degree (except block zero)
+        for(int i = 0; i < nodes.size(); ++i) {
+            if(reachable.get(i)) {
+                indexMapping.add(this.nodes.size());
+                nodes.get(i).id = this.nodes.size();
+                this.nodes.add(nodes.get(i));
+                final_links.add(Pair.of(new TreeSet<>(), new TreeSet<>()));
+            } else
+                indexMapping.add(-1);
+        }
+
+        for(var edge : edges) {
+            var u = edge.getLeft();
+            var v = edge.getRight();
+            if(reachable.get(u) && reachable.get(v)) {
+                u = indexMapping.get(u);
+                v = indexMapping.get(v);
+                this.edges.add(Pair.of(u, v));
+                final_links.get(u).getRight().add(v); // u -> v
+                final_links.get(v).getLeft().add(u); // v <- u
+            }
+        }
+
+        this.links = final_links;
     }
 
     /**

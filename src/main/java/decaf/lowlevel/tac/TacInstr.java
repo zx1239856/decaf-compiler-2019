@@ -8,6 +8,13 @@ import decaf.lowlevel.label.Label;
 import java.util.Optional;
 
 public abstract class TacInstr extends PseudoInstr {
+    public enum TacType {
+        ASSIGN, LOAD_VTBL, LOAD_IMM, LOAD_STR, UNARY, BINARY, BRANCH,
+        COND_BRANCH, RETURN, PARM, INDIRECT_CALL, DIRECT_CALL, LOAD, STORE, MEMO, MARK, UNKNOWN
+    }
+
+    public TacType type = TacType.UNKNOWN;
+
     /**
      * Similar to {@link PseudoInstr#PseudoInstr(Kind, Temp[], Temp[], Label)}
      */
@@ -118,6 +125,7 @@ public abstract class TacInstr extends PseudoInstr {
             super(new Temp[]{dst}, new Temp[]{src});
             this.dst = dst;
             this.src = src;
+            this.type = TacType.ASSIGN;
         }
 
         @Override
@@ -145,6 +153,7 @@ public abstract class TacInstr extends PseudoInstr {
             super(new Temp[]{dst}, new Temp[]{});
             this.dst = dst;
             this.vtbl = vtbl;
+            this.type = TacType.LOAD_VTBL;
         }
 
         @Override
@@ -172,6 +181,7 @@ public abstract class TacInstr extends PseudoInstr {
             super(new Temp[]{dst}, new Temp[]{});
             this.dst = dst;
             this.value = value;
+            this.type = TacType.LOAD_IMM;
         }
 
         @Override
@@ -199,6 +209,7 @@ public abstract class TacInstr extends PseudoInstr {
             super(new Temp[]{dst}, new Temp[]{});
             this.dst = dst;
             this.value = value;
+            this.type = TacType.LOAD_STR;
         }
 
         @Override
@@ -232,6 +243,7 @@ public abstract class TacInstr extends PseudoInstr {
             this.op = op;
             this.dst = dst;
             this.operand = operand;
+            this.type = TacType.UNARY;
         }
 
         @Override
@@ -271,6 +283,7 @@ public abstract class TacInstr extends PseudoInstr {
             this.dst = dst;
             this.lhs = lhs;
             this.rhs = rhs;
+            this.type = TacType.BINARY;
         }
 
         @Override
@@ -311,6 +324,7 @@ public abstract class TacInstr extends PseudoInstr {
         public Branch(Label target) {
             super(Kind.JMP, new Temp[]{}, new Temp[]{}, target);
             this.target = target;
+            this.type = TacType.BRANCH;
         }
 
         @Override
@@ -345,6 +359,7 @@ public abstract class TacInstr extends PseudoInstr {
             this.op = op;
             this.cond = cond;
             this.target = target;
+            this.type = TacType.COND_BRANCH;
         }
 
         @Override
@@ -379,6 +394,7 @@ public abstract class TacInstr extends PseudoInstr {
         public Return() {
             super(Kind.RET, new Temp[]{}, new Temp[]{}, null);
             this.value = Optional.empty();
+            this.type = TacType.RETURN;
         }
 
         @Override
@@ -407,6 +423,7 @@ public abstract class TacInstr extends PseudoInstr {
         public Parm(Temp value) {
             super(new Temp[]{}, new Temp[]{value});
             this.value = value;
+            this.type = TacType.PARM;
         }
 
         @Override
@@ -427,19 +444,21 @@ public abstract class TacInstr extends PseudoInstr {
      * </pre>
      */
     public static class IndirectCall extends TacInstr {
-        public final Optional<Temp> dst;
+        public Optional<Temp> dst;
         public final Temp entry;
 
         public IndirectCall(Temp dst, Temp entry) {
             super(new Temp[]{dst}, new Temp[]{entry});
             this.dst = Optional.of(dst);
             this.entry = entry;
+            this.type = TacType.INDIRECT_CALL;
         }
 
         public IndirectCall(Temp entry) {
             super(new Temp[]{}, new Temp[]{entry});
             this.dst = Optional.empty();
             this.entry = entry;
+            this.type = TacType.INDIRECT_CALL;
         }
 
         @Override
@@ -463,31 +482,35 @@ public abstract class TacInstr extends PseudoInstr {
      * </pre>
      */
     public static class DirectCall extends TacInstr {
-        public final Optional<Temp> dst;
+        public Optional<Temp> dst;
         public final Label entry;
 
         public DirectCall(Temp dst, Label entry) {
             super(new Temp[]{dst}, new Temp[]{});
             this.dst = Optional.of(dst);
             this.entry = entry;
+            this.type = TacType.DIRECT_CALL;
         }
 
         public DirectCall(Label entry) {
             super(new Temp[]{}, new Temp[]{});
             this.dst = Optional.empty();
             this.entry = entry;
+            this.type = TacType.DIRECT_CALL;
         }
 
         public DirectCall(Temp dst, Intrinsic intrinsic) {
             super(new Temp[]{dst}, new Temp[]{});
             this.dst = Optional.of(dst);
             this.entry = intrinsic.entry;
+            this.type = TacType.DIRECT_CALL;
         }
 
         public DirectCall(Intrinsic intrinsic) {
             super(new Temp[]{}, new Temp[]{});
             this.dst = Optional.empty();
             this.entry = intrinsic.entry;
+            this.type = TacType.DIRECT_CALL;
         }
 
         @Override
@@ -528,6 +551,7 @@ public abstract class TacInstr extends PseudoInstr {
             this.dst = dst;
             this.base = base;
             this.offset = offset;
+            this.type = op.equals(Op.LOAD) ? TacType.LOAD : TacType.STORE;
         }
 
         @Override
@@ -558,6 +582,7 @@ public abstract class TacInstr extends PseudoInstr {
         public Memo(String msg) {
             super(new Temp[]{}, new Temp[]{});
             this.msg = msg;
+            this.type = TacType.MEMO;
         }
 
         @Override
@@ -580,6 +605,7 @@ public abstract class TacInstr extends PseudoInstr {
     public static class Mark extends TacInstr {
         public Mark(Label label) {
             super(label);
+            this.type = TacType.MARK;
         }
 
         @Override

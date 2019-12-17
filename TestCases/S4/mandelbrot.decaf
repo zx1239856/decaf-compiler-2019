@@ -1,0 +1,66 @@
+class Complex {
+    int real;
+    int imag;
+
+    static class Complex make(int real, int imag) {
+        class Complex c = new Complex();
+        c.real = real % 32768;
+        c.imag = imag % 32768;
+        return c;
+    }
+
+    static class Complex add(class Complex l, class Complex r) {
+        return make(l.real + r.real, l.imag + r.imag);
+    }
+
+    static class Complex sub(class Complex l, class Complex r) {
+        return make(l.real - r.real, l.imag - r.imag);
+    }
+
+    static class Complex mul(class Complex l, class Complex r) {
+        return make((l.real * r.real - l.imag * r.imag) / 4096, (l.real * r.imag + l.imag * r.real) / 4096);
+    }
+
+    int abs2() {
+        return real * real + imag * imag;
+    }
+}
+
+class Main extends Complex {
+    static void main() {
+        int N = 51;
+        int BASE = 4096;
+        int LB = -2 * BASE;
+        int STEP = 4 * BASE / (N - 1);
+        class Complex[][] c = new class Complex[][N];
+        class Complex[][] z = new class Complex[][N];
+        for (int i = 0; i < N; i = i + 1) {
+            c[i] = new class Complex[N];
+            z[i] = new class Complex[N];
+            for (int j = 0; j < N; j = j + 1) {
+                c[i][j] = Complex.make(LB + j * STEP, LB + i * STEP);
+                z[i][j] = new Complex();
+            }
+        }
+        for (int x = 0; x < 20; x = x + 1) {
+            for (int i = 0; i < N; i = i + 1) {
+                for (int j = 0; j < N; j = j + 1) {
+                    class Complex t = z[i][j];
+                    if (t.abs2() < 4 * BASE * BASE) {
+                      z[i][j] = Complex.add(Complex.mul(t, t), c[i][j]);
+                    }
+                }
+            }
+        }
+        for (int i = 0; i < N; i = i + 1) {
+            for (int j = 0; j < N; j = j + 1) {
+                if (z[i][j].abs2() < 4 * BASE * BASE) {
+                    Print("**");
+                } else {
+                    Print("  ");
+                }
+            }
+            Print("\n");
+        }
+    }
+}
