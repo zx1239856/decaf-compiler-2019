@@ -13,6 +13,9 @@ public class Loc<I extends PseudoInstr> {
     public Set<Temp> liveIn;
     public Set<Temp> liveOut;
 
+    public Set<TempPair> copyIn;
+    public Set<TempPair> copyOut;
+
     Loc(I instr) {
         this.instr = instr;
     }

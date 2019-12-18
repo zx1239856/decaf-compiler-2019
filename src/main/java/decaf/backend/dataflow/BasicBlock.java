@@ -106,4 +106,13 @@ public class BasicBlock<I extends PseudoInstr> implements Iterable<Loc<I>> {
     public Set<Temp> liveIn;
 
     public Set<Temp> liveOut;
+
+    // For copy prop analysis
+    public Set<TempPair> copyGen;
+
+    public Set<TempPair> copyIn;
+
+    public Set<TempPair> copyOut;
+
+    public Set<Temp> copyKill;
 }

@@ -2,6 +2,7 @@ package decaf.backend.dataflow;
 
 import decaf.lowlevel.instr.PseudoInstr;
 
+import java.util.HashSet;
 import java.util.TreeSet;
 import java.util.function.Consumer;
 
@@ -28,12 +29,10 @@ public class LivenessAnalyzer<I extends PseudoInstr> implements Consumer<CFG<I>>
                 for (var next : graph.getSucc(bb.id)) {
                     bb.liveOut.addAll(graph.getBlock(next).liveIn);
                 }
-                bb.liveOut.removeAll(bb.def);
-                if (bb.liveIn.addAll(bb.liveOut)) {
+                var temp = new HashSet<>(bb.liveOut);
+                temp.removeAll(bb.def);
+                if (bb.liveIn.addAll(temp)) {
                     changed = true;
-                }
-                for (var next : graph.getSucc(bb.id)) {
-                    bb.liveOut.addAll(graph.getBlock(next).liveIn);
                 }
             }
         } while (changed);
