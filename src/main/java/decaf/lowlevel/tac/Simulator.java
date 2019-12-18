@@ -329,7 +329,10 @@ public final class Simulator {
             // Recover caller's state, if the caller exists
             if (!_call_stack.isEmpty()) {
                 var frame = _call_stack.peek();
-                value.ifPresent(v -> frame.array[frame.retValDst.index] = v);
+                value.ifPresent(v -> {
+                    if(frame.retValDst != null)
+                        frame.array[frame.retValDst.index] = v;
+                });
                 _pc = _call_stack.peek().pcNext;
             } // else: the entire program terminates
         }

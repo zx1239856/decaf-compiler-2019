@@ -1,0 +1,18 @@
+// Test const prop
+
+class Main {
+
+    // the main entry
+    static void main() {
+        int x = 2; 
+        int y = 3;
+        int z = x + y; // 5
+	int a = x * z; // 10
+	int b = a / 2; // 5
+	int c = b + b + b; // 15
+        Print(c,"\n");
+	c = 999;
+	Print(c,"\n");
+    }
+}
+

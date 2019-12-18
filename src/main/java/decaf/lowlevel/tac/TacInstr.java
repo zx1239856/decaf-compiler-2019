@@ -13,7 +13,13 @@ public abstract class TacInstr extends PseudoInstr {
         COND_BRANCH, RETURN, PARM, INDIRECT_CALL, DIRECT_CALL, LOAD, STORE, MEMO, MARK, UNKNOWN
     }
 
+    public enum CompilerHint {
+        NO_HINT
+    }
+
     public TacType type = TacType.UNKNOWN;
+
+    public CompilerHint hint = CompilerHint.NO_HINT;
 
     /**
      * Similar to {@link PseudoInstr#PseudoInstr(Kind, Temp[], Temp[], Label)}

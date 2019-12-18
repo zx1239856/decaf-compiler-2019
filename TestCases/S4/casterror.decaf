@@ -1,0 +1,9 @@
+class Main {
+    static void main() {
+        class Main m = new Main();
+        class A a = (class A)m;
+    }
+}
+
+class A extends Main {
+}

@@ -1,24 +1,17 @@
 package decaf.backend.opt;
 
-import decaf.backend.dataflow.CFG;
 import decaf.backend.dataflow.CFGBuilder;
 import decaf.backend.dataflow.LivenessAnalyzer;
 import decaf.driver.Config;
 import decaf.driver.Phase;
-import decaf.lowlevel.label.FuncLabel;
-import decaf.lowlevel.label.Label;
-import decaf.lowlevel.log.Log;
 import decaf.lowlevel.tac.Simulator;
 import decaf.lowlevel.tac.TacInstr;
 import decaf.lowlevel.tac.TacProg;
-import decaf.printing.PrettyCFG;
 
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
-import java.util.logging.Level;
 
 class IntValue implements Cloneable {
     public enum Kind {NAC, UNDEF, CONST};
@@ -66,8 +59,10 @@ public class Optimizer extends Phase<TacProg, TacProg> {
     private IntValue _meet(IntValue a, IntValue b) {
         if(a.kind == IntValue.Kind.CONST && b.kind == IntValue.Kind.CONST && a.value == b.value)
             return new IntValue(IntValue.Kind.CONST, a.value);
-        else if(a.kind == IntValue.Kind.UNDEF || b.kind == IntValue.Kind.UNDEF)
-            return new IntValue(IntValue.Kind.UNDEF);
+        else if(a.kind == IntValue.Kind.UNDEF)
+            return (IntValue) b.clone();
+        else if(b.kind == IntValue.Kind.UNDEF)
+            return (IntValue) a.clone();
         else
             return new IntValue(IntValue.Kind.NAC);
     }
@@ -133,7 +128,7 @@ public class Optimizer extends Phase<TacProg, TacProg> {
         }
     }
 
-    private TacInstr _transfer(TacInstr inst, List<IntValue> values) {
+    private TacInstr _transform(TacInstr inst, List<IntValue> values) {
         switch(inst.type) {
             case BINARY -> {
                 var bin = (TacInstr.Binary)inst;
@@ -150,6 +145,79 @@ public class Optimizer extends Phase<TacProg, TacProg> {
                     values.get(dst.index).kind = IntValue.Kind.NAC;
                 } else {
                     values.get(dst.index).kind = IntValue.Kind.UNDEF;
+                }
+                if(r.kind == IntValue.Kind.CONST) {
+                    switch(bin.op) {
+                        // x + 0 = x, x - 0 = x, x * 1 = x, x * 0 = 0, x & 0 = 0, x | 1 = 1
+                        case ADD, SUB -> {
+                            if(r.value == 0) {
+                                values.get(dst.index).kind = l.kind;
+                                values.get(dst.index).value = l.value;
+                                return new TacInstr.Assign(dst, bin.lhs);
+                            }
+                        }
+                        case MUL -> {
+                            if(r.value == 0) {
+                                values.get(dst.index).kind = IntValue.Kind.CONST;
+                                values.get(dst.index).value = 0;
+                                return new TacInstr.LoadImm4(dst, 0);
+                            } else if(r.value == 1) {
+                                values.get(dst.index).kind = l.kind;
+                                values.get(dst.index).value = l.value;
+                                return new TacInstr.Assign(dst, bin.lhs);
+                            }
+                        }
+                        case LAND -> {
+                            if(r.value == 0) {
+                                values.get(dst.index).kind = IntValue.Kind.CONST;
+                                values.get(dst.index).value = 0;
+                                return new TacInstr.LoadImm4(dst, 0);
+                            }
+                        }
+                        case LOR -> {
+                            if(r.value != 0) {
+                                values.get(dst.index).kind = IntValue.Kind.CONST;
+                                values.get(dst.index).value = 1;
+                                return new TacInstr.LoadImm4(dst, 1);
+                            }
+                        }
+                    }
+                } else if(l.kind == IntValue.Kind.CONST) {
+                    switch(bin.op) {
+                        // 0 + x = x, 1 * x = x, 0 * x = 0, 0 & x = 0, 1 | x = 1, 0 / x = 0, 0 % x = 0
+                        case ADD -> {
+                            if(l.value == 0) {
+                                values.get(dst.index).kind = r.kind;
+                                values.get(dst.index).value = r.value;
+                                return new TacInstr.Assign(dst, bin.rhs);
+                            }
+                        }
+                        case MUL -> {
+                            if(l.value == 0) {
+                                values.get(dst.index).kind = IntValue.Kind.CONST;
+                                values.get(dst.index).value = 0;
+                                return new TacInstr.LoadImm4(dst, 0);
+                            } else if(l.value == 1) {
+                                values.get(dst.index).kind = r.kind;
+                                values.get(dst.index).value = r.value;
+                                return new TacInstr.Assign(dst, bin.rhs);
+                            }
+                        }
+                        case LAND, DIV, MOD -> {
+                            if(l.value == 0) {
+                                values.get(dst.index).kind = IntValue.Kind.CONST;
+                                values.get(dst.index).value = 0;
+                                return new TacInstr.LoadImm4(dst, 0);
+                            }
+                        }
+                        case LOR -> {
+                            if(l.value != 0) {
+                                values.get(dst.index).kind = IntValue.Kind.CONST;
+                                values.get(dst.index).value = 1;
+                                return new TacInstr.LoadImm4(dst, 1);
+                            }
+                        }
+                    }
                 }
                 return inst;
             }
@@ -237,7 +305,7 @@ public class Optimizer extends Phase<TacProg, TacProg> {
                 for(int idx = 0; idx < cfg.nodes.size(); ++idx) {
                     var arr = flow.subList(idx * each, (idx + 1) * each);
                     for(var loc : cfg.nodes.get(idx).locs)
-                        _transfer(loc.instr, arr);
+                        _transform(loc.instr, arr);
                 }
                 boolean hasChange = false;
                 for(int i = 0; i < flow.size(); ++i) {
@@ -260,9 +328,11 @@ public class Optimizer extends Phase<TacProg, TacProg> {
                 cfg.nodes.get(idx).label.ifPresent(e -> instSeq.add(new TacInstr.Mark(e)));
                 var arr = flow.subList(idx * each, (idx + 1) * each);
                 for(var loc : cfg.nodes.get(idx).locs) {
-                    var res = _transfer(loc.instr, arr);
-                    if(res != null)
+                    var res = _transform(loc.instr, arr);
+                    if(res != null) {
+                        res.hint = loc.instr.hint;
                         instSeq.add(res);
+                    }
                 }
             }
             func.setInstrSeq(instSeq);
@@ -313,23 +383,25 @@ public class Optimizer extends Phase<TacProg, TacProg> {
         for(var func : input.funcs) {
             var seq = func.getInstrSeq();
             var instSeq = new ArrayList<TacInstr>();
-            for(int i = 0; i < seq.size() - 1; ++i) {
+            for(int i = 0; i < seq.size(); ++i) {
                 var curr = seq.get(i);
-                var next = seq.get(i + 1);
+                var next = i + 1 < seq.size() ? seq.get(i + 1) : null;
                 var omit = false;
                 switch (curr.type) {
                     case BRANCH -> {
                         var target = ((TacInstr.Branch)curr).target;
-                        if(next.type == TacInstr.TacType.MARK && ((TacInstr.Mark)next).label.equals(target))
+                        if(next != null && next.type == TacInstr.TacType.MARK && ((TacInstr.Mark)next).label.equals(target))
                             omit = true;
+                    }
+                    case ASSIGN -> {
+                        var assign = (TacInstr.Assign)curr;
+                        omit = assign.src.index == assign.dst.index;
                     }
                     default -> omit = false;
                 }
                 if(!omit)
                     instSeq.add(curr);
             }
-            if(seq.size() > 1)
-                instSeq.add(seq.get(seq.size() - 1));
             func.setInstrSeq(instSeq);
         }
     }

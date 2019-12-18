@@ -9,11 +9,14 @@ import java.util.List;
 public class TacFunc implements Comparable<TacFunc> {
     public final FuncLabel entry;
 
+    public TacInstr.CompilerHint hint;
+
     public final int numArgs;
 
     TacFunc(FuncLabel entry, int numArgs) {
         this.entry = entry;
         this.numArgs = numArgs;
+        this.hint = TacInstr.CompilerHint.NO_HINT;
     }
 
     public List<TacInstr> getInstrSeq() {
@@ -33,6 +36,7 @@ public class TacFunc implements Comparable<TacFunc> {
     int tempUsed;
 
     void add(TacInstr instr) {
+        instr.hint = hint;
         instrSeq.add(instr);
     }
 

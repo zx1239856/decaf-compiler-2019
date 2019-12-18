@@ -1,0 +1,26 @@
+// Test const prop
+
+class Main {
+
+    static int getVal() {
+        return 3;
+    }
+    // the main entry
+    static void main() {
+        int x = getVal();
+	Print(x + 0, "\n"); 
+	Print(0 + x, "\n");
+	Print(x * 1, "\n");
+	Print(1 * x, "\n");
+	Print(x * 0, "\n");
+	Print(0 * x, "\n");
+	Print(0 / x, "\n");
+	Print(0 % x, "\n");
+	bool bx = x != 0;
+	Print(bx && false, "\n");
+	Print(false && bx, "\n");
+	Print(bx || true, "\n");
+	Print(true || bx, "\n");
+    }
+}
+

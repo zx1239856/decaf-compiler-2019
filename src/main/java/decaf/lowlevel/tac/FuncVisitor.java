@@ -534,6 +534,10 @@ public class FuncVisitor {
         }
     }
 
+    public void setHintStatus(TacInstr.CompilerHint hint) {
+        func.hint = hint;
+    }
+
     private FuncLabel entry;
 
     private TacFunc func;

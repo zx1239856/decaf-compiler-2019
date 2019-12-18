@@ -1,0 +1,35 @@
+class Main {
+    bool e;
+
+    static void printint(int x) {
+        var y = x;
+        Print("Hello, ", y);
+    }
+
+    static void printbool(bool x) {
+        var y = x;
+        Print("Hello, ", y);
+    }
+
+    static void main() {
+        var a = 5;
+        printint(a);
+        var b = 7;
+        printint(b);
+        var c = a + b - 1;
+        printint(c);
+        var d = (new Main()).e;
+
+        var e = new Main();
+
+        var f = new int[2];
+
+        var g = true;
+        printbool(g);
+        var h = false;
+        printbool(h);
+
+        var i = 56 > 123;
+        printbool(i);
+    }
+}

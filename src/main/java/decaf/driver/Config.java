@@ -13,6 +13,11 @@ import java.util.logging.Level;
  * Compiler configuration.
  */
 public class Config {
+    public static class NullOutputStream extends OutputStream {
+        @Override
+        public void write(int b) throws IOException {
+        }
+    }
 
     /**
      * Target/task. Options: PA1, PA1_LL, PA2, PA3, PA4, PA5.
