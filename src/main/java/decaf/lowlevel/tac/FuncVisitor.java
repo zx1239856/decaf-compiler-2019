@@ -164,7 +164,9 @@ public class FuncVisitor {
     public Temp visitNewClass(String clazz) {
         var temp = freshTemp();
         var entry = ctx.getConstructorLabel(clazz);
+        setHintStatus(TacInstr.CompilerHint.CONSTRUCTOR);
         func.add(new TacInstr.DirectCall(temp, entry));
+        setHintStatus(TacInstr.CompilerHint.NO_HINT);
         return temp;
     }
 
@@ -373,6 +375,9 @@ public class FuncVisitor {
     public Temp visitIntrinsicCall(Intrinsic func, boolean needReturn, Temp... args) {
         Temp temp = null;
 
+        if(func.kind.equals(Intrinsic.Opcode.ALLOCATE))
+            setHintStatus(TacInstr.CompilerHint.ALLOC);
+
         for (var arg : args) {
             this.func.add(new TacInstr.Parm(arg));
         }
@@ -382,6 +387,7 @@ public class FuncVisitor {
         } else {
             this.func.add(new TacInstr.DirectCall(func));
         }
+        setHintStatus(TacInstr.CompilerHint.NO_HINT);
         return temp;
     }
 

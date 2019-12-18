@@ -14,7 +14,7 @@ public abstract class TacInstr extends PseudoInstr {
     }
 
     public enum CompilerHint {
-        NO_HINT
+        NO_HINT, CONSTRUCTOR, ALLOC
     }
 
     public TacType type = TacType.UNKNOWN;
