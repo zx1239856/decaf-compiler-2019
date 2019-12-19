@@ -1,13 +1,33 @@
 package decaf.lowlevel.tac;
 
+import decaf.backend.dataflow.TempPair;
 import decaf.lowlevel.StringUtils;
 import decaf.lowlevel.instr.PseudoInstr;
 import decaf.lowlevel.instr.Temp;
 import decaf.lowlevel.label.Label;
 
 import java.util.Optional;
+import java.util.Set;
 
 public abstract class TacInstr extends PseudoInstr {
+    public enum TacType {
+        ASSIGN, LOAD_VTBL, LOAD_IMM, LOAD_STR, UNARY, BINARY, BRANCH,
+        COND_BRANCH, RETURN, PARM, INDIRECT_CALL, DIRECT_CALL, LOAD, STORE, MEMO, MARK, UNKNOWN
+    }
+
+    public enum CompilerHint {
+        NO_HINT, CONSTRUCTOR, ALLOC, IMMUTABLE_LOAD
+    }
+
+    public TacType type = TacType.UNKNOWN;
+
+    public CompilerHint hint = CompilerHint.NO_HINT;
+
+    public TacInstr setHint(CompilerHint hint) {
+        this.hint = hint;
+        return this;
+    }
+
     /**
      * Similar to {@link PseudoInstr#PseudoInstr(Kind, Temp[], Temp[], Label)}
      */
@@ -28,6 +48,26 @@ public abstract class TacInstr extends PseudoInstr {
     public TacInstr(Label label) {
         super(label);
     }
+
+    protected static Temp findReg(Set<TempPair> ref, Temp src) {
+        var curr = src.index;
+        while(true) {
+            boolean found = false;
+            for(var reg : ref) {
+                if(reg.dst.index == curr) {
+                    found = true;
+                    curr = reg.src.index;
+                }
+            }
+            if(!found)
+                break;
+        }
+        return curr == src.index ? src : new Temp(curr);
+    }
+
+    public abstract TacInstr updateReadReg(Set<TempPair> ref);
+
+    public abstract TacInstr updateWriteReg(Temp reg);
 
     /**
      * Accept a visitor.
@@ -118,6 +158,7 @@ public abstract class TacInstr extends PseudoInstr {
             super(new Temp[]{dst}, new Temp[]{src});
             this.dst = dst;
             this.src = src;
+            this.type = TacType.ASSIGN;
         }
 
         @Override
@@ -128,6 +169,17 @@ public abstract class TacInstr extends PseudoInstr {
         @Override
         public String toString() {
             return String.format("%s = %s", dst, src);
+        }
+
+        @Override
+        public TacInstr updateReadReg(Set<TempPair> ref) {
+            var res = findReg(ref, this.src);
+            return res.compareTo(this.src) == 0 ? this : new Assign(this.dst, res).setHint(this.hint);
+        }
+
+        @Override
+        public TacInstr updateWriteReg(Temp reg) {
+            return dst.compareTo(reg) == 0 ? this : new Assign(reg, this.src).setHint(this.hint);
         }
     }
 
@@ -145,6 +197,7 @@ public abstract class TacInstr extends PseudoInstr {
             super(new Temp[]{dst}, new Temp[]{});
             this.dst = dst;
             this.vtbl = vtbl;
+            this.type = TacType.LOAD_VTBL;
         }
 
         @Override
@@ -155,6 +208,16 @@ public abstract class TacInstr extends PseudoInstr {
         @Override
         public String toString() {
             return String.format("%s = %s", dst, vtbl.label.prettyString());
+        }
+
+        @Override
+        public TacInstr updateReadReg(Set<TempPair> ref) {
+            return this;
+        }
+
+        @Override
+        public TacInstr updateWriteReg(Temp reg) {
+            return dst.compareTo(reg) == 0 ? this : new LoadVTbl(reg, vtbl).setHint(this.hint);
         }
     }
 
@@ -172,6 +235,7 @@ public abstract class TacInstr extends PseudoInstr {
             super(new Temp[]{dst}, new Temp[]{});
             this.dst = dst;
             this.value = value;
+            this.type = TacType.LOAD_IMM;
         }
 
         @Override
@@ -182,6 +246,16 @@ public abstract class TacInstr extends PseudoInstr {
         @Override
         public String toString() {
             return String.format("%s = %d", dst, value);
+        }
+
+        @Override
+        public TacInstr updateReadReg(Set<TempPair> ref) {
+            return this;
+        }
+
+        @Override
+        public TacInstr updateWriteReg(Temp reg) {
+            return dst.compareTo(reg) == 0 ? this : new LoadImm4(reg, value).setHint(this.hint);
         }
     }
 
@@ -199,6 +273,7 @@ public abstract class TacInstr extends PseudoInstr {
             super(new Temp[]{dst}, new Temp[]{});
             this.dst = dst;
             this.value = value;
+            this.type = TacType.LOAD_STR;
         }
 
         @Override
@@ -209,6 +284,16 @@ public abstract class TacInstr extends PseudoInstr {
         @Override
         public String toString() {
             return String.format("%s = %s", dst, StringUtils.quote(value));
+        }
+
+        @Override
+        public TacInstr updateReadReg(Set<TempPair> ref) {
+            return this;
+        }
+
+        @Override
+        public TacInstr updateWriteReg(Temp reg) {
+            return dst.compareTo(reg) == 0 ? this : new LoadStrConst(reg, value).setHint(this.hint);
         }
     }
 
@@ -232,6 +317,7 @@ public abstract class TacInstr extends PseudoInstr {
             this.op = op;
             this.dst = dst;
             this.operand = operand;
+            this.type = TacType.UNARY;
         }
 
         @Override
@@ -246,6 +332,17 @@ public abstract class TacInstr extends PseudoInstr {
                 case LNOT -> "!";
             };
             return String.format("%s = %s %s", dst, opStr, operand);
+        }
+
+        @Override
+        public TacInstr updateReadReg(Set<TempPair> ref) {
+            var res = findReg(ref, this.operand);
+            return res.compareTo(this.operand) == 0 ? this : new Unary(this.op, this.dst, res).setHint(this.hint);
+        }
+
+        @Override
+        public TacInstr updateWriteReg(Temp reg) {
+            return dst.compareTo(reg) == 0 ? this : new Unary(this.op, reg, this.operand).setHint(this.hint);
         }
     }
 
@@ -271,6 +368,7 @@ public abstract class TacInstr extends PseudoInstr {
             this.dst = dst;
             this.lhs = lhs;
             this.rhs = rhs;
+            this.type = TacType.BINARY;
         }
 
         @Override
@@ -297,6 +395,18 @@ public abstract class TacInstr extends PseudoInstr {
             };
             return String.format("%s = (%s %s %s)", dst, lhs, opStr, rhs);
         }
+
+        @Override
+        public TacInstr updateReadReg(Set<TempPair> ref) {
+            var nlhs = findReg(ref, lhs);
+            var nrhs = findReg(ref, rhs);
+            return nlhs.compareTo(lhs) == 0 && nrhs.compareTo(rhs) == 0 ? this : new Binary(this.op, this.dst, nlhs, nrhs).setHint(this.hint);
+        }
+
+        @Override
+        public TacInstr updateWriteReg(Temp reg) {
+            return dst.compareTo(reg) == 0 ? this : new Binary(this.op, reg, this.lhs, this.rhs).setHint(this.hint);
+        }
     }
 
     /**
@@ -311,6 +421,7 @@ public abstract class TacInstr extends PseudoInstr {
         public Branch(Label target) {
             super(Kind.JMP, new Temp[]{}, new Temp[]{}, target);
             this.target = target;
+            this.type = TacType.BRANCH;
         }
 
         @Override
@@ -321,6 +432,16 @@ public abstract class TacInstr extends PseudoInstr {
         @Override
         public String toString() {
             return String.format("branch %s", target.prettyString());
+        }
+
+        @Override
+        public TacInstr updateReadReg(Set<TempPair> ref) {
+            return this;
+        }
+
+        @Override
+        public TacInstr updateWriteReg(Temp reg) {
+            return this;
         }
     }
 
@@ -345,6 +466,7 @@ public abstract class TacInstr extends PseudoInstr {
             this.op = op;
             this.cond = cond;
             this.target = target;
+            this.type = TacType.COND_BRANCH;
         }
 
         @Override
@@ -359,6 +481,17 @@ public abstract class TacInstr extends PseudoInstr {
                 case BNEZ -> "!= 0";
             };
             return String.format("if (%s %s) branch %s", cond, opStr, target.prettyString());
+        }
+
+        @Override
+        public TacInstr updateReadReg(Set<TempPair> ref) {
+            var ncond = findReg(ref, cond);
+            return ncond.compareTo(cond) == 0 ? this : new CondBranch(this.op, ncond, target).setHint(this.hint);
+        }
+
+        @Override
+        public TacInstr updateWriteReg(Temp reg) {
+            return this;
         }
     }
 
@@ -379,6 +512,7 @@ public abstract class TacInstr extends PseudoInstr {
         public Return() {
             super(Kind.RET, new Temp[]{}, new Temp[]{}, null);
             this.value = Optional.empty();
+            this.type = TacType.RETURN;
         }
 
         @Override
@@ -392,6 +526,21 @@ public abstract class TacInstr extends PseudoInstr {
             sb.append("return");
             value.ifPresent(v -> sb.append(" ").append(v));
             return sb.toString();
+        }
+
+        @Override
+        public TacInstr updateReadReg(Set<TempPair> ref) {
+            if(value.isEmpty())
+                return this;
+            else {
+                var res = findReg(ref, value.get());
+                return res.compareTo(value.get()) == 0 ? this : new Return(res).setHint(this.hint);
+            }
+        }
+
+        @Override
+        public TacInstr updateWriteReg(Temp reg) {
+            return this;
         }
     }
 
@@ -407,6 +556,7 @@ public abstract class TacInstr extends PseudoInstr {
         public Parm(Temp value) {
             super(new Temp[]{}, new Temp[]{value});
             this.value = value;
+            this.type = TacType.PARM;
         }
 
         @Override
@@ -418,6 +568,17 @@ public abstract class TacInstr extends PseudoInstr {
         public String toString() {
             return String.format("parm %s", value);
         }
+
+        @Override
+        public TacInstr updateReadReg(Set<TempPair> ref) {
+            var nvalue = findReg(ref, value);
+            return nvalue.compareTo(value) == 0 ? this : new Parm(nvalue).setHint(this.hint);
+        }
+
+        @Override
+        public TacInstr updateWriteReg(Temp reg) {
+            return this;
+        }
     }
 
     /**
@@ -427,19 +588,21 @@ public abstract class TacInstr extends PseudoInstr {
      * </pre>
      */
     public static class IndirectCall extends TacInstr {
-        public final Optional<Temp> dst;
+        public Optional<Temp> dst;
         public final Temp entry;
 
         public IndirectCall(Temp dst, Temp entry) {
             super(new Temp[]{dst}, new Temp[]{entry});
             this.dst = Optional.of(dst);
             this.entry = entry;
+            this.type = TacType.INDIRECT_CALL;
         }
 
         public IndirectCall(Temp entry) {
             super(new Temp[]{}, new Temp[]{entry});
             this.dst = Optional.empty();
             this.entry = entry;
+            this.type = TacType.INDIRECT_CALL;
         }
 
         @Override
@@ -454,6 +617,17 @@ public abstract class TacInstr extends PseudoInstr {
             sb.append("call ").append(entry);
             return sb.toString();
         }
+
+        @Override
+        public TacInstr updateReadReg(Set<TempPair> ref) {
+            var tmp = findReg(ref, entry);
+            return tmp.compareTo(entry) == 0 ? this : dst.isEmpty() ? new IndirectCall(tmp).setHint(this.hint) : new IndirectCall(dst.get(), tmp).setHint(this.hint);
+        }
+
+        @Override
+        public TacInstr updateWriteReg(Temp reg) {
+            return dst.filter(temp -> temp.compareTo(reg) != 0).map(temp -> new IndirectCall(reg, entry).setHint(this.hint)).orElse(this);
+        }
     }
 
     /**
@@ -463,31 +637,35 @@ public abstract class TacInstr extends PseudoInstr {
      * </pre>
      */
     public static class DirectCall extends TacInstr {
-        public final Optional<Temp> dst;
+        public Optional<Temp> dst;
         public final Label entry;
 
         public DirectCall(Temp dst, Label entry) {
             super(new Temp[]{dst}, new Temp[]{});
             this.dst = Optional.of(dst);
             this.entry = entry;
+            this.type = TacType.DIRECT_CALL;
         }
 
         public DirectCall(Label entry) {
             super(new Temp[]{}, new Temp[]{});
             this.dst = Optional.empty();
             this.entry = entry;
+            this.type = TacType.DIRECT_CALL;
         }
 
         public DirectCall(Temp dst, Intrinsic intrinsic) {
             super(new Temp[]{dst}, new Temp[]{});
             this.dst = Optional.of(dst);
             this.entry = intrinsic.entry;
+            this.type = TacType.DIRECT_CALL;
         }
 
         public DirectCall(Intrinsic intrinsic) {
             super(new Temp[]{}, new Temp[]{});
             this.dst = Optional.empty();
             this.entry = intrinsic.entry;
+            this.type = TacType.DIRECT_CALL;
         }
 
         @Override
@@ -501,6 +679,16 @@ public abstract class TacInstr extends PseudoInstr {
             dst.ifPresent(d -> sb.append(d).append(" = "));
             sb.append("call ").append(entry.prettyString());
             return sb.toString();
+        }
+
+        @Override
+        public TacInstr updateReadReg(Set<TempPair> ref) {
+            return this;
+        }
+
+        @Override
+        public TacInstr updateWriteReg(Temp reg) {
+            return dst.filter(temp -> temp.compareTo(reg) != 0).map(temp -> new DirectCall(reg, entry).setHint(this.hint)).orElse(this);
         }
     }
 
@@ -528,6 +716,7 @@ public abstract class TacInstr extends PseudoInstr {
             this.dst = dst;
             this.base = base;
             this.offset = offset;
+            this.type = op.equals(Op.LOAD) ? TacType.LOAD : TacType.STORE;
         }
 
         @Override
@@ -544,6 +733,25 @@ public abstract class TacInstr extends PseudoInstr {
                 case STORE -> String.format("*(%s %s %d) = %s", base, sign, offset, dst);
             };
         }
+
+        @Override
+        public TacInstr updateReadReg(Set<TempPair> ref) {
+            var nbase = findReg(ref, base);
+            var ndst = findReg(ref, dst);
+            if(op.equals(Op.LOAD)) {
+                return nbase.compareTo(base) == 0 ? this : new Memory(this.op, this.dst, nbase, this.offset).setHint(this.hint);
+            } else {
+                return nbase.compareTo(base) == 0 && ndst.compareTo(dst) == 0 ? this : new Memory(this.op, ndst, nbase, this.offset).setHint(this.hint);
+            }
+        }
+
+        @Override
+        public TacInstr updateWriteReg(Temp reg) {
+            if(op.equals(Op.LOAD)) {
+                return dst.compareTo(reg) == 0 ? this : new Memory(this.op, reg, this.base, this.offset).setHint(this.hint);
+            } else
+                return this;
+        }
     }
 
     /**
@@ -558,6 +766,7 @@ public abstract class TacInstr extends PseudoInstr {
         public Memo(String msg) {
             super(new Temp[]{}, new Temp[]{});
             this.msg = msg;
+            this.type = TacType.MEMO;
         }
 
         @Override
@@ -568,6 +777,16 @@ public abstract class TacInstr extends PseudoInstr {
         @Override
         public String toString() {
             return String.format("memo '%s'", msg);
+        }
+
+        @Override
+        public TacInstr updateReadReg(Set<TempPair> ref) {
+            return this;
+        }
+
+        @Override
+        public TacInstr updateWriteReg(Temp reg) {
+            return this;
         }
     }
 
@@ -580,6 +799,7 @@ public abstract class TacInstr extends PseudoInstr {
     public static class Mark extends TacInstr {
         public Mark(Label label) {
             super(label);
+            this.type = TacType.MARK;
         }
 
         @Override
@@ -590,6 +810,16 @@ public abstract class TacInstr extends PseudoInstr {
         @Override
         public String toString() {
             return String.format("%s:", label.prettyString());
+        }
+
+        @Override
+        public TacInstr updateReadReg(Set<TempPair> ref) {
+            return this;
+        }
+
+        @Override
+        public TacInstr updateWriteReg(Temp reg) {
+            return this;
         }
     }
 }

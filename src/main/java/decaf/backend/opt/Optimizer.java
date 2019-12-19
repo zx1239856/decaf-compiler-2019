@@ -6,6 +6,7 @@ import decaf.lowlevel.tac.Simulator;
 import decaf.lowlevel.tac.TacProg;
 
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.PrintWriter;
 
 /**
@@ -20,6 +21,18 @@ public class Optimizer extends Phase<TacProg, TacProg> {
 
     @Override
     public TacProg transform(TacProg input) {
+        var copyProp = new CopyPropOpt();
+        var constProp = new ConstPropOpt();
+        var commonExpr = new CommonExprOpt();
+        var liveness = new LivenessOpt();
+        var peepHole = new PeepHoleOpt();
+        for (int round = 0; round < 3; ++round) {
+            commonExpr.accept(input);
+            constProp.accept(input);
+            copyProp.accept(input);
+            liveness.accept(input);
+            peepHole.accept(input);
+        }
         return input;
     }
 
@@ -38,7 +51,13 @@ public class Optimizer extends Phase<TacProg, TacProg> {
 
             // and then execute it using our simulator.
             var simulator = new Simulator(System.in, config.output);
-            simulator.execute(program);
+            int lines = simulator.execute(program);
+            path = config.dstPath.resolve(config.getSourceBaseName() + ".info");
+            try (var printer = new PrintWriter(new FileWriter(path.toFile(), true))) {
+                printer.format("Lines executed after optimization: %d\n", lines);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }

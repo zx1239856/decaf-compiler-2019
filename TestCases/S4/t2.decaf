@@ -1,0 +1,12 @@
+
+class Main {
+    static void main() {
+        int a = 3;
+        string b = "wow!";
+        bool c = true;
+
+        if (c)
+            a = a * 5;
+        Print(c, " ", a);
+    }
+}

@@ -1,0 +1,17 @@
+class Main {
+    int v;
+    static void main() {
+        var m = new Main();
+        m.f5();
+        m.f4()();
+        m.f3()()();
+        m.f2()()()();
+        m.f1()()()()();
+    }
+
+    void()()()() f1() { v = v + 1; return f2; }
+    void()()() f2() { v = v + 1; return f3; }
+    void()() f3() { v = v + 1; return f4; }
+    void() f4() { v = v + 1; return f5; }
+    void f5() { v = v + 1; Print(v, "\n"); }
+}

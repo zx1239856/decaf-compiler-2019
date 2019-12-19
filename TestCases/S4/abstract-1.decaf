@@ -1,0 +1,78 @@
+abstract class A {
+    int u;
+    abstract void a();
+    abstract void b();
+    abstract void c();
+    abstract void d();
+}
+
+abstract class B extends A {
+    int v;
+    abstract void a();
+    void b() { Print("B.b()\n"); }
+    abstract void e();
+    void f() { Print("B.f()\n"); }
+}
+
+class C extends B {
+    void a() { Print("C.a()\n"); }
+    void c() { Print("C.c()\n"); }
+    void d() { Print("C.d()\n"); }
+    void e() { Print("C.e()\n"); }
+    void f() { Print("C.f()\n"); }
+}
+
+abstract class D extends C {
+    // abstract void a();
+    void c() { Print("D.c()\n"); }
+    void d() { Print("D.d()\n"); }
+    void e() { Print("D.e()\n"); }
+    void f() { Print("D.f()\n"); }
+    abstract void g(int x, bool y);
+    abstract class C h();
+}
+
+class E extends C {
+    // int v;
+    void a() { Print("E.a()\n"); }
+    void d() { Print("E.d()\n"); }
+    void g(int x, bool y) { Print("E.g()\n"); }
+}
+
+abstract class F extends D {
+    abstract class F h();
+}
+
+class Main extends D {
+    void a() { Print("Main.a()\n"); }
+    void d() { Print("Main.d()\n"); }
+    void g(int x, bool y) { Print("Main.g()\n"); }
+    class D h() { Print("Main.h()\n"); return new Main(); }
+    static void main() {
+        class C c = new C();
+        c.a();
+        c.b();
+        c.c();
+        c.d();
+        c.e();
+        c.f();
+
+        class E e = new E();
+        e.a();
+        e.b();
+        e.c();
+        e.d();
+        e.e();
+        e.f();
+        e.g(1,true);
+        class Main f = new Main();
+        f.a();
+        f.b();
+        f.c();
+        f.d();
+        f.e();
+        f.f();
+        f.g(1,true);
+        f.h();
+    }
+}

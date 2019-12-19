@@ -24,4 +24,9 @@ public class Temp implements Comparable<Temp> {
     public int compareTo(Temp that) {
         return this.index - that.index;
     }
+
+    @Override
+    public int hashCode() {
+        return Integer.valueOf(index).hashCode();
+    }
 }

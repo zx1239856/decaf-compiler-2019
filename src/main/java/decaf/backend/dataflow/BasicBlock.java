@@ -1,5 +1,6 @@
 package decaf.backend.dataflow;
 
+import decaf.backend.opt.Rhs;
 import decaf.lowlevel.instr.PseudoInstr;
 import decaf.lowlevel.instr.Temp;
 import decaf.lowlevel.label.Label;
@@ -30,7 +31,7 @@ public class BasicBlock<I extends PseudoInstr> implements Iterable<Loc<I>> {
     /**
      * Block id.
      */
-    public final int id;
+    public int id;
 
     /**
      * Entry label of this block, if any.
@@ -106,4 +107,22 @@ public class BasicBlock<I extends PseudoInstr> implements Iterable<Loc<I>> {
     public Set<Temp> liveIn;
 
     public Set<Temp> liveOut;
+
+    // For copy prop analysis
+    public Set<TempPair> copyGen;
+
+    public Set<TempPair> copyIn;
+
+    public Set<TempPair> copyOut;
+
+    public Set<Temp> copyKill;
+
+    // For common expr analysis
+    public Set<Rhs> gen;
+
+    public Set<Rhs> in;
+
+    public Set<Rhs> out;
+
+    public Set<Temp> kill;
 }

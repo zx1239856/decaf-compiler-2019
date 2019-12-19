@@ -1,0 +1,23 @@
+// Test const prop
+class A {
+	void member_func() {
+		Print("You called member_func of class A\n");
+	}
+}
+
+class Main {
+    // the main entry
+    static void main() {
+        string x = "dup_string";
+	Print(x);
+	string y = "dup_string";
+	Print(y);
+	string z = "dup_string";
+	Print(z);
+	var a = new A();
+	a.member_func();
+	a.member_func();
+	a.member_func();
+    }
+}
+

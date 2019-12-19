@@ -135,6 +135,10 @@ class PA3Tester(PATester):
     def __init__(self, test_set: str, exclude: [str]):
         PATester.__init__(self, 'PA3', test_set, exclude)
 
+class PA4Tester(PATester):
+    def __init__(self, test_set: str, exclude: [str]):
+        PATester.__init__(self, 'PA4', test_set, exclude)
+
 class JVMTester(Tester):
     def __init__(self, test_set: str, exclude: [str]):
         Tester.__init__(self, test_set, exclude)
@@ -145,7 +149,7 @@ class JVMTester(Tester):
         result = self.get_result(test_case_name)
         sys.stdout.write('{}  ...  '.format(test_case_name))
         # compile
-        if run_decaf(['-t', 'jvm', '-d', bytecode_dir, self.get_test_case(test_case_name)]):
+        if run_decaf(['-t', 'PA3-JVM', '-d', bytecode_dir, self.get_test_case(test_case_name)]):
             # execute bytecode
             sys.stdout.write('JVM  ...  ')
             if run_jvm(bytecode_dir, output):
@@ -179,7 +183,8 @@ TARGETS = {
     'PA1-B': (['S1', 'S1-LL'], ['abstract1.decaf', 'abstract3.decaf', 'lambdabad1.decaf'], PA1BTester),
     'PA2': (['S2'], [], PA2Tester),
     'PA3': (['S3'], [], PA3Tester),
-    'jvm': (['S3-JVM'], [], JVMTester),
+    'PA4': (['S4'], [], PA4Tester),
+    'jvm': (['S3'], ['test_divisionbyzero1.decaf', 'test_divisionbyzero2.decaf'], JVMTester),
     'PA5': (['S3'], [], MipsTester),
 }
 

@@ -1,0 +1,31 @@
+// currying
+
+class Main {
+    static void niam() {
+        var y = 0;
+
+        var f = fun (int x) => x + 1;
+        var a = fun (int x) { Print(f(x + y)); };
+        a(f(120));
+        a(13);
+
+        int(int) f1 = fun (int x) => x + 1;
+        void(int, int) a1 = fun (int x, int z) { Print(f(x + y + z)); };
+        a1(f1(120), f(f1(y)));
+        a1(13, f(f1(f(f1(f(2333))))));
+    }
+
+    static void main() {
+        var addn = fun (int x, int y)=>x+y;
+        int(int) addc = fun (int x) => x+5;
+        var badadd2 = fun (int x) => x + addn(2, 3);
+        var add2 = fun (int y) => 3+y;
+        var badadd2c = addn(2, badadd2(2));
+        Print(addn(2, 3));
+        Print(addc(4));
+        Print(badadd2(6));
+        Print(add2(8));
+        Print(addc(9));
+        Print(badadd2c);
+    }
+}

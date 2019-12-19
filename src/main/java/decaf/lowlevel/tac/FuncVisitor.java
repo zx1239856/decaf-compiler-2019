@@ -164,7 +164,9 @@ public class FuncVisitor {
     public Temp visitNewClass(String clazz) {
         var temp = freshTemp();
         var entry = ctx.getConstructorLabel(clazz);
+        setHintStatus(TacInstr.CompilerHint.CONSTRUCTOR);
         func.add(new TacInstr.DirectCall(temp, entry));
+        setHintStatus(TacInstr.CompilerHint.NO_HINT);
         return temp;
     }
 
@@ -233,14 +235,18 @@ public class FuncVisitor {
         if(index == -1) {
             var visitor = new FuncVisitor(label, 1, ctx);
             var arr = visitor.visitLoadFrom(visitor.argsTemps[0], 4);
+            visitor.setHintStatus(TacInstr.CompilerHint.IMMUTABLE_LOAD);
             var len = visitor.visitLoadFrom(arr, -4);
+            visitor.setHintStatus(TacInstr.CompilerHint.NO_HINT);
             visitor.visitReturn(len);
             visitor.visitEnd();
             index = ctx.putInGlobalTable(label);
         }
         var offset = 8 + 4 * index;
         var vtbl = loadGlobalVtbl();
+        setHintStatus(TacInstr.CompilerHint.IMMUTABLE_LOAD);
         var wrapperAddr = visitLoadFrom(vtbl, offset);
+        setHintStatus(TacInstr.CompilerHint.NO_HINT);
         var block = visitIntrinsicCall(Intrinsic.ALLOCATE, true, visitLoad(8));
         visitStoreTo(block, 4, array);
         visitStoreTo(block, wrapperAddr);
@@ -263,7 +269,9 @@ public class FuncVisitor {
         var offset = 8 + 4 * index;
         var vtbl = loadGlobalVtbl();
         var block = visitIntrinsicCall(Intrinsic.ALLOCATE, true, visitLoad(4));
+        setHintStatus(TacInstr.CompilerHint.IMMUTABLE_LOAD);
         var wrapperAddr = visitLoadFrom(vtbl, offset);  // wrapper addr in virtual table
+        setHintStatus(TacInstr.CompilerHint.NO_HINT);
         visitStoreTo(block, wrapperAddr);
         return block;
     }
@@ -288,7 +296,9 @@ public class FuncVisitor {
         // wrapper already present
         var offset = 8 + 4 * index;
         var vtbl = loadGlobalVtbl();
+        setHintStatus(TacInstr.CompilerHint.IMMUTABLE_LOAD);
         var wrapperAddr = visitLoadFrom(vtbl, offset);
+        setHintStatus(TacInstr.CompilerHint.NO_HINT);
         var block = visitIntrinsicCall(Intrinsic.ALLOCATE, true, visitLoad(8));
         visitStoreTo(block, 4, object);
         visitStoreTo(block, wrapperAddr);
@@ -308,7 +318,9 @@ public class FuncVisitor {
     public Temp visitMemberCall(Temp object, String clazz, String method, List<Temp> args, boolean needReturn) {
         Temp temp = null;
         var vtbl = visitLoadFrom(object);
+        setHintStatus(TacInstr.CompilerHint.IMMUTABLE_LOAD);
         var entry = visitLoadFrom(vtbl, ctx.getOffset(clazz, method));
+        setHintStatus(TacInstr.CompilerHint.NO_HINT);
 
         func.add(new TacInstr.Parm(object));
         for (var arg : args) {
@@ -373,6 +385,9 @@ public class FuncVisitor {
     public Temp visitIntrinsicCall(Intrinsic func, boolean needReturn, Temp... args) {
         Temp temp = null;
 
+        if(func.kind.equals(Intrinsic.Opcode.ALLOCATE))
+            setHintStatus(TacInstr.CompilerHint.ALLOC);
+
         for (var arg : args) {
             this.func.add(new TacInstr.Parm(arg));
         }
@@ -382,6 +397,7 @@ public class FuncVisitor {
         } else {
             this.func.add(new TacInstr.DirectCall(func));
         }
+        setHintStatus(TacInstr.CompilerHint.NO_HINT);
         return temp;
     }
 
@@ -532,6 +548,10 @@ public class FuncVisitor {
         for (int i = 0; i < numArgs; i++) {
             argsTemps[i] = freshTemp();
         }
+    }
+
+    public void setHintStatus(TacInstr.CompilerHint hint) {
+        func.hint = hint;
     }
 
     private FuncLabel entry;

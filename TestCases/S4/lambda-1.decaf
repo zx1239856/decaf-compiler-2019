@@ -1,0 +1,49 @@
+class A {
+    int f(int x) { return x - 1; }
+    static int sf(int x) { return x + 1; }
+    int(int) vf;
+}
+
+class Main {
+    int v;
+
+    int f(int x) { return x + v; }
+    static int sf(int x) { return x + 2; }
+    int(int) vf;
+
+    static void main() {
+        int(int) f2 = sf;
+        Print(f2(3));
+        new Main().trueMain();
+    }
+
+    void trueMain() {
+        class A a = new A();
+        this.vf = fun (int x) => x * 2;
+        Print(this.vf(3));
+        this.v = 4;
+        int(int) f1 = f;
+        Print(f1(3));
+        int(int) f2 = sf;
+        Print(f2(3));
+        int(int) f3 = vf;
+        Print(f3(3));
+
+        int(int) f4 = this.f;
+        Print(f4(3));
+        int(int) f5 = this.sf;
+        Print(f5(3));
+        int(int) f6 = this.vf;
+        Print(f6(3));
+
+        int(int) f8 = Main.sf;
+        Print(f8(3));
+        int(int) f10 = a.f;
+        Print(f10(3));
+        int(int) f11 = a.sf;
+        Print(f11(3));
+
+        int(int) f14 = A.sf;
+        Print(f14(3));
+    }
+}
