@@ -1,17 +1,13 @@
 package decaf.backend.opt;
 
-import decaf.backend.dataflow.CFGBuilder;
-import decaf.backend.dataflow.LivenessAnalyzer;
 import decaf.driver.Config;
 import decaf.driver.Phase;
 import decaf.lowlevel.tac.Simulator;
-import decaf.lowlevel.tac.TacInstr;
 import decaf.lowlevel.tac.TacProg;
 
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.PrintWriter;
-import java.util.*;
 
 /**
  * TAC optimization phase: optimize a TAC program.
@@ -27,9 +23,11 @@ public class Optimizer extends Phase<TacProg, TacProg> {
     public TacProg transform(TacProg input) {
         var copyProp = new CopyPropOpt();
         var constProp = new ConstPropOpt();
+        var commonExpr = new CommonExprOpt();
         var liveness = new LivenessOpt();
         var peepHole = new PeepHoleOpt();
-        for (int round = 0; round < 10; ++round) {
+        for (int round = 0; round < 3; ++round) {
+            commonExpr.accept(input);
             constProp.accept(input);
             copyProp.accept(input);
             liveness.accept(input);

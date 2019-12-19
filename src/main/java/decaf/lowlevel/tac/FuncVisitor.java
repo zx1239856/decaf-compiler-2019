@@ -235,14 +235,18 @@ public class FuncVisitor {
         if(index == -1) {
             var visitor = new FuncVisitor(label, 1, ctx);
             var arr = visitor.visitLoadFrom(visitor.argsTemps[0], 4);
+            visitor.setHintStatus(TacInstr.CompilerHint.IMMUTABLE_LOAD);
             var len = visitor.visitLoadFrom(arr, -4);
+            visitor.setHintStatus(TacInstr.CompilerHint.NO_HINT);
             visitor.visitReturn(len);
             visitor.visitEnd();
             index = ctx.putInGlobalTable(label);
         }
         var offset = 8 + 4 * index;
         var vtbl = loadGlobalVtbl();
+        setHintStatus(TacInstr.CompilerHint.IMMUTABLE_LOAD);
         var wrapperAddr = visitLoadFrom(vtbl, offset);
+        setHintStatus(TacInstr.CompilerHint.NO_HINT);
         var block = visitIntrinsicCall(Intrinsic.ALLOCATE, true, visitLoad(8));
         visitStoreTo(block, 4, array);
         visitStoreTo(block, wrapperAddr);
@@ -265,7 +269,9 @@ public class FuncVisitor {
         var offset = 8 + 4 * index;
         var vtbl = loadGlobalVtbl();
         var block = visitIntrinsicCall(Intrinsic.ALLOCATE, true, visitLoad(4));
+        setHintStatus(TacInstr.CompilerHint.IMMUTABLE_LOAD);
         var wrapperAddr = visitLoadFrom(vtbl, offset);  // wrapper addr in virtual table
+        setHintStatus(TacInstr.CompilerHint.NO_HINT);
         visitStoreTo(block, wrapperAddr);
         return block;
     }
@@ -290,7 +296,9 @@ public class FuncVisitor {
         // wrapper already present
         var offset = 8 + 4 * index;
         var vtbl = loadGlobalVtbl();
+        setHintStatus(TacInstr.CompilerHint.IMMUTABLE_LOAD);
         var wrapperAddr = visitLoadFrom(vtbl, offset);
+        setHintStatus(TacInstr.CompilerHint.NO_HINT);
         var block = visitIntrinsicCall(Intrinsic.ALLOCATE, true, visitLoad(8));
         visitStoreTo(block, 4, object);
         visitStoreTo(block, wrapperAddr);
@@ -310,7 +318,9 @@ public class FuncVisitor {
     public Temp visitMemberCall(Temp object, String clazz, String method, List<Temp> args, boolean needReturn) {
         Temp temp = null;
         var vtbl = visitLoadFrom(object);
+        setHintStatus(TacInstr.CompilerHint.IMMUTABLE_LOAD);
         var entry = visitLoadFrom(vtbl, ctx.getOffset(clazz, method));
+        setHintStatus(TacInstr.CompilerHint.NO_HINT);
 
         func.add(new TacInstr.Parm(object));
         for (var arg : args) {

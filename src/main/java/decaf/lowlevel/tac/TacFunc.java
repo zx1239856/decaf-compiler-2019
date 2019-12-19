@@ -1,5 +1,6 @@
 package decaf.lowlevel.tac;
 
+import decaf.lowlevel.instr.Temp;
 import decaf.lowlevel.label.FuncLabel;
 
 import java.io.PrintWriter;
@@ -29,6 +30,10 @@ public class TacFunc implements Comparable<TacFunc> {
 
     public int getUsedTempCount() {
         return tempUsed;
+    }
+
+    public Temp getFreshTemp() {
+        return new Temp(tempUsed++);
     }
 
     List<TacInstr> instrSeq = new ArrayList<>();

@@ -1,7 +1,6 @@
 package decaf.backend.dataflow;
 
 import decaf.lowlevel.instr.Temp;
-import decaf.lowlevel.label.FuncLabel;
 
 public class TempPair implements Comparable<TempPair> {
     public final Temp dst;
@@ -33,5 +32,10 @@ public class TempPair implements Comparable<TempPair> {
             return false;
         TempPair o = (TempPair) obj;
         return o.compareTo(this) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return dst.hashCode() * 19260817 + src.hashCode();
     }
 }

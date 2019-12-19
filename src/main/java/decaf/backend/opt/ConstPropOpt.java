@@ -41,6 +41,11 @@ class IntValue implements Cloneable {
     }
 
     @Override
+    public int hashCode() {
+        return kind.hashCode() ^ Integer.valueOf(value).hashCode();
+    }
+
+    @Override
     public Object clone() {
         return new IntValue(this.kind, this.value);
     }

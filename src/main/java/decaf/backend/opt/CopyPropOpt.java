@@ -4,31 +4,30 @@ import decaf.backend.dataflow.BasicBlock;
 import decaf.backend.dataflow.CFG;
 import decaf.backend.dataflow.CFGBuilder;
 import decaf.backend.dataflow.TempPair;
-import decaf.lowlevel.instr.PseudoInstr;
-import decaf.lowlevel.instr.Temp;
 import decaf.lowlevel.tac.TacInstr;
 import decaf.lowlevel.tac.TacProg;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.function.Consumer;
 
-class CopyAnalyzer implements Consumer<CFG<decaf.lowlevel.tac.TacInstr>> {
+class CopyAnalyzer implements Consumer<CFG<TacInstr>> {
     @Override
     public void accept(CFG<TacInstr> graph) {
+        var uSet = new HashSet<TempPair>();
+
         for(var bb : graph.nodes) {
             computeGenKill(bb);
             bb.copyOut = new HashSet<>();
             bb.copyOut.addAll(bb.copyGen);
+            uSet.addAll(bb.copyGen);
             bb.copyIn = new HashSet<>();
         }
 
         var changed = true;
 
-        for(var bb : graph.nodes) {
-            for(var prev : graph.getPrev(bb.id)) {
-                bb.copyIn.addAll(graph.getBlock(prev).copyOut);
-                break;
-            }
+        for(int i = 1; i < graph.nodes.size(); ++i) {
+            graph.nodes.get(i).copyIn.addAll(uSet);
         }
 
         do {
