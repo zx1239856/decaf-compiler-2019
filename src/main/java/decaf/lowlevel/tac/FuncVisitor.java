@@ -209,7 +209,7 @@ public class FuncVisitor {
     }
 
     public FuncVisitor getLambdaVisitor(Pos pos, int numArgs) {
-        var label = ctx.getGlobalLabel("lambda$" + pos.line + "$" + pos.column);
+        var label = ctx.getGlobalLabel("lambda__" + pos.line + "__" + pos.column);
         ctx.putInGlobalTable(label);
         // this label will not duplicate, ignore checking
         return new FuncVisitor(label, numArgs + 1, ctx);
@@ -230,7 +230,7 @@ public class FuncVisitor {
     }
 
     public Temp wrapArrayLength(Temp array) {
-        var label = ctx.getGlobalLabel("array$len");
+        var label = ctx.getGlobalLabel("array__len");
         int index = ctx.indexInGlobalTable(label);
         if(index == -1) {
             var visitor = new FuncVisitor(label, 1, ctx);
@@ -254,7 +254,7 @@ public class FuncVisitor {
     }
 
     public Temp wrapStaticMethod(String clazz, String method, int numArgs, boolean needReturn) {
-        var label = ctx.getGlobalLabel(clazz + "$" + method);
+        var label = ctx.getGlobalLabel(clazz + "__" + method);
         int index = ctx.indexInGlobalTable(label);
         if(index == -1) {
             // no wrapper available, create one
@@ -277,7 +277,7 @@ public class FuncVisitor {
     }
 
     public Temp wrapMemberMethod(Temp object, String clazz, String method, int numArgs, boolean needReturn) {
-        var label = ctx.getGlobalLabel(clazz + "$" + method);
+        var label = ctx.getGlobalLabel(clazz + "__" + method);
         int index = ctx.indexInGlobalTable(label);
         if(index == -1) {
             // Mechanism
