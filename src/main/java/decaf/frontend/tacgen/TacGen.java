@@ -76,11 +76,13 @@ public class TacGen extends Phase<Tree.TopLevel, TacProg> implements TacEmitter 
             // and then execute it using our simulator.
             var simulator = new Simulator(System.in, config.target.equals(Config.Target.PA3) ? config.output : new Config.NullOutputStream());
             int lines = simulator.execute(program);
-            path = config.dstPath.resolve(config.getSourceBaseName() + ".info");
-            try (var printer = new PrintWriter(path.toFile())){
-                printer.format("Lines executed: %d\n", lines);
-            } catch(FileNotFoundException e) {
-                e.printStackTrace();
+            if(config.target.equals(Config.Target.PA4)) {
+                path = config.dstPath.resolve(config.getSourceBaseName() + ".info");
+                try (var printer = new PrintWriter(path.toFile())){
+                    printer.format("Lines executed: %d\n", lines);
+                } catch(FileNotFoundException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

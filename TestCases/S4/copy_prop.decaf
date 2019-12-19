@@ -1,0 +1,16 @@
+// Test copy prop
+
+class Main {
+
+    // the main entry
+    static void main() {
+        int x = (fun() => 2)(); 
+	int y = (fun() => 3)();
+	int z = x + y * x + y;
+	int a = z;
+	int b = a;
+	int c = a + b;
+        Print(c,"\n");
+    }
+}
+
