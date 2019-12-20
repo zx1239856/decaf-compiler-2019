@@ -410,19 +410,59 @@ public interface TacEmitter extends Visitor<FuncVisitor> {
 
     @Override
     default void visitCall(Tree.Call expr, FuncVisitor mv) {
-        expr.args.forEach(arg -> arg.accept(this, mv));
-        var temps = new ArrayList<Temp>();
-        expr.args.forEach(arg -> temps.add(arg.val));
-
         // type of callable exprs:
         // direct var selection
         // return value of a call
         // lambda definition
-        if (expr.callee.val == null)
-            expr.callee.accept(this, mv);
-        var entry = mv.visitLoadFrom(expr.callee.val);
-        temps.add(0, expr.callee.val);
-        expr.val = mv.visitCallByAddress(entry, temps, ((FunType) expr.callee.type).hasReturn());
+
+        // when callee is array length, symbol is nullptr, must short circuit here
+        if(expr.callee instanceof Tree.VarSel && (((Tree.VarSel) expr.callee).isArrayLength || ((Tree.VarSel)expr.callee).symbol.isMethodSymbol())) {
+            // Note: new optimization
+            // when calling conventional functions, do not create func object to avoid extra overheads
+            var varSel = (Tree.VarSel)expr.callee;
+
+            if(varSel.isArrayLength) {
+                var array = varSel.receiver.get();
+                array.accept(this, mv);
+                expr.val = mv.visitLoadFrom(array.val, -4);
+                return;
+            }
+
+            expr.args.forEach(arg -> arg.accept(this, mv));
+            var temps = new ArrayList<Temp>();
+            expr.args.forEach(arg -> temps.add(arg.val));
+
+            var symbol = (MethodSymbol)varSel.symbol;
+            // static method call
+            if (symbol.isStatic()) {
+                if (symbol.type.returnType.isVoidType()) {
+                    mv.visitStaticCall(symbol.owner.name, symbol.name, temps);
+                } else {
+                    expr.val = mv.visitStaticCall(symbol.owner.name, symbol.name, temps, true);
+                }
+            } else {
+                // member method call
+                var object = varSel.receiver.get();
+                if(object.val == null)
+                    object.accept(this, mv);
+                if (symbol.type.returnType.isVoidType()) {
+                    mv.visitMemberCall(object.val, symbol.owner.name, symbol.name, temps);
+                } else {
+                    expr.val = mv.visitMemberCall(object.val, symbol.owner.name, symbol.name, temps, true);
+                }
+            }
+        } else {
+            // new features impl
+            expr.args.forEach(arg -> arg.accept(this, mv));
+            var temps = new ArrayList<Temp>();
+            expr.args.forEach(arg -> temps.add(arg.val));
+
+            if (expr.callee.val == null)
+                expr.callee.accept(this, mv);
+            var entry = mv.visitLoadFrom(expr.callee.val);
+            temps.add(0, expr.callee.val);
+            expr.val = mv.visitCallByAddress(entry, temps, ((FunType) expr.callee.type).hasReturn());
+        }
     }
 
     @Override

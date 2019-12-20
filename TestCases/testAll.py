@@ -187,7 +187,7 @@ TARGETS = {
     'PA3': (['S3'], [], PA3Tester),
     'PA4': (['S4'], [], PA4Tester),
     'jvm': (['S3'], ['test_divisionbyzero1.decaf', 'test_divisionbyzero2.decaf'], JVMTester),
-    'PA5': (['S3'], ['basic-matrix.decaf'], MipsTester),
+    'PA5': (['S4'], ['basic-matrix.decaf'], MipsTester),
 }
 
 OPTIONS = ', '.join(TARGETS.keys())
