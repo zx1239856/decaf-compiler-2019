@@ -2,25 +2,20 @@ package decaf.backend.reg;
 
 import decaf.backend.asm.AsmEmitter;
 import decaf.backend.asm.SubroutineInfo;
-import decaf.backend.dataflow.CFG;
 import decaf.lowlevel.instr.PseudoInstr;
+import org.apache.commons.lang3.tuple.Pair;
+
+import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Register allocation.
  */
-public abstract class RegAlloc {
+public abstract class RegAlloc implements Consumer<Pair<List<PseudoInstr>, SubroutineInfo>> {
 
     public RegAlloc(AsmEmitter emitter) {
         this.emitter = emitter;
     }
-
-    /**
-     * Entry of the main algorithm.
-     *
-     * @param graph control flow graph
-     * @param info  basic info of the associated subroutine
-     */
-    public abstract void accept(CFG<PseudoInstr> graph, SubroutineInfo info);
 
     /**
      * Assembly emitter.

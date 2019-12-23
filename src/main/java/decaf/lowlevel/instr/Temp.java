@@ -29,4 +29,13 @@ public class Temp implements Comparable<Temp> {
     public int hashCode() {
         return Integer.valueOf(index).hashCode();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(this == obj)
+            return true;
+        if(obj instanceof Temp) {
+            return this.compareTo((Temp)obj) == 0;
+        } else return false;
+    }
 }

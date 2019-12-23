@@ -79,9 +79,13 @@ public class Mips {
     }
 
     public static class Move extends PseudoInstr {
+        public final Temp dst;
+        public final Temp src;
 
         public Move(Temp dst, Temp src) {
             super(new Temp[]{dst}, new Temp[]{src});
+            this.dst = dst;
+            this.src = src;
         }
 
         @Override

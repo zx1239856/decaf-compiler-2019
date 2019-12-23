@@ -129,4 +129,19 @@ public abstract class PseudoInstr {
     }
 
     public abstract String toString();
+
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj == this)
+            return true;
+        else if(obj instanceof PseudoInstr)
+            return toString().equals(obj.toString());
+        else
+            return false;
+    }
 }

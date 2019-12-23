@@ -4,14 +4,16 @@ import decaf.backend.asm.AsmEmitter;
 import decaf.backend.asm.HoleInstr;
 import decaf.backend.asm.SubroutineEmitter;
 import decaf.backend.asm.SubroutineInfo;
-import decaf.backend.dataflow.BasicBlock;
-import decaf.backend.dataflow.CFG;
-import decaf.backend.dataflow.Loc;
+import decaf.backend.dataflow.*;
 import decaf.lowlevel.instr.PseudoInstr;
 import decaf.lowlevel.instr.Reg;
 import decaf.lowlevel.instr.Temp;
+import decaf.lowlevel.log.Log;
+import decaf.printing.PrettyCFG;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
+import java.util.logging.Level;
 
 /**
  * Brute force greedy register allocation algorithm.
@@ -28,9 +30,15 @@ public final class BruteRegAlloc extends RegAlloc {
     }
 
     @Override
-    public void accept(CFG<PseudoInstr> graph, SubroutineInfo info) {
-        var subEmitter = emitter.emitSubroutine(info);
-        for (var bb : graph) {
+    public void accept(Pair<List<PseudoInstr>, SubroutineInfo> input) {
+        var analyzer = new LivenessAnalyzer<>();
+        var builder = new CFGBuilder<>();
+        var cfg = builder.buildFrom(input.getLeft());
+        analyzer.accept(cfg);
+
+        var subEmitter = emitter.emitSubroutine(input.getRight());
+        Log.ifLoggable(Level.FINE, printer -> new PrettyCFG<>(printer).pretty(cfg));
+        for (var bb : cfg) {
             bb.label.ifPresent(subEmitter::emitLabel);
             localAlloc(bb, subEmitter);
         }

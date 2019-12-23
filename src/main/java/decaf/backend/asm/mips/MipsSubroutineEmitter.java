@@ -41,7 +41,6 @@ public class MipsSubroutineEmitter extends SubroutineEmitter {
     MipsSubroutineEmitter(MipsAsmEmitter emitter, SubroutineInfo info) {
         super(emitter, info);
         nextLocalOffset = info.argsSize + 4 * Mips.calleeSaved.length + 4;
-        printer.printLabel(info.funcLabel, "function " + info.funcLabel.prettyString());
     }
 
     @Override
@@ -91,6 +90,7 @@ public class MipsSubroutineEmitter extends SubroutineEmitter {
 
     @Override
     public void emitEnd() {
+        printer.printLabel(info.funcLabel, "function " + info.funcLabel.prettyString());
         printer.printComment("start of prologue");
         printer.printInstr(new Mips.SPAdd(-nextLocalOffset), "push stack frame");
         if (Mips.RA.isUsed() || info.hasCalls) {
