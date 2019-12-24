@@ -88,6 +88,10 @@ public class MipsSubroutineEmitter extends SubroutineEmitter {
         new Mips.MipsLabel(label).toNative(new Reg[]{}, new Reg[]{}).ifPresent(buf::add);
     }
 
+    public void setBruteForce(boolean val) {
+        isBruteForce = val;
+    }
+
     @Override
     public void emitEnd() {
         printer.printLabel(info.funcLabel, "function " + info.funcLabel.prettyString());
@@ -107,15 +111,17 @@ public class MipsSubroutineEmitter extends SubroutineEmitter {
         printer.println();
 
         printer.printComment("start of body");
-        for (var i = 0; i < Math.min(info.numArg, Mips.argRegs.length); i++) {
-            printer.printInstr(new Mips.NativeStoreWord(Mips.argRegs[i], Mips.SP, 4 * i),
-                    "save arg " + i);
-        }
-        for (var i = Mips.argRegs.length; i < info.numArg; i++) {
-            printer.printInstr(new Mips.NativeLoadWord(Mips.callerSaved[0], Mips.SP, nextLocalOffset + 4 * i),
-                    "load arg " + i);
-            printer.printInstr(new Mips.NativeStoreWord(Mips.callerSaved[0], Mips.SP, 4 * i),
-                    "save arg " + i);
+        if(isBruteForce) {
+            for (var i = 0; i < Math.min(info.numArg, Mips.argRegs.length); i++) {
+                printer.printInstr(new Mips.NativeStoreWord(Mips.argRegs[i], Mips.SP, 4 * i),
+                        "save arg " + i);
+            }
+            for (var i = Mips.argRegs.length; i < info.numArg; i++) {
+                printer.printInstr(new Mips.NativeLoadWord(Mips.callerSaved[0], Mips.SP, nextLocalOffset + 4 * i),
+                        "load arg " + i);
+                printer.printInstr(new Mips.NativeStoreWord(Mips.callerSaved[0], Mips.SP, 4 * i),
+                        "save arg " + i);
+            }
         }
         for (var instr : buf) {
             printer.printInstr(instr);
@@ -150,6 +156,8 @@ public class MipsSubroutineEmitter extends SubroutineEmitter {
     private List<NativeInstr> buf = new ArrayList<>();
 
     private int nextLocalOffset;
+
+    private boolean isBruteForce = true;
 
     private Map<Temp, Integer> offsets = new TreeMap<>();
 }

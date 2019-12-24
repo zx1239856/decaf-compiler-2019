@@ -3,6 +3,7 @@ package decaf.backend.reg;
 import decaf.backend.asm.AsmEmitter;
 import decaf.backend.asm.HoleInstr;
 import decaf.backend.asm.SubroutineInfo;
+import decaf.backend.asm.mips.MipsSubroutineEmitter;
 import decaf.backend.dataflow.CFG;
 import decaf.backend.dataflow.CFGBuilder;
 import decaf.backend.dataflow.LivenessAnalyzer;
@@ -57,13 +58,13 @@ public class GraphColorRegAlloc extends RegAlloc {
 
         var backPatchList = new ArrayList<Mips.LoadWord>();
         // add label
-        if(input.getLeft().size() > 0)
+        if (input.getLeft().size() > 0)
             instrList.add(input.getLeft().get(0));
 
         // handle func args
         var info = input.getRight();
-        for(int i = 0; i < info.numArg; ++i) {
-            if(i < Mips.argRegs.length)
+        for (int i = 0; i < info.numArg; ++i) {
+            if (i < Mips.argRegs.length)
                 instrList.add(new Mips.Move(new Temp(i), Mips.argRegs[i]));
             else {
                 var inst = new Mips.LoadWord(new Temp(i), Mips.SP, 0);
@@ -71,7 +72,7 @@ public class GraphColorRegAlloc extends RegAlloc {
                 backPatchList.add(inst);
             }
         }
-        for(int i = 1; i < input.getLeft().size(); ++i) {
+        for (int i = 1; i < input.getLeft().size(); ++i) {
             instrList.add(input.getLeft().get(i));
         }
 
@@ -104,13 +105,13 @@ public class GraphColorRegAlloc extends RegAlloc {
             var cfg = builder.buildFrom(instrList);
             analyzer.accept(cfg);
 
-            for(var instr : instrList) {
-                for(var reg : instr.getRead()) {
-                    if(!(reg instanceof Reg))
+            for (var instr : instrList) {
+                for (var reg : instr.getRead()) {
+                    if (!(reg instanceof Reg))
                         initial.add(reg);
                 }
-                for(var reg : instr.getWritten()) {
-                    if(!(reg instanceof Reg))
+                for (var reg : instr.getWritten()) {
+                    if (!(reg instanceof Reg))
                         initial.add(reg);
                 }
             }
@@ -134,15 +135,18 @@ public class GraphColorRegAlloc extends RegAlloc {
             if (spilledNodes.isEmpty()) {
                 // no spill, now output asm
                 var subEmitter = emitter.emitSubroutine(input.getRight());
+                if (subEmitter instanceof MipsSubroutineEmitter) {
+                    ((MipsSubroutineEmitter) subEmitter).setBruteForce(false);
+                }
 
-                for(int i = 0; i < backPatchList.size(); ++i) {
+                for (int i = 0; i < backPatchList.size(); ++i) {
                     backPatchList.get(i).setOffset(subEmitter.getNextLocalOffset() + 4 * (i + Mips.argRegs.length));
                 }
 
                 for (var bb : cfg) {
                     bb.label.ifPresent(subEmitter::emitLabel);
 
-                    for(var loc : bb.locs) {
+                    for (var loc : bb.locs) {
                         if (loc.instr instanceof HoleInstr)
                             continue; // ignore because we do not need them
 
@@ -168,15 +172,14 @@ public class GraphColorRegAlloc extends RegAlloc {
                                 dstRegs[i] = coloredTemp.get(temp);
                             }
                         }
-                        if(instr instanceof Mips.Move && dstRegs[0].equals(srcRegs[0]))
+                        if (instr instanceof Mips.Move && dstRegs[0].equals(srcRegs[0]))
                             continue;
                         instr.toNative(dstRegs, srcRegs).ifPresent(subEmitter::emitNative);
                     }
                 }
                 subEmitter.emitEnd();
                 break;
-            }
-            else
+            } else
                 rewriteProgram();
         } while (true);
     }
@@ -198,7 +201,7 @@ public class GraphColorRegAlloc extends RegAlloc {
             var okColors = new HashSet<>(tmp);
             for (var w : adjList.getOrDefault(n, new HashSet<>())) {
                 var alias = getAlias(w);
-                if(alias instanceof Reg)
+                if (alias instanceof Reg)
                     okColors.remove(alias);
                 else if (coloredNodes.contains(alias))
                     okColors.remove(coloredTemp.get(alias));
@@ -212,9 +215,9 @@ public class GraphColorRegAlloc extends RegAlloc {
         for (var n : coalescedNodes) {
             var alias = getAlias(n);
             var idx = Optional.ofNullable(coloredTemp.get(alias));
-            idx.ifPresentOrElse(v -> coloredTemp.put(n, v), () -> coloredTemp.put(n, (Reg)alias));
+            idx.ifPresentOrElse(v -> coloredTemp.put(n, v), () -> coloredTemp.put(n, (Reg) alias));
         }
-        for(var entry : coloredTemp.entrySet()) {
+        for (var entry : coloredTemp.entrySet()) {
             entry.getValue().used = true;
         }
     }
@@ -355,9 +358,9 @@ public class GraphColorRegAlloc extends RegAlloc {
     }
 
     private void initializeSet(Temp u) {
-        if(!degree.containsKey(u))
+        if (!degree.containsKey(u))
             degree.put(u, (u instanceof Reg) ? Integer.MAX_VALUE : 0);
-        if(!adjList.containsKey(u))
+        if (!adjList.containsKey(u))
             adjList.put(u, new HashSet<>());
     }
 
@@ -370,9 +373,9 @@ public class GraphColorRegAlloc extends RegAlloc {
                 // initial null ptr
                 var def = loc.instr.getWritten();
                 var use = loc.instr.getRead();
-                for(var n : def)
+                for (var n : def)
                     initializeSet(n);
-                for(var n : use)
+                for (var n : use)
                     initializeSet(n);
                 if (loc.instr instanceof Mips.Move) {
                     live.removeIf(use::contains);
@@ -429,7 +432,7 @@ public class GraphColorRegAlloc extends RegAlloc {
 
     private void decrementDegree(Temp m) {
         var d = degree.getOrDefault(m, null);
-        if(d == null)
+        if (d == null)
             return;
         degree.put(m, d - 1);
         if (d == K) {

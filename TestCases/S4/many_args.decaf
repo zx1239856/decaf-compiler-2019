@@ -1,0 +1,23 @@
+// Test copy prop
+
+class Main {
+
+    static int many_args(int a, int b, int c, int d, int e, int f, int g, int h)    {
+	return a + b + c + d + e + f + g + h;
+    }
+    static void many_args_multi_type(int a, int b, int c, string d, bool e, string f, bool(int) g, int h) {
+	Print("Sum of a,b,c is: ");
+        Print(a+b+c, "\n");
+        Print(d, "\n");
+	Print(e, "\n");
+	Print(f, "\n");
+	Print(g(h), "\n");
+    }
+    // the main entry
+    static void main() {
+        Print(many_args(1,2,3,4,5,6,7,8),"\n");
+	many_args_multi_type(10, 100, 1000, "Hello decaf", true, "Hola decaf", (fun(int x) => (x > 1)), 0);
+	many_args_multi_type(10, 100, 1000, "Hello decaf", true, "Hola decaf", (fun(int x) => (x > 1)), 2);
+    }
+}
+
