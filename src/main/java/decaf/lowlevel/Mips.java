@@ -47,8 +47,12 @@ public class Mips {
     public static final Reg S8 = new Reg(30, "$s8"); // also called $fp, but used as an additional saved register
     public static final Reg RA = new Reg(31, "$ra"); // return address
 
-    public static final Reg[] callerSaved = new Reg[]{
+    public static final Reg[] callerSavedBruteForce = new Reg[]{
             V1, T0, T1, T2, T3, T4, T5, T6, T7, T8, T9
+    };
+
+    public static final Reg[] callerSaved = new Reg[]{
+            V0, V1, A0, A1, A2, A3, T0, T1, T2, T3, T4, T5, T6, T7, T8, T9
     };
 
     public static final Reg[] calleeSaved = new Reg[]{
@@ -56,6 +60,8 @@ public class Mips {
     };
 
     public static final Reg[] allocatableRegs = ArrayUtils.addAll(callerSaved, calleeSaved);
+
+    public static final Reg[] allocatableRegsBruteForce = ArrayUtils.addAll(callerSavedBruteForce, calleeSaved);
 
     public static final Reg[] argRegs = new Reg[]{
             A0, A1, A2, A3
@@ -69,13 +75,9 @@ public class Mips {
     private static final String FMT_OFFSET = "%s, %d(%s)";
 
     private static String format(String op, String fmt, Object... args) {
-        var sb = new StringBuilder();
-        sb.append(op).append(' ');
-        for (var i = 0; i < 7 - op.length(); i++) {
-            sb.append(' ');
-        }
-        sb.append(String.format(fmt, args));
-        return sb.toString();
+        return op + ' ' +
+                " ".repeat(Math.max(0, 7 - op.length())) +
+                String.format(fmt, args);
     }
 
     public static class Move extends PseudoInstr {
@@ -183,7 +185,7 @@ public class Mips {
     public static class JumpAndLink extends PseudoInstr {
 
         public JumpAndLink(Label to) {
-            super(Kind.SEQ, new Temp[]{}, new Temp[]{}, to);
+            super(Kind.SEQ, Mips.callerSaved, Mips.argRegs, to);
         }
 
         @Override
@@ -195,7 +197,7 @@ public class Mips {
     public static class JumpAndLinkReg extends PseudoInstr {
 
         public JumpAndLinkReg(Temp src) {
-            super(new Temp[]{}, new Temp[]{src});
+            super(Mips.callerSaved, new Temp[]{src, A0, A1, A2, A3});
         }
 
         @Override
@@ -212,6 +214,10 @@ public class Mips {
         }
 
         private int offset;
+
+        public void setOffset(int offset) {
+            this.offset = offset;
+        }
 
         @Override
         public String toString() {
@@ -334,7 +340,7 @@ public class Mips {
     public static class NativeReturn extends NativeInstr {
 
         public NativeReturn() {
-            super(Kind.RET, new Reg[]{RA}, new Reg[]{}, null);
+            super(Kind.RET, new Reg[]{RA}, new Reg[]{V0}, null);
         }
 
         @Override

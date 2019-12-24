@@ -70,6 +70,14 @@ public class OptParser {
             .desc("prints this usage text")
             .build();
 
+    static final String BRUTE_FORCE = "b";
+    final Option bruteForce = Option
+            .builder(BRUTE_FORCE)
+            .longOpt("brute-force")
+            .hasArg(false)
+            .desc("use brute force register allocation, default is graph coloring allocation")
+            .build();
+
     Options options;
 
     public OptParser() {
@@ -82,6 +90,7 @@ public class OptParser {
         options.addOption(logLevel);
         options.addOption(logFile);
         options.addOption(logColorful);
+        options.addOption(bruteForce);
     }
 
     public void printHelp() {

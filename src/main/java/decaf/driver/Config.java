@@ -53,12 +53,15 @@ public class Config {
      */
     public final Target target;
 
-    private Config(FileInputStream source, Path sourcePath, OutputStream output, Path dstPath, Target target) {
+    public final boolean bruteForceRegAlloc;
+
+    private Config(FileInputStream source, Path sourcePath, OutputStream output, Path dstPath, Target target, boolean bruteForceRegAlloc) {
         this.source = source;
         this.sourcePath = sourcePath;
         this.output = output;
         this.dstPath = dstPath;
         this.target = target;
+        this.bruteForceRegAlloc = bruteForceRegAlloc;
     }
 
     /**
@@ -124,7 +127,9 @@ public class Config {
             }
         }
 
-        return new Config(source, sourcePath, output, dstPath, target);
+        boolean bruteForce = cli.hasOption(OptParser.BRUTE_FORCE);
+
+        return new Config(source, sourcePath, output, dstPath, target, bruteForce);
     }
 
     /**

@@ -34,6 +34,16 @@ public final class MipsAsmEmitter extends AsmEmitter {
         printer.println();
     }
 
+    public MipsAsmEmitter(boolean isBruteForce) {
+        super("mips", isBruteForce ? Mips.allocatableRegsBruteForce : Mips.allocatableRegs, isBruteForce ? Mips.callerSavedBruteForce : Mips.callerSaved);
+
+        printer.println("# start of header");
+        printer.println(".text");
+        printer.println(".globl main");
+        printer.println("# end of header");
+        printer.println();
+    }
+
     @Override
     public void emitVTable(VTable vtbl) {
         // vtable begin

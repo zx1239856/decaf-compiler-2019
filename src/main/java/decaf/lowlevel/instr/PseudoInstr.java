@@ -1,9 +1,11 @@
 package decaf.lowlevel.instr;
 
+import decaf.lowlevel.Mips;
 import decaf.lowlevel.label.Label;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * A pseudo instruction.
@@ -97,12 +99,16 @@ public abstract class PseudoInstr {
      * @param srcRegs source registers
      * @return native instruction
      */
-    public NativeInstr toNative(Reg[] dstRegs, Reg[] srcRegs) {
+    public Optional<NativeInstr> toNative(Reg[] dstRegs, Reg[] srcRegs) {
         var oldDsts = this.dsts;
         var oldSrcs = this.srcs;
 
         this.dsts = dstRegs;
         this.srcs = srcRegs;
+
+        if(this instanceof Mips.Move && this.dsts.length > 0 && this.srcs.length > 0 && this.dsts[0].equals(this.srcs[0]))
+            return Optional.empty();
+
         var str = toString();
         var nativeInstr = new NativeInstr(kind, dstRegs, srcRegs, label) {
             @Override
@@ -113,7 +119,7 @@ public abstract class PseudoInstr {
 
         this.dsts = oldDsts;
         this.srcs = oldSrcs;
-        return nativeInstr;
+        return Optional.of(nativeInstr);
     }
 
     public boolean isLabel() {

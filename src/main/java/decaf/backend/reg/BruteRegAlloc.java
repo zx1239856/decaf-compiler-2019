@@ -65,7 +65,7 @@ public final class BruteRegAlloc extends RegAlloc {
     /**
      * Main algorithm of local register allocation à la brute-force. Basic idea:
      * <ul>
-     *     <li>Allocation is preformed block-by-block.</li>
+     *     <li>Allocation is performed block-by-block.</li>
      *     <li>Assume that every allocatable register is unoccupied before entering every basic block.</li>
      *     <li>For every read (src) and written (dst) temp {@code t} in every pseudo instruction, attempt the following
      *     in order:</li>
@@ -157,7 +157,7 @@ public final class BruteRegAlloc extends RegAlloc {
             }
         }
 
-        subEmitter.emitNative(instr.toNative(dstRegs, srcRegs));
+        instr.toNative(dstRegs, srcRegs).ifPresent(subEmitter::emitNative);
     }
 
     /**

@@ -59,6 +59,8 @@ public abstract class SubroutineEmitter {
      */
     public abstract void emitEnd();
 
+    public abstract int getNextLocalOffset();
+
     /**
      * Basic info of this subroutine.
      */

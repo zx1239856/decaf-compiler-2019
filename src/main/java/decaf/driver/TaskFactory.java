@@ -4,6 +4,7 @@ import decaf.backend.asm.Asm;
 import decaf.backend.asm.mips.MipsAsmEmitter;
 import decaf.backend.opt.Optimizer;
 import decaf.backend.reg.BruteRegAlloc;
+import decaf.backend.reg.GraphColorRegAlloc;
 import decaf.frontend.parsing.JaccParser;
 import decaf.frontend.parsing.LLParser;
 import decaf.frontend.tacgen.TacGen;
@@ -45,7 +46,7 @@ public class TaskFactory {
     }
 
     public Task<InputStream, String> mips() {
-        var emitter = new MipsAsmEmitter();
-        return tacGen().then(new Asm(emitter, new BruteRegAlloc(emitter), config));
+        var emitter = new MipsAsmEmitter(config.bruteForceRegAlloc);
+        return optimize().then(new Asm(emitter, config.bruteForceRegAlloc ? new BruteRegAlloc(emitter) : new GraphColorRegAlloc(emitter), config));
     }
 }

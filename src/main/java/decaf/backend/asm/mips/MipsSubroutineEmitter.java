@@ -85,7 +85,7 @@ public class MipsSubroutineEmitter extends SubroutineEmitter {
 
     @Override
     public void emitLabel(Label label) {
-        buf.add(new Mips.MipsLabel(label).toNative(new Reg[]{}, new Reg[]{}));
+        new Mips.MipsLabel(label).toNative(new Reg[]{}, new Reg[]{}).ifPresent(buf::add);
     }
 
     @Override
@@ -141,6 +141,10 @@ public class MipsSubroutineEmitter extends SubroutineEmitter {
 
         printer.printInstr(new Mips.NativeReturn(), "return");
         printer.println();
+    }
+
+    public int getNextLocalOffset() {
+        return nextLocalOffset;
     }
 
     private List<NativeInstr> buf = new ArrayList<>();
