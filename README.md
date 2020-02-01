@@ -1,4 +1,12 @@
 # The New Decaf Compiler
+## Notes
++ PA1-A Lexical analysis of Decaf based on JFlex and (buggy) Jacc to construct AST
++ PA1-B Hand-crafted LL(1) lexical analysis based on Ll1pg
++ PA2 Syntax analysis, including symbol and type check, yielding an attributed AST
++ PA3 AST to TAC (Three Address Code) IR, unoptimized
++ PA4 TAC optimization
++ PA5 TAC to MIPS32 assembly (with register allocation backed by graph coloring)
+
 
 <img src="https://github.com/decaf-lang/decaf/wiki/images/decaf-logo-h.svg?sanitize=true" width="300" align=center></img>
 
